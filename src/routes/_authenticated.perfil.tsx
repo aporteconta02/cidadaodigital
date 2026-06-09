@@ -37,9 +37,10 @@ type UserProfile = {
   assinante_plus: boolean | null;
   numero_membro: string | null;
   validade_assinatura: string | null;
-  qr_code_token: string;
+  qr_code_token: string | null;
   avatar_url?: string | null;
 };
+
 
 
 function PerfilPage() {
