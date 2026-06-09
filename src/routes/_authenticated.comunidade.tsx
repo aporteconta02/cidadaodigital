@@ -324,8 +324,161 @@ function ComunidadePage() {
         )}
 
         {activeTab === 'mural' && (
-          <div className="py-20 text-center text-muted-foreground">
-            <p className="text-sm font-bold uppercase tracking-widest opacity-50">Em breve...</p>
+          <div className="space-y-6">
+            {/* Sub-tabs */}
+            <div className="flex bg-card/50 p-1.5 rounded-2xl border border-white/5 mb-6">
+              <button 
+                onClick={() => setMuralSubTab('avisos')}
+                className={cn(
+                  "flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                  muralSubTab === 'avisos' ? "bg-primary text-primary-foreground shadow-lg" : "text-muted-foreground hover:bg-white/5"
+                )}
+              >
+                Mural de Avisos
+              </button>
+              <button 
+                onClick={() => setMuralSubTab('telefones')}
+                className={cn(
+                  "flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                  muralSubTab === 'telefones' ? "bg-primary text-primary-foreground shadow-lg" : "text-muted-foreground hover:bg-white/5"
+                )}
+              >
+                Telefones Úteis
+              </button>
+            </div>
+
+            {muralSubTab === 'avisos' ? (
+              <div className="space-y-8 pb-12">
+                {/* Filters */}
+                <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+                  {['Todos', 'Pets', 'Emprego', 'Venda', 'Alerta', 'Geral'].map((f) => (
+                    <button 
+                      key={f} 
+                      onClick={() => setMuralFilter(f)}
+                      className={cn(
+                        "whitespace-nowrap px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                        muralFilter === f ? "bg-white/10 text-white" : "text-muted-foreground hover:bg-white/5"
+                      )}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Feed */}
+                <div className="space-y-4">
+                  {[
+                    { type: 'Pets', title: 'Gato desaparecido', text: 'Gato cinza sumiu na Rua das Flores ontem à tarde.', neighborhood: 'Jardim Paulista', time: 'Há 20 min', icon: '🐾', color: 'bg-orange-500/10 text-orange-500' },
+                    { type: 'Emprego', title: 'Vaga para Garçom', text: 'Restaurante Sabor Mineiro está contratando urgente.', neighborhood: 'Centro', time: 'Há 2h', icon: '💼', color: 'bg-blue-500/10 text-blue-500' },
+                    { type: 'Venda', title: 'Bicicleta Caloi Aro 29', text: 'Pouco uso, estado de nova. Preço a combinar.', neighborhood: 'Vila Mariana', time: 'Há 5h', icon: '🛒', color: 'bg-green-500/10 text-green-500' },
+                    { type: 'Alerta', title: 'Falta de água amanhã', text: 'Sabesp informa manutenção programada na rede local.', neighborhood: 'Bairro Alto', time: 'Há 10h', icon: '⚠️', color: 'bg-red-500/10 text-red-500' },
+                  ].filter(item => muralFilter === 'Todos' || item.type === muralFilter).map((aviso, i) => (
+                    <div key={i} className="bg-card border border-white/5 rounded-3xl p-5 shadow-standard">
+                      <div className="flex justify-between items-start mb-4">
+                        <span className={cn("px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-widest flex items-center gap-1", aviso.color)}>
+                          <span>{aviso.icon}</span>
+                          {aviso.type}
+                        </span>
+                        <span className="text-[9px] text-muted-foreground font-black uppercase tracking-widest">{aviso.time}</span>
+                      </div>
+                      <h4 className="font-bold text-base mb-2">{aviso.title}</h4>
+                      <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{aviso.text}</p>
+                      <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                          <MapPin size={10} />
+                          <span>{aviso.neighborhood}</span>
+                        </div>
+                        <button className="text-primary hover:text-primary/80 transition-colors">
+                          <MessageSquare size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* FAB for Avisos */}
+                <button 
+                  onClick={() => setShowNewAviso(true)}
+                  className="fixed bottom-24 right-6 size-16 rounded-2xl bg-primary text-primary-foreground shadow-2xl flex items-center justify-center active:scale-90 transition-all z-30"
+                >
+                  <Plus size={32} strokeWidth={3} />
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                {/* Search Bar */}
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                  <input 
+                    type="text" 
+                    placeholder="Buscar serviço ou telefone..." 
+                    value={telefonesSearch}
+                    onChange={(e) => setTelefonesSearch(e.target.value)}
+                    className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
+                  />
+                </div>
+
+                {/* Emergências Section */}
+                <section>
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Emergências</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { label: 'Polícia', phone: '190', icon: <ShieldAlert size={20} />, color: 'bg-red-500' },
+                      { label: 'Bombeiros', phone: '193', icon: '🚒', color: 'bg-orange-500' },
+                      { label: 'SAMU', phone: '192', icon: '🚑', color: 'bg-red-600' },
+                      { label: 'CVV', phone: '188', icon: <Heart size={20} />, color: 'bg-blue-500' },
+                    ].map((item, i) => (
+                      <a 
+                        key={i} 
+                        href={`tel:${item.phone}`}
+                        className="bg-card border border-white/5 p-4 rounded-2xl flex items-center gap-3 shadow-standard active:scale-95 transition-all"
+                      >
+                        <div className={cn("size-10 rounded-xl flex items-center justify-center text-white", item.color)}>
+                          {item.icon}
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-black uppercase tracking-widest">{item.label}</h4>
+                          <span className="text-lg font-black text-foreground">{item.phone}</span>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </section>
+
+                {/* Serviços da Cidade */}
+                <section>
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Serviços da Cidade</h3>
+                  <div className="space-y-3">
+                    {[
+                      { name: 'Prefeitura', category: 'Administração', phone: '156' },
+                      { name: 'Defesa Civil', category: 'Segurança', phone: '199' },
+                      { name: 'Iluminação Pública', category: 'Serviços', phone: '0800 123 4567' },
+                      { name: 'Coleta de Lixo', category: 'Serviços', phone: '0800 765 4321' },
+                      { name: 'Centro de Zoonoses', category: 'Saúde/Pet', phone: '1234-5678' },
+                      { name: 'Conselho Tutelar', category: 'Social', phone: '1234-9999' },
+                    ].filter(s => s.name.toLowerCase().includes(telefonesSearch.toLowerCase()) || s.category.toLowerCase().includes(telefonesSearch.toLowerCase())).map((service, i) => (
+                      <div key={i} className="bg-card border border-white/5 rounded-2xl p-4 flex items-center justify-between shadow-standard">
+                        <div>
+                          <h4 className="font-bold text-sm mb-1">{service.name}</h4>
+                          <div className="flex items-center gap-2">
+                             <span className="text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded bg-white/5 text-muted-foreground">
+                              {service.category}
+                            </span>
+                            <span className="text-[10px] text-primary font-black uppercase tracking-widest">{service.phone}</span>
+                          </div>
+                        </div>
+                        <a 
+                          href={`tel:${service.phone}`}
+                          className="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center active:scale-90 transition-all"
+                        >
+                          <Phone size={18} />
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            )}
           </div>
         )}
       </div>
