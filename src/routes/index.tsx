@@ -1,7 +1,7 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
-import { Shield, MapPin, Users, ShoppingBag } from "lucide-react";
+import { Shield, ShoppingBag, Users } from "lucide-react";
 import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/")({
@@ -32,7 +32,7 @@ function LandingPage() {
       <div className="absolute top-[-10%] right-[-20%] size-96 bg-primary/20 blur-[120px] rounded-full" />
       <div className="absolute bottom-[10%] left-[-20%] size-96 bg-secondary/10 blur-[120px] rounded-full" />
 
-      <main className="flex-1 flex flex-col px-8 pt-24 relative z-10">
+      <main className="flex-1 flex flex-col px-8 pt-24 relative z-10 max-w-lg mx-auto w-full">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -43,7 +43,7 @@ function LandingPage() {
             <Shield size={12} />
             <span>App Oficial da Cidade</span>
           </div>
-          <h1 className="text-5xl font-black font-display tracking-tighter leading-none mb-4">
+          <h1 className="text-5xl font-black font-display tracking-tighter leading-none mb-4 uppercase">
             CIDADÃO<span className="text-primary">+</span>
           </h1>
           <p className="text-xl text-muted-foreground leading-snug">
@@ -64,12 +64,12 @@ function LandingPage() {
           transition={{ delay: 0.3, duration: 0.5 }}
           className="mt-auto pb-12"
         >
-          <button 
-            onClick={() => navigate({ to: "/auth" })}
-            className="w-full bg-primary text-primary-foreground font-black py-5 rounded-2xl shadow-standard text-lg uppercase tracking-wider active:scale-95 transition-transform"
+          <Link 
+            to="/auth"
+            className="w-full bg-primary text-primary-foreground font-black py-5 rounded-2xl shadow-standard text-lg uppercase tracking-wider active:scale-95 transition-transform flex items-center justify-center"
           >
             Começar agora
-          </button>
+          </Link>
           <p className="text-center text-[10px] uppercase font-bold tracking-widest text-muted-foreground mt-4 opacity-50">
             Disponível para todos os bairros
           </p>
