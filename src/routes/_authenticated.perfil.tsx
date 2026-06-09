@@ -246,6 +246,57 @@ function PerfilPage() {
 
   return (
     <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-500">
+      {/* Validation Modal for Merchants */}
+      <AnimatePresence>
+        {(new URLSearchParams(window.location.search)).get('mode') === 'validate' && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/90 backdrop-blur-xl"
+              onClick={() => navigate({ to: '/perfil' } as any)}
+            />
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative w-full max-w-md bg-card border border-white/10 rounded-[32px] overflow-hidden shadow-2xl"
+            >
+              <div className="p-8">
+                <div className="flex justify-between items-center mb-8">
+                  <h3 className="text-xl font-black font-display uppercase tracking-tight">Validar Membro</h3>
+                  <button onClick={() => navigate({ to: '/perfil' } as any)} className="size-10 rounded-full bg-white/5 flex items-center justify-center text-muted-foreground">
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-background/50 border border-white/5 rounded-2xl p-6 text-center">
+                    <QrCode size={48} className="mx-auto text-primary mb-4" />
+                    <p className="text-sm font-bold text-muted-foreground mb-4">Aponte a câmera para o QR Code da carteirinha do cliente.</p>
+                    <button className="w-full bg-primary text-primary-foreground font-black py-4 rounded-xl uppercase tracking-widest active:scale-95 transition-all">
+                      Abrir Scanner
+                    </button>
+                  </div>
+                  
+                  {/* Mock Result for validation demo */}
+                  <div className="bg-secondary/10 border border-secondary/20 rounded-2xl p-6">
+                    <div className="flex items-center gap-4">
+                      <div className="size-12 rounded-full bg-secondary/20 flex items-center justify-center text-secondary font-black">JS</div>
+                      <div>
+                        <p className="font-bold text-white">João Silva</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-secondary">Assinante Ativo</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Header Perfil */}
       <div className="flex items-center gap-6 py-4">
         <div className="relative group">
@@ -403,6 +454,19 @@ function PerfilPage() {
         <MenuButton icon={<Shield size={18} />} label="Meus Alertas de Segurança" onClick={() => navigate({ to: '/sos' })} />
         <MenuButton icon={<Users size={18} />} label="Contatos de Confiança" onClick={() => navigate({ to: '/sos' })} />
         <MenuButton icon={<Ticket size={18} />} label="Clube de Benefícios" />
+        
+        {/* Merchant validation panel if merchant */}
+        {user?.tipo === 'COMERCIANTE' && (
+          <div className="pt-2">
+            <h3 className="text-[10px] font-black uppercase tracking-widest text-primary ml-1 mb-2">Painel do Comerciante</h3>
+            <MenuButton 
+              icon={<QrCode size={18} />} 
+              label="Validar Clube Cidadão+" 
+              onClick={() => navigate({ to: '/perfil', search: { mode: 'validate' } } as any)} 
+            />
+          </div>
+        )}
+
         <MenuButton icon={<Settings size={18} />} label="Configurações da Conta" />
         
         <div className="pt-4">
