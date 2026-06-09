@@ -65,8 +65,28 @@ function PerfilPage() {
         .eq('auth_id', authUser.id)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No user found, using mock data for demo
+          setUser({
+            id: authUser.id,
+            nome: authUser.user_metadata?.full_name || "Usuário Demo",
+            email: authUser.email || "",
+            cidade: "São Paulo",
+            bairro: "Jardim Paulista",
+            tipo: "MORADOR",
+            assinante_plus: true,
+            numero_membro: "00847",
+            validade_assinatura: "2027-07-01",
+            qr_code_token: "demo-token-123",
+            avatar_url: null
+          });
+          return;
+        }
+        throw error;
+      }
       setUser(data);
+
     } catch (error) {
       console.error('Error fetching profile:', error);
       toast.error("Erro ao carregar perfil");
