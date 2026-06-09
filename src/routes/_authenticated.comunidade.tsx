@@ -224,7 +224,94 @@ function ComunidadePage() {
           </div>
         )}
 
-        {(activeTab === 'mural' || activeTab === 'voz') && (
+        {activeTab === 'voz' && (
+          <div className="space-y-8">
+            <header className="flex items-center gap-4 bg-primary/5 p-6 rounded-[32px] border border-primary/10 mb-2">
+              <div className="size-14 rounded-2xl bg-primary/20 flex items-center justify-center text-primary text-3xl">🗳️</div>
+              <div>
+                <h3 className="text-lg font-black font-display uppercase tracking-tight leading-tight">Voz do Povo</h3>
+                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">Sua opinião constrói a cidade</p>
+              </div>
+            </header>
+
+            <section>
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Pesquisas Ativas</h3>
+              <div className="space-y-4">
+                {[
+                  { 
+                    id: 1, 
+                    title: 'Nova Ciclovia na Av. Brasil', 
+                    cat: 'Mobilidade', 
+                    votes: 1240, 
+                    days: 3, 
+                    progress: 65,
+                    color: 'text-blue-400 bg-blue-400/10'
+                  },
+                  { 
+                    id: 2, 
+                    title: 'Reforma do Parque da Matriz', 
+                    cat: 'Lazer', 
+                    votes: 856, 
+                    days: 5, 
+                    progress: 40,
+                    color: 'text-secondary bg-secondary/10'
+                  },
+                ].map((poll) => (
+                  <div key={poll.id} className="bg-card border border-white/5 rounded-3xl p-5 shadow-standard">
+                    <div className="flex justify-between items-start mb-4">
+                      <span className={cn("px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-widest", poll.color)}>
+                        {poll.cat}
+                      </span>
+                      <div className="flex items-center gap-1 text-[9px] text-muted-foreground font-black uppercase tracking-widest">
+                        <Clock size={10} />
+                        <span>Encerra em {poll.days} dias</span>
+                      </div>
+                    </div>
+                    
+                    <h4 className="font-bold text-base mb-4 leading-tight">{poll.title}</h4>
+                    
+                    <div className="space-y-2 mb-6">
+                      <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                        <span>Progresso da meta</span>
+                        <span>{poll.progress}%</span>
+                      </div>
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: `${poll.progress}%` }}
+                          className="h-full bg-primary"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{poll.votes} votos registrados</span>
+                      <button className="bg-primary text-primary-foreground px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-standard active:scale-95 transition-all">
+                        Votar
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Encerradas</h3>
+              <div className="bg-card/50 border border-white/5 rounded-2xl p-4 flex items-center justify-between opacity-60">
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-xl bg-muted flex items-center justify-center text-xl">🌳</div>
+                  <div>
+                    <h4 className="text-xs font-bold">Plantio de Árvores</h4>
+                    <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest">Aprovado com 82%</p>
+                  </div>
+                </div>
+                <button className="text-[9px] font-black uppercase tracking-widest text-primary">Resultado</button>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {activeTab === 'mural' && (
           <div className="py-20 text-center text-muted-foreground">
             <p className="text-sm font-bold uppercase tracking-widest opacity-50">Em breve...</p>
           </div>
