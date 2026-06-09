@@ -146,12 +146,12 @@ function PerfilPage() {
   };
 
   return (
-    <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-500">
-      {/* Header Perfil */}
-      <div className="flex items-center gap-6 py-4">
-        <div className="relative">
-          <div className="size-20 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center overflow-hidden shadow-xl">
-            {user?.avatar_url ? (
+    <div className="p-6 text-white">
+      <h1>Perfil Page</h1>
+      <pre>{JSON.stringify(user, null, 2)}</pre>
+    </div>
+  );
+
               <img src={user.avatar_url} alt={user.nome} className="size-full object-cover" />
             ) : (
               <span className="text-2xl font-black text-primary">{user ? getInitials(user.nome) : '??'}</span>
