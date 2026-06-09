@@ -59,86 +59,97 @@ function DashboardPage() {
   const isSubscriber = true; // Temporary mock
 
   return (
-    <div className="pb-32 animate-in fade-in duration-500">
-      {/* Search & Header (Header is already in __root but we add search here as per layout) */}
-      <div className="px-6 pt-4 mb-6">
+    <div className="pb-32 animate-in fade-in duration-700">
+      {/* Search & Header */}
+      <div className="px-6 pt-6 mb-8">
         <div className="relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={20} />
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/40 group-focus-within:text-primary transition-all duration-300" size={18} />
           <input 
-            placeholder="Buscar serviços, ocorrências..." 
-            className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all shadow-standard"
+            placeholder="O que você procura hoje?" 
+            className="w-full bg-white/[0.03] border border-white/[0.05] rounded-2xl py-5 pl-12 pr-5 text-sm font-medium placeholder:text-muted-foreground/30 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:bg-white/[0.05] transition-all duration-500 shadow-soft"
           />
         </div>
       </div>
 
-      {/* Rotating Banners */}
-      <section className="mb-8 relative group">
+      {/* Hero Carousel */}
+      <section className="mb-10 relative group">
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="flex">
             {BANNERS.map((banner) => (
-              <div key={banner.id} className="flex-[0_0_100%] min-w-0 relative h-48 px-6">
-                <div className="w-full h-full rounded-3xl overflow-hidden relative border border-white/5 shadow-standard">
-                  <img src={banner.image} alt={banner.title} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
-                    <h3 className="text-white font-black font-display text-xl leading-none mb-1 uppercase tracking-tight">{banner.title}</h3>
-                    <p className="text-white/70 text-xs font-bold uppercase tracking-widest">{banner.subtitle}</p>
+              <div key={banner.id} className="flex-[0_0_100%] min-w-0 relative h-56 px-6">
+                <div className="w-full h-full rounded-[32px] overflow-hidden relative border border-white/[0.05] shadow-premium group/card">
+                  <img src={banner.image} alt={banner.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover/card:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-8">
+                    <motion.div
+                      initial={{ y: 20, opacity: 0 }}
+                      whileInView={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <h3 className="text-white font-bold font-display text-2xl leading-tight mb-2 uppercase tracking-tight italic">{banner.title}</h3>
+                      <p className="text-white/60 text-[10px] font-black uppercase tracking-[0.2em]">{banner.subtitle}</p>
+                    </motion.div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-        {/* Pagination Dots */}
-        <div className="flex justify-center gap-1.5 mt-4">
+        {/* Modern Pagination */}
+        <div className="flex justify-center gap-1.5 mt-5">
           {BANNERS.map((_, i) => (
             <div 
               key={i}
               className={cn(
-                "h-1 rounded-full transition-all duration-300",
-                i === selectedIndex ? "w-6 bg-primary" : "w-1.5 bg-muted-foreground/30"
+                "h-0.5 rounded-full transition-all duration-500",
+                i === selectedIndex ? "w-8 bg-primary" : "w-2 bg-white/10"
               )}
             />
           ))}
         </div>
       </section>
 
-      {/* Quick Access Grid */}
-      <section className="px-6 mb-10">
+      {/* Action Grid (Bento Style Lite) */}
+      <section className="px-6 mb-12">
         <div className="grid grid-cols-3 gap-3">
-          {QUICK_ACTIONS.map((action) => (
-            <button 
+          {QUICK_ACTIONS.map((action, idx) => (
+            <motion.button 
               key={action.id} 
-              className="flex flex-col items-center justify-center gap-3 p-4 rounded-2xl bg-card border border-white/5 hover:bg-card-hover hover:border-white/10 transition-all shadow-standard active:scale-95 group"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.05, duration: 0.5 }}
+              className="flex flex-col items-center justify-center gap-4 p-5 rounded-3xl bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.05] hover:border-white/[0.08] transition-all duration-500 shadow-soft active:scale-95 group"
             >
-              <div className={cn("transition-transform group-hover:scale-110", action.color)}>
+              <div className={cn("transition-transform duration-500 group-hover:scale-110", action.color)}>
                 {action.icon}
               </div>
-              <span className="text-[10px] font-black font-display uppercase tracking-widest text-center leading-tight">
+              <span className="text-[9px] font-black font-display uppercase tracking-[0.15em] text-center leading-tight opacity-60 group-hover:opacity-100 transition-opacity">
                 {action.label}
               </span>
-            </button>
+            </motion.button>
           ))}
         </div>
       </section>
 
-      {/* Featured Events */}
-      <section className="mb-10">
-        <div className="px-6 flex items-center justify-between mb-4">
-          <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground">Eventos em Destaque</h2>
-          <button className="text-[10px] font-black uppercase tracking-widest text-primary">Ver todos</button>
+      {/* Event Cards */}
+      <section className="mb-12">
+        <div className="px-6 flex items-center justify-between mb-6">
+          <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-50">Próximos Eventos</h2>
+          <button className="text-[9px] font-black uppercase tracking-[0.1em] text-primary hover:underline">Ver Agenda</button>
         </div>
-        <div className="flex gap-4 overflow-x-auto px-6 pb-4 scrollbar-hide">
+        <div className="flex gap-4 overflow-x-auto px-6 pb-6 scrollbar-hide">
           {[
-            { title: "Yoga no Parque", date: "Dom, 08:00", img: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=300" },
-            { title: "Feira de Adoção", date: "Sáb, 10:00", img: "https://images.unsplash.com/photo-1548199973-03c40e556509?q=80&w=300" },
-            { title: "Cinema de Rua", date: "Sex, 19:30", img: "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=300" },
+            { title: "Yoga no Parque", date: "DOMINGO, 08:00", img: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=300" },
+            { title: "Feira de Adoção", date: "SÁBADO, 10:00", img: "https://images.unsplash.com/photo-1548199973-03c40e556509?q=80&w=300" },
+            { title: "Cinema de Rua", date: "SEXTA, 19:30", img: "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=300" },
           ].map((event, i) => (
-            <div key={i} className="flex-[0_0_160px] bg-card rounded-2xl overflow-hidden border border-white/5 shadow-standard">
-              <img src={event.img} className="w-full h-24 object-cover" />
-              <div className="p-3">
-                <h4 className="font-bold text-xs truncate mb-1">{event.title}</h4>
-                <div className="flex items-center gap-1 text-[9px] text-muted-foreground font-black uppercase tracking-tight">
-                  <Calendar size={10} />
+            <div key={i} className="flex-[0_0_200px] bg-white/[0.02] rounded-[24px] overflow-hidden border border-white/[0.04] shadow-premium hover:bg-white/[0.04] transition-all duration-500 group">
+              <div className="h-28 overflow-hidden">
+                <img src={event.img} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+              </div>
+              <div className="p-4">
+                <h4 className="font-bold text-sm mb-1 text-foreground/90 uppercase tracking-tight italic">{event.title}</h4>
+                <div className="flex items-center gap-1.5 text-[8px] text-muted-foreground font-black uppercase tracking-widest opacity-60">
+                  <Calendar size={10} className="text-primary" />
                   <span>{event.date}</span>
                 </div>
               </div>
@@ -149,31 +160,30 @@ function DashboardPage() {
 
       {/* Neighborhood Alerts (Subscribers only) */}
       {isSubscriber && (
-        <section className="px-6 mb-10">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-black uppercase tracking-widest text-sos flex items-center gap-2">
-              <AlertCircle size={16} />
-              Alertas do Bairro
+        <section className="px-6 mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-sos flex items-center gap-2">
+              <AlertCircle size={14} />
+              Alertas Recentes
             </h2>
-            <span className="text-[9px] font-black uppercase bg-premium/10 text-premium px-2 py-0.5 rounded border border-premium/20">Plus</span>
+            <span className="text-[8px] font-black uppercase bg-premium text-black px-2 py-0.5 rounded-full">C+ PREMIUM</span>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {[
-              { type: "Suspeito", time: "Há 5 min", loc: "Rua Oscar Freire" },
-              { type: "Acidente", time: "Há 12 min", loc: "Av. Brasil" },
-              { type: "Barulho", time: "Há 45 min", loc: "Praça das Flores" },
+              { type: "Comportamento Suspeito", time: "HÁ 5 MINUTOS", loc: "Rua Oscar Freire, 1200" },
+              { type: "Acidente de Trânsito", time: "HÁ 12 MINUTOS", loc: "Av. Brasil x Rebouças" },
             ].map((alert, i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-sos/5 border border-sos/10 hover:bg-sos/10 transition-colors cursor-pointer">
+              <div key={i} className="flex items-center justify-between p-5 rounded-3xl bg-sos/5 border border-sos/10 hover:bg-sos/10 transition-all duration-500 cursor-pointer group">
                 <div className="flex items-center gap-4">
-                  <div className="size-10 rounded-xl bg-sos/20 flex items-center justify-center text-sos">
+                  <div className="size-11 rounded-2xl bg-sos/10 flex items-center justify-center text-sos border border-sos/20 transition-transform group-hover:scale-110">
                     <TrendingUp size={18} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm">{alert.type}</h4>
-                    <p className="text-[10px] text-muted-foreground font-bold uppercase">{alert.loc}</p>
+                    <h4 className="font-bold text-sm text-foreground/90 uppercase tracking-tight italic">{alert.type}</h4>
+                    <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest opacity-60">{alert.loc}</p>
                   </div>
                 </div>
-                <span className="text-[10px] font-black text-sos/60 uppercase">{alert.time}</span>
+                <span className="text-[8px] font-black text-sos/60 uppercase tracking-widest">{alert.time}</span>
               </div>
             ))}
           </div>
@@ -183,26 +193,26 @@ function DashboardPage() {
       {/* Voz do Povo (Poll) */}
       <section className="px-6 mb-10">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-black uppercase tracking-widest text-primary flex items-center gap-2">
-            <Users size={16} />
+          <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-50 flex items-center gap-2">
+            <Users size={14} />
             Voz do Povo
           </h2>
         </div>
-        <div className="bg-card border border-white/5 rounded-3xl p-6 shadow-standard relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-5">
-             <TrendingUp size={100} />
+        <div className="bg-white/[0.02] border border-white/[0.04] rounded-[32px] p-8 shadow-premium relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-700">
+             <TrendingUp size={120} />
           </div>
-          <h3 className="text-lg font-black font-display leading-tight mb-4 uppercase tracking-tight relative z-10">
+          <h3 className="text-xl font-bold font-display leading-tight mb-8 uppercase tracking-tight relative z-10 italic">
             Qual a prioridade para o bairro em 2026?
           </h3>
-          <div className="space-y-4 relative z-10">
-            <PollOption label="Iluminação" percent={65} active />
-            <PollOption label="Asfaltamento" percent={20} />
-            <PollOption label="Novas Praças" percent={15} />
+          <div className="space-y-6 relative z-10">
+            <PollOption label="Iluminação Pública" percent={65} active />
+            <PollOption label="Recapeamento Asfáltico" percent={20} />
+            <PollOption label="Novas Áreas Verdes" percent={15} />
           </div>
-          <p className="mt-6 text-[10px] text-muted-foreground font-bold text-center uppercase tracking-widest">
-            842 vizinhos já votaram
-          </p>
+          <div className="mt-8 pt-6 border-t border-white/5 flex justify-center items-center gap-2">
+            <span className="text-[8px] font-black text-primary uppercase tracking-[0.2em]">842 Votos Coletivos</span>
+          </div>
         </div>
       </section>
 
@@ -240,17 +250,17 @@ function DashboardPage() {
 
 function PollOption({ label, percent, active = false }: { label: string, percent: number, active?: boolean }) {
   return (
-    <div className="space-y-1.5">
-      <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-        <span className={active ? "text-primary" : "text-muted-foreground"}>{label}</span>
-        <span>{percent}%</span>
+    <div className="space-y-2">
+      <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-[0.15em]">
+        <span className={active ? "text-primary opacity-100" : "text-muted-foreground opacity-40"}>{label}</span>
+        <span className="opacity-60">{percent}%</span>
       </div>
-      <div className="h-2 bg-muted rounded-full overflow-hidden">
+      <div className="h-1 bg-white/5 rounded-full overflow-hidden">
         <motion.div 
           initial={{ width: 0 }}
           whileInView={{ width: `${percent}%` }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className={cn("h-full rounded-full", active ? "bg-primary" : "bg-muted-foreground/30")}
+          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          className={cn("h-full rounded-full", active ? "bg-primary shadow-[0_0_10px_rgba(0,209,255,0.4)]" : "bg-white/20")}
         />
       </div>
     </div>

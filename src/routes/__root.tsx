@@ -143,18 +143,18 @@ function RootComponent() {
       )}>
         {/* App Header (Hidden on landing/auth) */}
         {!isPublicPage && (
-          <header className="sticky top-0 z-40 bg-gradient-to-br from-[#080C18] to-[#0A1628] px-6 py-6 border-b border-white/5">
+          <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl px-6 py-5 border-b border-white/5">
             <div className="flex items-center justify-between max-w-lg mx-auto">
-              <h1 className="text-2xl font-black tracking-tighter text-primary font-display uppercase">
-                CIDADÃO<span className="text-secondary">+</span>
+              <h1 className="text-xl font-bold tracking-tight text-primary font-display uppercase italic">
+                CIDADÃO<span className="text-foreground">.</span><span className="text-secondary">PLUS</span>
               </h1>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <div className="flex flex-col items-end">
-                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-display font-bold leading-none mb-1">Bairro</span>
-                  <span className="text-xs font-bold text-foreground">Jardim Paulista</span>
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground font-display font-black leading-none mb-1 opacity-70">SÃO PAULO</span>
+                  <span className="text-[11px] font-bold text-foreground/90 uppercase tracking-wider">Jardim Paulista</span>
                 </div>
-                <div className="size-10 rounded-full bg-muted border border-border overflow-hidden flex items-center justify-center">
-                  <User size={20} className="text-muted-foreground" />
+                <div className="size-9 rounded-full bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center transition-transform active:scale-95 cursor-pointer">
+                  <User size={18} className="text-muted-foreground" />
                 </div>
               </div>
             </div>
@@ -168,24 +168,24 @@ function RootComponent() {
 
         {/* Bottom Navigation (Hidden on landing/auth) */}
         {!isPublicPage && (
-          <nav className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-white/5 pb-safe">
-            <div className="flex items-center justify-around h-20 max-w-lg mx-auto relative px-2">
-              <NavLink to="/dashboard" icon={<Home size={22} />} label="Início" />
-              <NavLink to="/comercio" icon={<ShoppingBag size={22} />} label="Loja" />
+          <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-2xl border-t border-white/5 pb-safe">
+            <div className="flex items-center justify-around h-18 max-w-lg mx-auto relative px-4">
+              <NavLink to="/dashboard" icon={<Home size={20} />} label="Início" />
+              <NavLink to="/comercio" icon={<ShoppingBag size={20} />} label="Lojas" />
               
               {/* SOS Central Button */}
-              <div className="relative -top-6 flex flex-col items-center">
+              <div className="relative -top-5 flex flex-col items-center">
                 <Link 
                   to="/sos"
-                  className="sos-pulse size-16 rounded-full bg-sos flex items-center justify-center text-white shadow-[0_0_20px_rgba(255,45,45,0.4)] hover:scale-105 active:scale-95 transition-transform"
+                  className="size-14 rounded-2xl bg-sos flex items-center justify-center text-white shadow-[0_8px_24px_rgba(255,59,59,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 border border-white/20"
                 >
-                  <ShieldAlert size={32} strokeWidth={2.5} />
+                  <ShieldAlert size={28} strokeWidth={2.5} className="animate-pulse" />
                 </Link>
-                <span className="text-[10px] font-bold mt-1 text-sos uppercase tracking-wider">SOS</span>
+                <span className="text-[8px] font-black mt-1.5 text-sos uppercase tracking-[0.2em]">EMERGÊNCIA</span>
               </div>
 
-              <NavLink to="/comunidade" icon={<Users size={22} />} label="Povo" />
-              <NavLink to="/perfil" icon={<User size={22} />} label="Perfil" />
+              <NavLink to="/comunidade" icon={<Users size={20} />} label="Povo" />
+              <NavLink to="/perfil" icon={<User size={20} />} label="Perfil" />
             </div>
           </nav>
         )}
