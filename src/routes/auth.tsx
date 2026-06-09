@@ -91,7 +91,7 @@ function AuthPage() {
             tipo: accountType,
             numero_membro: memberNum,
             qr_code_token: crypto.randomUUID()
-          });
+          } as any);
 
           if (profileError) throw profileError;
 
@@ -105,7 +105,7 @@ function AuthPage() {
                   categoria: shopCategory,
                   bairro: neighborhood,
                   cidade: city
-                });
+                } as any);
              }
           }
         }
