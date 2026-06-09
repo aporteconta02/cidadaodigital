@@ -56,9 +56,22 @@ function PerfilPage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const authUser = session?.user;
-
       
       if (!authUser) {
+        // Fallback for preview mode without session
+        setUser({
+          id: "demo-id",
+          nome: "RICARDO OLIVEIRA",
+          email: "ricardo@exemplo.com",
+          cidade: "São Paulo",
+          bairro: "Jardim Paulista",
+          tipo: "MORADOR",
+          assinante_plus: true,
+          numero_membro: "00847",
+          validade_assinatura: "2027-07-01",
+          qr_code_token: "ricardo-token-premium-847",
+          avatar_url: null
+        });
         setLoading(false);
         return;
       }
@@ -71,10 +84,9 @@ function PerfilPage() {
 
       if (error) {
         if (error.code === 'PGRST116') {
-          // No user found, using mock data for demo
           setUser({
             id: authUser.id,
-            nome: authUser.user_metadata?.full_name || "Membro Demonstrativo",
+            nome: authUser.user_metadata?.full_name || "Membro Cidadão+",
             email: authUser.email || "",
             cidade: "São Paulo",
             bairro: "Jardim Paulista",
@@ -82,7 +94,7 @@ function PerfilPage() {
             assinante_plus: true,
             numero_membro: "00847",
             validade_assinatura: "2027-07-01",
-            qr_code_token: "demo-token-123",
+            qr_code_token: "token-demo-" + authUser.id.substring(0, 5),
             avatar_url: null
           });
           return;
@@ -149,7 +161,7 @@ function PerfilPage() {
   };
 
   return (
-    <div className="p-6 space-y-8 bg-zinc-900 min-h-screen">
+    <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-500">
       {/* Header Perfil */}
       <div className="flex items-center gap-6 py-4">
         <div className="relative">
@@ -206,18 +218,17 @@ function PerfilPage() {
                     <div className="flex items-center gap-2">
                       <span className="text-amber-500 font-black tracking-tighter text-xl italic">★ CIDADÃO+</span>
                     </div>
-                    <div className="bg-white p-1 rounded-lg flex items-center justify-center size-12">
-                      <QrCode size={32} className="text-black" />
+                    <div className="bg-white p-1 rounded-lg">
+                      <QRCodeSVG value={user.qr_code_token || user.id} size={48} />
                     </div>
-
                   </div>
 
                   <div className="flex items-center gap-4 mt-auto">
-                    <div className="size-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center overflow-hidden">
+                    <div className="size-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center overflow-hidden text-amber-500 font-black text-xl">
                       {user.avatar_url ? (
                         <img src={user.avatar_url} alt={user.nome} className="size-full object-cover" />
                       ) : (
-                        <span className="text-xl font-black text-amber-500/80">{getInitials(user.nome)}</span>
+                        <span>{getInitials(user.nome)}</span>
                       )}
                     </div>
                     <div>
@@ -250,10 +261,9 @@ function PerfilPage() {
                 style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-primary/5" />
-                <div className="relative bg-white p-4 rounded-2xl shadow-xl flex items-center justify-center size-36">
-                  <QrCode size={100} className="text-black" />
+                <div className="relative bg-white p-4 rounded-2xl shadow-xl">
+                  <QRCodeSVG value={user.qr_code_token || user.id} size={140} />
                 </div>
-
                 <p className="relative text-[10px] font-bold text-amber-500/60 uppercase tracking-widest text-center max-w-[200px]">
                   Apresente este QR Code em estabelecimentos parceiros para obter descontos.
                 </p>
