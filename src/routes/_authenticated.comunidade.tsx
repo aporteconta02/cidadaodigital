@@ -76,32 +76,32 @@ function ComunidadePage() {
   };
 
   return (
-    <div className="pb-32 animate-in fade-in duration-500">
+    <div className="pb-32 animate-in fade-in duration-700">
       {/* City Tabs Scroller */}
-      <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-md pt-4 pb-2">
-        <div className="flex gap-2 overflow-x-auto px-6 scrollbar-hide">
+      <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-xl pt-6 pb-3 border-b border-white/5">
+        <div className="flex gap-3 overflow-x-auto px-6 scrollbar-hide">
           <CityTabButton 
             active={activeTab === 'denuncias'} 
             onClick={() => setActiveTab('denuncias')} 
-            icon={<Megaphone size={16} />} 
+            icon={<Megaphone size={14} />} 
             label="Denúncias" 
           />
           <CityTabButton 
             active={activeTab === 'eventos'} 
             onClick={() => setActiveTab('eventos')} 
-            icon={<Calendar size={16} />} 
+            icon={<Calendar size={14} />} 
             label="Eventos" 
           />
           <CityTabButton 
             active={activeTab === 'mural'} 
             onClick={() => setActiveTab('mural')} 
-            icon={<ClipboardList size={16} />} 
+            icon={<ClipboardList size={14} />} 
             label="Mural" 
           />
           <CityTabButton 
             active={activeTab === 'voz'} 
             onClick={() => setActiveTab('voz')} 
-            icon={<Vote size={16} />} 
+            icon={<Vote size={14} />} 
             label="Voz do Povo" 
           />
         </div>
@@ -112,7 +112,7 @@ function ComunidadePage() {
           <div className="space-y-8">
             {/* My Denuncias */}
             <section>
-              <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Minhas Denúncias</h3>
+              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-40 mb-5 italic">Ocorrências Ativas</h3>
               <div className="space-y-3">
                 <DenunciaItem 
                   title="Buraco na via" 
@@ -131,21 +131,23 @@ function ComunidadePage() {
 
             {/* Public Feed */}
             <section>
-              <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Feed da Cidade</h3>
+              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-40 mb-5 italic">Monitoramento Urbano</h3>
               <div className="space-y-4">
                 {[
                   { cat: 'Lixo', loc: 'Rua Bela Cintra, 45', time: 'Há 10 min', img: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?q=80&w=300' },
                   { cat: 'Vandalismo', loc: 'Praça da Matriz', time: 'Há 1h', img: 'https://images.unsplash.com/photo-1579548122064-9da09ef830c2?q=80&w=300' },
                   { cat: 'Buraco', loc: 'Av. Brasil, 1200', time: 'Há 3h', img: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?q=80&w=300' },
                 ].map((item, i) => (
-                  <div key={i} className="bg-card border border-white/5 rounded-2xl overflow-hidden shadow-standard flex gap-4 p-3 hover:bg-card-hover transition-colors cursor-pointer">
-                    <img src={item.img} className="size-20 rounded-xl object-cover" />
+                  <div key={i} className="bg-white/[0.02] border border-white/[0.04] rounded-[24px] overflow-hidden shadow-premium flex gap-5 p-4 hover:bg-white/[0.05] transition-all duration-500 cursor-pointer group">
+                    <div className="size-20 rounded-2xl overflow-hidden shrink-0">
+                      <img src={item.img} className="size-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    </div>
                     <div className="flex-1 py-1 flex flex-col justify-between">
                       <div>
-                        <h4 className="font-bold text-sm">{item.cat}</h4>
-                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tight truncate">{item.loc}</p>
+                        <h4 className="font-bold text-sm text-foreground/90 uppercase tracking-tight italic">{item.cat}</h4>
+                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-60 truncate">{item.loc}</p>
                       </div>
-                      <div className="flex items-center gap-1 text-[9px] text-muted-foreground font-black uppercase tracking-widest">
+                      <div className="flex items-center gap-1.5 text-[8px] text-muted-foreground font-black uppercase tracking-[0.2em] opacity-40">
                         <Clock size={10} />
                         <span>{item.time}</span>
                       </div>
