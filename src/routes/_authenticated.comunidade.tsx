@@ -629,6 +629,56 @@ function ComunidadePage() {
           </div>
         )}
       </Modal>
+
+      {/* New Aviso Modal */}
+      <Modal show={showNewAviso} onClose={() => setShowNewAviso(false)}>
+        <div className="space-y-6">
+          <h3 className="text-xl font-black font-display uppercase tracking-tight mb-6 text-center">Publicar Aviso</h3>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-2">Tipo de Aviso</label>
+              <div className="grid grid-cols-3 gap-2">
+                {['🐾 Pets', '💼 Job', '🛒 Venda', '⚠️ Alerta', '📋 Geral'].map((t) => (
+                  <button key={t} className="py-3 rounded-xl border border-white/5 bg-background text-[10px] font-black uppercase tracking-widest hover:border-primary/50 transition-colors">
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-2">Título</label>
+              <input 
+                type="text" 
+                placeholder="Ex: Gato sumido" 
+                className="w-full bg-background border border-white/5 rounded-2xl py-4 px-4 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-primary/50"
+              />
+            </div>
+
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-2">Descrição</label>
+              <textarea 
+                rows={4}
+                placeholder="Descreva os detalhes..." 
+                className="w-full bg-background border border-white/5 rounded-2xl py-4 px-4 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-primary/50 resize-none"
+              />
+            </div>
+
+            <div className="aspect-video rounded-3xl bg-background border border-dashed border-white/10 flex flex-col items-center justify-center text-muted-foreground group hover:border-primary/50 transition-colors cursor-pointer">
+                <Camera size={32} className="mb-2 opacity-30 group-hover:opacity-100 transition-opacity" />
+                <span className="text-[9px] font-black uppercase tracking-widest">Foto Opcional</span>
+            </div>
+          </div>
+
+          <button 
+            onClick={() => setShowNewAviso(false)}
+            className="w-full bg-primary text-primary-foreground font-black py-5 rounded-2xl shadow-standard uppercase tracking-widest active:scale-95 transition-all mt-4"
+          >
+            Publicar no Bairro
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }
