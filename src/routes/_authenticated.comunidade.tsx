@@ -216,7 +216,7 @@ function ComunidadePage() {
 
             {/* Floating FAB for Events */}
             <button 
-              onClick={() => setShowNewDenuncia(true)} // Reusing modal trigger for demo
+              onClick={() => setShowNewDenuncia(true)}
               className="fixed bottom-24 right-6 size-16 rounded-2xl bg-secondary text-secondary-foreground shadow-2xl flex items-center justify-center active:scale-90 transition-all z-30"
             >
               <Plus size={32} strokeWidth={3} />
