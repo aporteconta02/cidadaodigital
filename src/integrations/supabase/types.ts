@@ -433,6 +433,38 @@ export type Database = {
           },
         ]
       }
+      parceiros_clube: {
+        Row: {
+          ativo: boolean | null
+          desconto_percentual: number | null
+          descricao_beneficio: string | null
+          id: string
+          loja_id: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          desconto_percentual?: number | null
+          descricao_beneficio?: string | null
+          id?: string
+          loja_id: string
+        }
+        Update: {
+          ativo?: boolean | null
+          desconto_percentual?: number | null
+          descricao_beneficio?: string | null
+          id?: string
+          loja_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parceiros_clube_loja_id_fkey"
+            columns: ["loja_id"]
+            isOneToOne: false
+            referencedRelation: "lojas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pedidos: {
         Row: {
           comprador_id: string | null
@@ -594,8 +626,9 @@ export type Database = {
         }
         Relationships: []
       }
-      respostas_pesquisas: {
+      respostas_pesquisa: {
         Row: {
+          bairro: string | null
           criado_em: string | null
           id: string
           pesquisa_id: string
@@ -603,6 +636,7 @@ export type Database = {
           usuario_id: string
         }
         Insert: {
+          bairro?: string | null
           criado_em?: string | null
           id?: string
           pesquisa_id: string
@@ -610,6 +644,7 @@ export type Database = {
           usuario_id: string
         }
         Update: {
+          bairro?: string | null
           criado_em?: string | null
           id?: string
           pesquisa_id?: string
@@ -618,14 +653,14 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "respostas_pesquisas_pesquisa_id_fkey"
+            foreignKeyName: "respostas_pesquisa_pesquisa_id_fkey"
             columns: ["pesquisa_id"]
             isOneToOne: false
             referencedRelation: "pesquisas"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "respostas_pesquisas_usuario_id_fkey"
+            foreignKeyName: "respostas_pesquisa_usuario_id_fkey"
             columns: ["usuario_id"]
             isOneToOne: false
             referencedRelation: "usuarios"
@@ -737,6 +772,45 @@ export type Database = {
           validade_assinatura?: string | null
         }
         Relationships: []
+      }
+      validacoes_qr: {
+        Row: {
+          criado_em: string | null
+          id: string
+          membro_id: string
+          resultado: string | null
+          validador_id: string
+        }
+        Insert: {
+          criado_em?: string | null
+          id?: string
+          membro_id: string
+          resultado?: string | null
+          validador_id: string
+        }
+        Update: {
+          criado_em?: string | null
+          id?: string
+          membro_id?: string
+          resultado?: string | null
+          validador_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "validacoes_qr_membro_id_fkey"
+            columns: ["membro_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "validacoes_qr_validador_id_fkey"
+            columns: ["validador_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
