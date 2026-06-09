@@ -1,118 +1,370 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Mail, Lock, User as UserIcon, Shield } from "lucide-react";
+import { 
+  Mail, 
+  Lock, 
+  User as UserIcon, 
+  Phone, 
+  MapPin, 
+  Building2, 
+  Store, 
+  ChevronLeft,
+  Eye,
+  EyeOff,
+  CheckCircle2
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import InputMask from "react-input-mask-next";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
+type AccountType = 'morador' | 'comerciante' | 'entregador';
+
 function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
+  // Form states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [phone, setPhone] = useState("");
+  const [city, setCity] = useState("");
+  const [neighborhood, setNeighborhood] = useState("");
+  const [accountType, setAccountType] = useState<AccountType>('morador');
+  const [shopName, setShopName] = useState("");
+  const [shopCategory, setShopCategory] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isLogin && password !== confirmPassword) {
+      alert("As senhas não coincidem");
+      return;
+    }
+
+    if (!isLogin && !termsAccepted) {
+      alert("Você precisa aceitar os termos de uso");
+      return;
+    }
+
     setLoading(true);
     try {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       } else {
-        const { error, data } = await supabase.auth.signUp({ 
+        // Step 1: Sign up in Auth
+        const { error: signUpError, data: authData } = await supabase.auth.signUp({ 
           email, 
           password,
           options: {
-            data: { full_name: fullName }
+            data: { 
+              full_name: fullName,
+              account_type: accountType
+            }
           }
         });
-        if (error) throw error;
-        // In reality, profiles are often handled via triggers, but here we keep it simple
-        if (data.user) {
-           await supabase.from('profiles').insert({
-             id: data.user.id,
-             full_name: fullName
-           });
+        
+        if (signUpError) throw signUpError;
+
+        if (authData.user) {
+          // Generates member number # + 5 random digits (could be sequential if handled in DB, but random is safer for front-end only gen)
+          const memberNum = "#" + Math.floor(10000 + Math.random() * 90000).toString();
+          
+          // Step 2: Create profile in 'usuarios' table
+          const { error: profileError } = await supabase.from('usuarios').insert({
+            auth_id: authData.user.id,
+            nome: fullName,
+            email: email,
+            telefone: phone,
+            cidade: city,
+            bairro: neighborhood,
+            tipo: accountType,
+            numero_membro: memberNum,
+            qr_code_token: crypto.randomUUID()
+          } as any);
+
+          if (profileError) throw profileError;
+
+          // Step 3: If comerciante, create shop
+          if (accountType === 'comerciante') {
+             const { data: userData } = await supabase.from('usuarios').select('id').eq('auth_id', authData.user.id).single();
+             if (userData) {
+                await supabase.from('lojas').insert({
+                  usuario_id: userData.id,
+                  nome: shopName,
+                  categoria: shopCategory,
+                  bairro: neighborhood,
+                  cidade: city
+                } as any);
+             }
+          }
         }
       }
       navigate({ to: "/dashboard" });
     } catch (error: any) {
-      alert(error.message);
+      alert(error.message || "Erro na autenticação");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col p-8 pt-20 animate-in slide-in-from-bottom-10 duration-500">
-      <div className="mb-12">
-        <h1 className="text-4xl font-black font-display text-primary tracking-tighter mb-2">
-          CIDADÃO<span className="text-secondary">+</span>
+    <div className="min-h-screen flex flex-col bg-background p-6">
+      {/* Header */}
+      <div className="pt-8 mb-8 flex items-center justify-between">
+        <button 
+          onClick={() => isLogin ? navigate({ to: '/' }) : setIsLogin(true)}
+          className="size-10 rounded-xl bg-card border border-white/5 flex items-center justify-center text-muted-foreground"
+        >
+          <ChevronLeft size={20} />
+        </button>
+        <h1 className="text-xl font-black font-display tracking-tighter uppercase">
+          CIDADÃO<span className="text-primary">+</span>
         </h1>
-        <p className="text-muted-foreground">O super app do seu bairro.</p>
+        <div className="size-10" /> {/* Spacer */}
       </div>
 
-      <form onSubmit={handleAuth} className="space-y-4">
-        {!isLogin && (
-          <div className="relative">
-            <UserIcon className="absolute left-3 top-3 text-muted-foreground" size={18} />
-            <input 
-              required
-              placeholder="Nome completo" 
-              className="w-full bg-card border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-            />
-          </div>
-        )}
-        <div className="relative">
-          <Mail className="absolute left-3 top-3 text-muted-foreground" size={18} />
-          <input 
-            required
-            type="email"
+      <div className="flex-1 max-w-lg mx-auto w-full">
+        <div className="mb-8">
+          <h2 className="text-3xl font-black font-display tracking-tighter leading-none mb-2 uppercase">
+            {isLogin ? "Bem-vindo de volta" : "Crie sua conta"}
+          </h2>
+          <p className="text-muted-foreground">
+            {isLogin 
+              ? "Acesse seu bairro e aproveite os benefícios." 
+              : "Junte-se a milhares de vizinhos agora."}
+          </p>
+        </div>
+
+        <form onSubmit={handleAuth} className="space-y-4 pb-12">
+          {!isLogin && (
+            <>
+              {/* Account Type Selection */}
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                <AccountTypeCard 
+                  active={accountType === 'morador'} 
+                  onClick={() => setAccountType('morador')}
+                  icon={<UserIcon size={20} />}
+                  label="Morador"
+                />
+                <AccountTypeCard 
+                  active={accountType === 'comerciante'} 
+                  onClick={() => setAccountType('comerciante')}
+                  icon={<Store size={20} />}
+                  label="Comércio"
+                />
+                <AccountTypeCard 
+                  active={accountType === 'entregador'} 
+                  onClick={() => setAccountType('entregador')}
+                  icon={<Building2 size={20} />}
+                  label="Entregador"
+                />
+              </div>
+
+              <InputField 
+                icon={<UserIcon size={18} />} 
+                placeholder="Nome completo" 
+                value={fullName} 
+                onChange={setFullName} 
+                required
+              />
+            </>
+          )}
+
+          <InputField 
+            icon={<Mail size={18} />} 
+            type="email" 
             placeholder="E-mail" 
-            className="w-full bg-card border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="relative">
-          <Lock className="absolute left-3 top-3 text-muted-foreground" size={18} />
-          <input 
+            value={email} 
+            onChange={setEmail} 
             required
-            type="password"
-            placeholder="Senha" 
-            className="w-full bg-card border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
           />
-        </div>
 
-        <button 
-          disabled={loading}
-          className="w-full bg-primary text-primary-foreground font-bold py-4 rounded-xl shadow-standard hover:opacity-90 active:scale-95 transition-all mt-4"
-        >
-          {loading ? "Processando..." : (isLogin ? "Entrar" : "Criar Conta")}
-        </button>
-      </form>
+          {!isLogin && (
+             <div className="relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                  <Phone size={18} />
+                </div>
+                <InputMask
+                  mask="(99) 99999-9999"
+                  value={phone}
+                  onChange={(e: any) => setPhone(e.target.value)}
+                  placeholder="Telefone"
+                  required
+                  className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+                />
+             </div>
+          )}
 
-      <div className="mt-8 text-center">
-        <button 
-          onClick={() => setIsLogin(!isLogin)}
-          className="text-xs font-bold text-muted-foreground uppercase tracking-widest hover:text-primary transition-colors"
-        >
-          {isLogin ? "Não tem uma conta? Cadastre-se" : "Já tem uma conta? Faça Login"}
-        </button>
+          {!isLogin && (
+            <div className="grid grid-cols-2 gap-3">
+              <InputField 
+                icon={<Building2 size={18} />} 
+                placeholder="Cidade" 
+                value={city} 
+                onChange={setCity} 
+                required
+              />
+              <InputField 
+                icon={<MapPin size={18} />} 
+                placeholder="Bairro" 
+                value={neighborhood} 
+                onChange={setNeighborhood} 
+                required
+              />
+            </div>
+          )}
+
+          {accountType === 'comerciante' && !isLogin && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }} 
+              animate={{ opacity: 1, height: 'auto' }}
+              className="space-y-4 pt-2"
+            >
+              <InputField 
+                icon={<Store size={18} />} 
+                placeholder="Nome da Loja" 
+                value={shopName} 
+                onChange={setShopName} 
+                required
+              />
+              <InputField 
+                icon={<Building2 size={18} />} 
+                placeholder="Categoria (Ex: Padaria, Farmácia)" 
+                value={shopCategory} 
+                onChange={setShopCategory} 
+                required
+              />
+            </motion.div>
+          )}
+
+          <div className="relative">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+              <Lock size={18} />
+            </div>
+            <input 
+              type={showPassword ? "text" : "password"}
+              placeholder="Senha"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-12 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+            />
+            <button 
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+
+          {!isLogin && (
+            <InputField 
+              icon={<Lock size={18} />} 
+              type="password" 
+              placeholder="Confirmar senha" 
+              value={confirmPassword} 
+              onChange={setConfirmPassword} 
+              required
+            />
+          )}
+
+          {isLogin && (
+            <div className="flex justify-end px-2">
+              <button 
+                type="button"
+                className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors"
+              >
+                Esqueci minha senha
+              </button>
+            </div>
+          )}
+
+          {!isLogin && (
+            <div className="flex items-start gap-3 px-2 py-2">
+              <button 
+                type="button"
+                onClick={() => setTermsAccepted(!termsAccepted)}
+                className={cn(
+                  "mt-0.5 size-5 rounded border flex items-center justify-center transition-all",
+                  termsAccepted ? "bg-primary border-primary text-primary-foreground" : "bg-card border-white/10"
+                )}
+              >
+                {termsAccepted && <CheckCircle2 size={14} strokeWidth={3} />}
+              </button>
+              <p className="text-[11px] text-muted-foreground leading-tight">
+                Li e aceito os <span className="text-primary font-bold">Termos de Uso</span> e a <span className="text-primary font-bold">Política de Privacidade</span> do Cidadão+.
+              </p>
+            </div>
+          )}
+
+          <button 
+            disabled={loading}
+            className="w-full bg-primary text-primary-foreground font-black py-5 rounded-2xl shadow-standard text-lg uppercase tracking-wider active:scale-95 transition-all mt-4 disabled:opacity-50 disabled:active:scale-100"
+          >
+            {loading ? "Processando..." : (isLogin ? "Entrar na Conta" : "Criar Minha Conta")}
+          </button>
+
+          <div className="pt-6 text-center">
+            <button 
+              type="button"
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-xs font-black text-muted-foreground uppercase tracking-widest hover:text-primary transition-colors"
+            >
+              {isLogin ? "Ainda não tem conta? Cadastre-se" : "Já possui conta? Faça login"}
+            </button>
+          </div>
+        </form>
       </div>
-      
-      <div className="mt-auto pt-10 flex items-center justify-center gap-2 text-muted-foreground opacity-50">
-        <Shield size={16} />
-        <span className="text-[10px] uppercase font-bold tracking-widest">Conexão Segura</span>
+    </div>
+  );
+}
+
+function AccountTypeCard({ active, onClick, icon, label }: { active: boolean, onClick: () => void, icon: React.ReactNode, label: string }) {
+  return (
+    <button 
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all",
+        active 
+          ? "bg-primary/10 border-primary text-primary shadow-[0_0_20px_rgba(0,196,255,0.1)]" 
+          : "bg-card border-white/5 text-muted-foreground hover:bg-white/5"
+      )}
+    >
+      <div className={cn("size-10 rounded-xl flex items-center justify-center border", active ? "bg-primary/20 border-primary/30" : "bg-background border-white/5")}>
+        {icon}
       </div>
+      <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
+    </button>
+  );
+}
+
+function InputField({ icon, placeholder, type = "text", value, onChange, required = false }: any) {
+  return (
+    <div className="relative">
+      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+        {icon}
+      </div>
+      <input 
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        required={required}
+        className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+      />
     </div>
   );
 }
