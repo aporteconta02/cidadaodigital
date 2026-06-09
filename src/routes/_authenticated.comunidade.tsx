@@ -224,7 +224,11 @@ function ComunidadePage() {
           </div>
         )}
 
-        {activeTab !== 'denuncias' && activeTab !== 'eventos' && (
+        {(activeTab === 'mural' || activeTab === 'voz') && (
+          <div className="py-20 text-center text-muted-foreground">
+            <p className="text-sm font-bold uppercase tracking-widest opacity-50">Em breve...</p>
+          </div>
+        )}
       </div>
 
       {/* New Denuncia Modal Flow */}
