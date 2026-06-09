@@ -30,6 +30,8 @@ export const createProfile = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId, claims } = context;
     
+    if (!claims.email) throw new Error("Email do usuário não disponível");
+
     const { data: profile, error } = await supabase
       .from("usuarios")
       .insert({
@@ -39,6 +41,7 @@ export const createProfile = createServerFn({ method: "POST" })
       })
       .select()
       .single();
+
 
     if (error) throw error;
     return { profile };
