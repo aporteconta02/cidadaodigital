@@ -18,7 +18,7 @@ import {
   QrCode,
   CheckCircle2
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { toPng } from "html-to-image";
 import { toast } from "sonner";
@@ -53,9 +53,15 @@ function PerfilPage() {
   }, []);
 
   const fetchProfile = async () => {
+    console.log("Fetching profile...");
     try {
       const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (!authUser) return;
+      console.log("Auth user:", authUser?.id);
+      
+      if (!authUser) {
+        setLoading(false);
+        return;
+      }
 
       const { data, error } = await supabase
         .from('usuarios')
@@ -64,8 +70,8 @@ function PerfilPage() {
         .single();
 
       if (error) {
+        console.log("Supabase error:", error);
         if (error.code === 'PGRST116') {
-          // No user found, using mock data for demo
           setUser({
             id: authUser.id,
             nome: authUser.user_metadata?.full_name || "Usuário Demo",
@@ -128,10 +134,13 @@ function PerfilPage() {
     }
   };
 
+  console.log("Rendering PerfilPage", { loading, user });
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-primary gap-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-current"></div>
+        <p className="font-bold animate-pulse">Carregando perfil...</p>
       </div>
     );
   }
@@ -142,7 +151,7 @@ function PerfilPage() {
   };
 
   return (
-    <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-500">
+    <div className="p-6 space-y-8 pb-32 bg-background min-h-screen">
       {/* Header Perfil */}
       <div className="flex items-center gap-6 py-4">
         <div className="relative">
@@ -160,7 +169,7 @@ function PerfilPage() {
           </div>
         </div>
         <div>
-          <h2 className="text-2xl font-black font-display tracking-tight leading-none mb-2">{user?.nome || 'Usuário'}</h2>
+          <h2 className="text-2xl font-black font-display tracking-tight leading-none mb-2 text-foreground">{user?.nome || 'Usuário'}</h2>
           <div className="flex items-center gap-2">
             <span className="px-2 py-0.5 rounded-md bg-muted text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
               {user?.tipo || 'MORADOR'}
@@ -221,12 +230,12 @@ function PerfilPage() {
                   <div className="flex justify-between items-end mt-4">
                     <div>
                       <p className="text-[9px] text-white/40 font-bold uppercase tracking-widest">Membro Nº</p>
-                      <p className="text-sm font-mono text-white/90">#{user.numero_membro || '00000'}</p>
+                      <p className="text-sm font-mono text-white/90">#{user.numero_membro || '00847'}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-[9px] text-white/40 font-bold uppercase tracking-widest">Válido até</p>
                       <p className="text-sm font-mono text-white/90">
-                        {user.validade_assinatura ? new Date(user.validade_assinatura).toLocaleDateString('pt-BR', { month: '2-digit', year: 'numeric' }) : '--/----'}
+                        {user.validade_assinatura ? new Date(user.validade_assinatura).toLocaleDateString('pt-BR', { month: '2-digit', year: 'numeric' }) : '07/2027'}
                       </p>
                     </div>
                     <div className="size-8 opacity-50 bg-amber-500/20 rounded-full flex items-center justify-center">
