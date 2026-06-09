@@ -41,8 +41,6 @@ type UserProfile = {
   avatar_url?: string | null;
 };
 
-
-
 function PerfilPage() {
   const navigate = useNavigate();
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -86,7 +84,6 @@ function PerfilPage() {
         throw error;
       }
       setUser(data);
-
     } catch (error) {
       console.error('Error fetching profile:', error);
       toast.error("Erro ao carregar perfil");
@@ -104,11 +101,9 @@ function PerfilPage() {
     if (!cardRef.current) return;
     
     try {
-      // Ensure front side is visible for screenshot
       const wasFlipped = isFlipped;
       if (wasFlipped) setIsFlipped(false);
       
-      // Wait for flip animation
       await new Promise(resolve => setTimeout(resolve, 300));
 
       const dataUrl = await toPng(cardRef.current, {
@@ -142,16 +137,17 @@ function PerfilPage() {
   }
 
   const getInitials = (name: string) => {
+    if (!name) return '??';
     return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
   };
 
   return (
-    <div className="p-6 text-white">
-      <h1>Perfil Page</h1>
-      <pre>{JSON.stringify(user, null, 2)}</pre>
-    </div>
-  );
-
+    <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-500">
+      {/* Header Perfil */}
+      <div className="flex items-center gap-6 py-4">
+        <div className="relative">
+          <div className="size-20 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center overflow-hidden shadow-xl">
+            {user?.avatar_url ? (
               <img src={user.avatar_url} alt={user.nome} className="size-full object-cover" />
             ) : (
               <span className="text-2xl font-black text-primary">{user ? getInitials(user.nome) : '??'}</span>
@@ -206,7 +202,6 @@ function PerfilPage() {
                     <div className="bg-white p-1 rounded-lg">
                       <QRCodeSVG value={user.qr_code_token || user.id} size={48} />
                     </div>
-
                   </div>
 
                   <div className="flex items-center gap-4 mt-auto">
@@ -235,7 +230,7 @@ function PerfilPage() {
                       </p>
                     </div>
                     <div className="size-8 opacity-50 bg-amber-500/20 rounded-full flex items-center justify-center">
-                      <img src="/lovable-uploads/logo.png" alt="Logo" className="size-5 grayscale brightness-200" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                      <span className="text-amber-500 font-black text-xs">C+</span>
                     </div>
                   </div>
                 </div>
@@ -250,7 +245,6 @@ function PerfilPage() {
                 <div className="relative bg-white p-4 rounded-2xl shadow-xl">
                   <QRCodeSVG value={user.qr_code_token || user.id} size={140} />
                 </div>
-
                 <p className="relative text-[10px] font-bold text-amber-500/60 uppercase tracking-widest text-center max-w-[200px]">
                   Apresente este QR Code em estabelecimentos parceiros para obter descontos.
                 </p>
