@@ -184,8 +184,9 @@ function PerfilPage() {
                       <span className="text-amber-500 font-black tracking-tighter text-xl italic">★ CIDADÃO+</span>
                     </div>
                     <div className="bg-white p-1 rounded-lg">
-                      <QRCodeSVG value={user.qr_code_token} size={48} />
+                      <QRCodeSVG value={user.qr_code_token || user.id} size={48} />
                     </div>
+
                   </div>
 
                   <div className="flex items-center gap-4 mt-auto">
