@@ -17,6 +17,7 @@ import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedComunidadeRouteImport } from './routes/_authenticated.comunidade'
 import { Route as AuthenticatedComercioRouteImport } from './routes/_authenticated.comercio'
+import { Route as AuthenticatedComercioProdutoProdutoIdRouteImport } from './routes/_authenticated.comercio.produto.$produtoId'
 import { Route as AuthenticatedComercioLojaLojaIdRouteImport } from './routes/_authenticated.comercio.loja.$lojaId'
 
 const AuthRoute = AuthRouteImport.update({
@@ -58,6 +59,12 @@ const AuthenticatedComercioRoute = AuthenticatedComercioRouteImport.update({
   path: '/comercio',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedComercioProdutoProdutoIdRoute =
+  AuthenticatedComercioProdutoProdutoIdRouteImport.update({
+    id: '/produto/$produtoId',
+    path: '/produto/$produtoId',
+    getParentRoute: () => AuthenticatedComercioRoute,
+  } as any)
 const AuthenticatedComercioLojaLojaIdRoute =
   AuthenticatedComercioLojaLojaIdRouteImport.update({
     id: '/loja/$lojaId',
@@ -74,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
   '/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
+  '/comercio/produto/$produtoId': typeof AuthenticatedComercioProdutoProdutoIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -84,6 +92,7 @@ export interface FileRoutesByTo {
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
   '/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
+  '/comercio/produto/$produtoId': typeof AuthenticatedComercioProdutoProdutoIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -96,6 +105,7 @@ export interface FileRoutesById {
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/sos': typeof AuthenticatedSosRoute
   '/_authenticated/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
+  '/_authenticated/comercio/produto/$produtoId': typeof AuthenticatedComercioProdutoProdutoIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/sos'
     | '/comercio/loja/$lojaId'
+    | '/comercio/produto/$produtoId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/sos'
     | '/comercio/loja/$lojaId'
+    | '/comercio/produto/$produtoId'
   id:
     | '__root__'
     | '/'
@@ -129,6 +141,7 @@ export interface FileRouteTypes {
     | '/_authenticated/perfil'
     | '/_authenticated/sos'
     | '/_authenticated/comercio/loja/$lojaId'
+    | '/_authenticated/comercio/produto/$produtoId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -195,6 +208,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedComercioRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/comercio/produto/$produtoId': {
+      id: '/_authenticated/comercio/produto/$produtoId'
+      path: '/produto/$produtoId'
+      fullPath: '/comercio/produto/$produtoId'
+      preLoaderRoute: typeof AuthenticatedComercioProdutoProdutoIdRouteImport
+      parentRoute: typeof AuthenticatedComercioRoute
+    }
     '/_authenticated/comercio/loja/$lojaId': {
       id: '/_authenticated/comercio/loja/$lojaId'
       path: '/loja/$lojaId'
@@ -207,10 +227,13 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedComercioRouteChildren {
   AuthenticatedComercioLojaLojaIdRoute: typeof AuthenticatedComercioLojaLojaIdRoute
+  AuthenticatedComercioProdutoProdutoIdRoute: typeof AuthenticatedComercioProdutoProdutoIdRoute
 }
 
 const AuthenticatedComercioRouteChildren: AuthenticatedComercioRouteChildren = {
   AuthenticatedComercioLojaLojaIdRoute: AuthenticatedComercioLojaLojaIdRoute,
+  AuthenticatedComercioProdutoProdutoIdRoute:
+    AuthenticatedComercioProdutoProdutoIdRoute,
 }
 
 const AuthenticatedComercioRouteWithChildren =
