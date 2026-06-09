@@ -228,8 +228,9 @@ function PerfilPage() {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-primary/5" />
                 <div className="relative bg-white p-4 rounded-2xl shadow-xl">
-                  <QRCodeSVG value={user.qr_code_token} size={140} />
+                  <QRCodeSVG value={user.qr_code_token || user.id} size={140} />
                 </div>
+
                 <p className="relative text-[10px] font-bold text-amber-500/60 uppercase tracking-widest text-center max-w-[200px]">
                   Apresente este QR Code em estabelecimentos parceiros para obter descontos.
                 </p>
