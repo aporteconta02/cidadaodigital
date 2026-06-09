@@ -6,8 +6,12 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  useLocation,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { Home, ShoppingBag, Users, ShieldAlert, User } from "lucide-react";
+import { cn } from "@/lib/utils";
+
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
