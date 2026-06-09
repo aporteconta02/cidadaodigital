@@ -692,8 +692,8 @@ function CityTabButton({ active, onClick, icon, label }: { active: boolean, onCl
     <button 
       onClick={onClick}
       className={cn(
-        "whitespace-nowrap flex items-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border",
-        active ? "bg-primary border-primary text-primary-foreground shadow-standard" : "bg-card border-white/5 text-muted-foreground hover:bg-white/5"
+        "whitespace-nowrap flex items-center gap-2.5 px-6 py-3.5 rounded-full text-[9px] font-black uppercase tracking-[0.15em] transition-all duration-500 border",
+        active ? "bg-white border-white text-black shadow-premium" : "bg-white/[0.02] border-white/[0.05] text-muted-foreground hover:bg-white/[0.05] opacity-60 hover:opacity-100"
       )}
     >
       {icon}
@@ -704,17 +704,17 @@ function CityTabButton({ active, onClick, icon, label }: { active: boolean, onCl
 
 function DenunciaItem({ title, status, statusColor, time }: { title: string, status: string, statusColor: string, time: string }) {
   return (
-    <div className="bg-card border border-white/5 rounded-2xl p-4 flex items-center justify-between shadow-standard">
+    <div className="bg-white/[0.02] border border-white/[0.04] rounded-[24px] p-5 flex items-center justify-between shadow-premium hover:bg-white/[0.04] transition-all duration-500 group cursor-pointer">
       <div>
-        <h4 className="font-bold text-sm mb-1">{title}</h4>
-        <div className="flex items-center gap-3">
-           <span className={cn("text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded", statusColor)}>
+        <h4 className="font-bold text-sm text-foreground/90 mb-2 uppercase tracking-tight italic">{title}</h4>
+        <div className="flex items-center gap-4">
+           <span className={cn("text-[8px] font-black uppercase tracking-[0.15em] px-2.5 py-1 rounded-full border", statusColor)}>
             {status}
           </span>
-          <span className="text-[9px] text-muted-foreground font-bold">{time}</span>
+          <span className="text-[9px] text-muted-foreground font-black uppercase tracking-widest opacity-40">{time}</span>
         </div>
       </div>
-      <ChevronRight size={18} className="text-muted-foreground opacity-30" />
+      <ChevronRight size={14} className="text-muted-foreground/30 group-hover:translate-x-1 transition-transform" />
     </div>
   );
 }
