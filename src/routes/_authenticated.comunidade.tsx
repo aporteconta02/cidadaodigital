@@ -151,7 +151,80 @@ function ComunidadePage() {
           </div>
         )}
 
-        {activeTab !== 'denuncias' && (
+        {activeTab === 'eventos' && (
+          <div className="space-y-8">
+            {/* Featured Event */}
+            <section>
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Destaque do Bairro</h3>
+              <div className="relative h-64 rounded-[32px] overflow-hidden border border-white/5 shadow-standard group">
+                <img 
+                  src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=800" 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                  alt="Evento Destaque"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-6">
+                  <div className="flex gap-2 mb-3">
+                    <span className="bg-primary px-3 py-1 rounded-full text-[10px] font-black text-primary-foreground uppercase tracking-widest">Música</span>
+                    <span className="bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black text-white uppercase tracking-widest border border-white/10">Sáb, 21:00</span>
+                  </div>
+                  <h4 className="text-2xl font-black font-display text-white uppercase tracking-tighter leading-none mb-1">Show na Praça Central</h4>
+                  <p className="text-white/60 text-xs font-bold uppercase tracking-widest">Praça das Flores, S/N</p>
+                </div>
+              </div>
+            </section>
+
+            {/* Filters */}
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+              {['Hoje', 'Esta semana', 'Este mês', 'Todos'].map((filter, i) => (
+                <button 
+                  key={i}
+                  className={cn(
+                    "whitespace-nowrap px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                    i === 0 ? "bg-white/10 text-white" : "text-muted-foreground hover:bg-white/5"
+                  )}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
+
+            {/* Event List */}
+            <div className="space-y-4">
+              {[
+                { title: 'Feira de Adoção', date: '14 Jun • 10:00', loc: 'Parque Ibirapuera', cat: 'Pets', img: 'https://images.unsplash.com/photo-1548199973-03c40e556509?q=80&w=300' },
+                { title: 'Yoga Coletivo', date: '15 Jun • 08:30', loc: 'Gramado Central', cat: 'Saúde', img: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=300' },
+                { title: 'Cinema de Rua', date: '16 Jun • 19:30', loc: 'Rua das Flores', cat: 'Cultura', img: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=300' },
+              ].map((event, i) => (
+                <div key={i} className="bg-card border border-white/5 rounded-2xl overflow-hidden shadow-standard flex gap-4 p-3 hover:bg-card-hover transition-colors cursor-pointer">
+                  <img src={event.img} className="size-20 rounded-xl object-cover" />
+                  <div className="flex-1 py-1 flex flex-col justify-between">
+                    <div>
+                      <div className="flex justify-between items-start">
+                        <h4 className="font-bold text-sm truncate pr-2">{event.title}</h4>
+                        <span className="text-[8px] font-black uppercase tracking-widest text-primary shrink-0">{event.cat}</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tight truncate">{event.loc}</p>
+                    </div>
+                    <div className="flex items-center gap-1 text-[9px] text-secondary font-black uppercase tracking-widest">
+                      <Calendar size={10} />
+                      <span>{event.date}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Floating FAB for Events */}
+            <button 
+              onClick={() => setShowNewDenuncia(true)} // Reusing modal trigger for demo
+              className="fixed bottom-24 right-6 size-16 rounded-2xl bg-secondary text-secondary-foreground shadow-2xl flex items-center justify-center active:scale-90 transition-all z-30"
+            >
+              <Plus size={32} strokeWidth={3} />
+            </button>
+          </div>
+        )}
+
+        {(activeTab === 'mural' || activeTab === 'voz') && (
           <div className="py-20 text-center text-muted-foreground">
             <p className="text-sm font-bold uppercase tracking-widest opacity-50">Em breve...</p>
           </div>
