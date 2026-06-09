@@ -35,7 +35,7 @@ function AppLayout() {
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-white/5 pb-safe">
         <div className="flex items-center justify-around h-20 max-w-lg mx-auto relative px-2">
-          <NavLink to="/" icon={<Home size={22} />} label="Início" />
+          <NavLink to="/dashboard" icon={<Home size={22} />} label="Início" />
           <NavLink to="/comercio" icon={<ShoppingBag size={22} />} label="Loja" />
           
           {/* SOS Central Button */}
