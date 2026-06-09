@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedComunidadeRouteImport } from './routes/_authenticated.comunidade'
+import { Route as AuthenticatedComercioRouteImport } from './routes/_authenticated.comercio'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -39,16 +40,23 @@ const AuthenticatedComunidadeRoute = AuthenticatedComunidadeRouteImport.update({
   path: '/comunidade',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedComercioRoute = AuthenticatedComercioRouteImport.update({
+  id: '/comercio',
+  path: '/comercio',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/comercio': typeof AuthenticatedComercioRoute
   '/comunidade': typeof AuthenticatedComunidadeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/comercio': typeof AuthenticatedComercioRoute
   '/comunidade': typeof AuthenticatedComunidadeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
 }
@@ -57,19 +65,21 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/comercio': typeof AuthenticatedComercioRoute
   '/_authenticated/comunidade': typeof AuthenticatedComunidadeRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/comunidade' | '/dashboard'
+  fullPaths: '/' | '/auth' | '/comercio' | '/comunidade' | '/dashboard'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/comunidade' | '/dashboard'
+  to: '/' | '/auth' | '/comercio' | '/comunidade' | '/dashboard'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/comercio'
     | '/_authenticated/comunidade'
     | '/_authenticated/dashboard'
   fileRoutesById: FileRoutesById
@@ -117,15 +127,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedComunidadeRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/comercio': {
+      id: '/_authenticated/comercio'
+      path: '/comercio'
+      fullPath: '/comercio'
+      preLoaderRoute: typeof AuthenticatedComercioRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedComercioRoute: typeof AuthenticatedComercioRoute
   AuthenticatedComunidadeRoute: typeof AuthenticatedComunidadeRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedComercioRoute: AuthenticatedComercioRoute,
   AuthenticatedComunidadeRoute: AuthenticatedComunidadeRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
 }
