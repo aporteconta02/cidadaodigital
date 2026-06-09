@@ -50,6 +50,11 @@ function ComunidadePage() {
   const [denunciaStep, setDenunciaStep] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [successProtocol, setSuccessProtocol] = useState<string | null>(null);
+  
+  const [muralSubTab, setMuralSubTab] = useState<MuralSubTab>('avisos');
+  const [muralFilter, setMuralFilter] = useState('Todos');
+  const [telefonesSearch, setTelefonesSearch] = useState("");
+  const [showNewAviso, setShowNewAviso] = useState(false);
 
   const resetDenuncia = () => {
     setDenunciaStep(1);
