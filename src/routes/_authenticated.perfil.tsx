@@ -33,13 +33,14 @@ type UserProfile = {
   email: string;
   cidade: string;
   bairro: string;
-  tipo: 'MORADOR' | 'COMERCIANTE' | 'ENTREGADOR';
-  assinante_plus: boolean;
-  numero_membro: string;
-  validade_assinatura: string;
+  tipo: string;
+  assinante_plus: boolean | null;
+  numero_membro: string | null;
+  validade_assinatura: string | null;
   qr_code_token: string;
-  avatar_url?: string;
+  avatar_url?: string | null;
 };
+
 
 function PerfilPage() {
   const navigate = useNavigate();
