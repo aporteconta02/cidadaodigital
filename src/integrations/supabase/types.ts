@@ -64,6 +64,85 @@ export type Database = {
           },
         ]
       }
+      banners: {
+        Row: {
+          ativo: boolean | null
+          criado_em: string | null
+          data_fim: string | null
+          data_inicio: string | null
+          id: string
+          imagem_url: string
+          link_destino: string | null
+          loja_id: string | null
+          posicao: number | null
+          titulo: string | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          criado_em?: string | null
+          data_fim?: string | null
+          data_inicio?: string | null
+          id?: string
+          imagem_url: string
+          link_destino?: string | null
+          loja_id?: string | null
+          posicao?: number | null
+          titulo?: string | null
+        }
+        Update: {
+          ativo?: boolean | null
+          criado_em?: string | null
+          data_fim?: string | null
+          data_inicio?: string | null
+          id?: string
+          imagem_url?: string
+          link_destino?: string | null
+          loja_id?: string | null
+          posicao?: number | null
+          titulo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "banners_loja_id_fkey"
+            columns: ["loja_id"]
+            isOneToOne: false
+            referencedRelation: "lojas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contatos_confianca: {
+        Row: {
+          criado_em: string | null
+          id: string
+          nome: string
+          telefone: string
+          usuario_id: string
+        }
+        Insert: {
+          criado_em?: string | null
+          id?: string
+          nome: string
+          telefone: string
+          usuario_id: string
+        }
+        Update: {
+          criado_em?: string | null
+          id?: string
+          nome?: string
+          telefone?: string
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contatos_confianca_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       denuncias: {
         Row: {
           categoria: string
@@ -307,6 +386,53 @@ export type Database = {
           },
         ]
       }
+      mural_avisos: {
+        Row: {
+          ativo: boolean | null
+          bairro: string | null
+          cidade: string | null
+          criado_em: string | null
+          foto_url: string | null
+          id: string
+          texto: string
+          tipo: string
+          titulo: string
+          usuario_id: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          bairro?: string | null
+          cidade?: string | null
+          criado_em?: string | null
+          foto_url?: string | null
+          id?: string
+          texto: string
+          tipo: string
+          titulo: string
+          usuario_id: string
+        }
+        Update: {
+          ativo?: boolean | null
+          bairro?: string | null
+          cidade?: string | null
+          criado_em?: string | null
+          foto_url?: string | null
+          id?: string
+          texto?: string
+          tipo?: string
+          titulo?: string
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mural_avisos_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pedidos: {
         Row: {
           comprador_id: string | null
@@ -357,6 +483,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      pesquisas: {
+        Row: {
+          ativa: boolean | null
+          categoria: string
+          cidade: string | null
+          criado_em: string | null
+          descricao: string | null
+          encerra_em: string | null
+          id: string
+          opcoes: Json | null
+          tipo: string
+          titulo: string
+        }
+        Insert: {
+          ativa?: boolean | null
+          categoria: string
+          cidade?: string | null
+          criado_em?: string | null
+          descricao?: string | null
+          encerra_em?: string | null
+          id?: string
+          opcoes?: Json | null
+          tipo: string
+          titulo: string
+        }
+        Update: {
+          ativa?: boolean | null
+          categoria?: string
+          cidade?: string | null
+          criado_em?: string | null
+          descricao?: string | null
+          encerra_em?: string | null
+          id?: string
+          opcoes?: Json | null
+          tipo?: string
+          titulo?: string
+        }
+        Relationships: []
       }
       produtos: {
         Row: {
@@ -426,6 +591,75 @@ export type Database = {
           id?: string
           neighborhood?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      respostas_pesquisas: {
+        Row: {
+          criado_em: string | null
+          id: string
+          pesquisa_id: string
+          resposta: Json
+          usuario_id: string
+        }
+        Insert: {
+          criado_em?: string | null
+          id?: string
+          pesquisa_id: string
+          resposta: Json
+          usuario_id: string
+        }
+        Update: {
+          criado_em?: string | null
+          id?: string
+          pesquisa_id?: string
+          resposta?: Json
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "respostas_pesquisas_pesquisa_id_fkey"
+            columns: ["pesquisa_id"]
+            isOneToOne: false
+            referencedRelation: "pesquisas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "respostas_pesquisas_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      telefones_uteis: {
+        Row: {
+          categoria: string
+          cidade: string | null
+          destaque: boolean | null
+          id: string
+          nome: string
+          ordem: number | null
+          telefone: string
+        }
+        Insert: {
+          categoria: string
+          cidade?: string | null
+          destaque?: boolean | null
+          id?: string
+          nome: string
+          ordem?: number | null
+          telefone: string
+        }
+        Update: {
+          categoria?: string
+          cidade?: string | null
+          destaque?: boolean | null
+          id?: string
+          nome?: string
+          ordem?: number | null
+          telefone?: string
         }
         Relationships: []
       }
