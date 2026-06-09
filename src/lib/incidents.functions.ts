@@ -24,9 +24,9 @@ export const createIncident = createServerFn({ method: "POST" })
   });
 
 export const getIncidents = createServerFn({ method: "GET" })
-  .handler(async ({ context }) => {
-    const { supabase } = context;
-    const { data: incidents, error } = await supabase
+  .handler(async () => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: incidents, error } = await supabaseAdmin
       .from("incidents")
       .select("*")
       .order("created_at", { ascending: false });
@@ -34,3 +34,4 @@ export const getIncidents = createServerFn({ method: "GET" })
     if (error) throw error;
     return { incidents };
   });
+
