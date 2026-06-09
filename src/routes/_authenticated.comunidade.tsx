@@ -22,9 +22,11 @@ import {
   ShieldAlert,
   Heart
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/comunidade")({
   component: ComunidadePage,
