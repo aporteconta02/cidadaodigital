@@ -14,7 +14,13 @@ import {
   Vote,
   X,
   Navigation,
-  Check
+  Check,
+  Phone,
+  Search,
+  MessageSquare,
+  Filter,
+  ShieldAlert,
+  Heart
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -25,6 +31,7 @@ export const Route = createFileRoute("/_authenticated/comunidade")({
 });
 
 type CityTab = 'denuncias' | 'eventos' | 'mural' | 'voz';
+type MuralSubTab = 'avisos' | 'telefones';
 
 const DENUNCIA_CATEGORIES = [
   { id: 'buraco', label: "Buraco", icon: "🕳️" },
