@@ -147,7 +147,7 @@ function PerfilPage() {
   };
 
   return (
-    <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-500">
+    <div className="p-6 space-y-8 bg-zinc-900 min-h-screen">
       {/* Header Perfil */}
       <div className="flex items-center gap-6 py-4">
         <div className="relative">
