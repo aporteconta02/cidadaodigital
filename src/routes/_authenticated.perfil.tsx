@@ -298,39 +298,39 @@ function PerfilPage() {
       </AnimatePresence>
 
       {/* Header Perfil */}
-      <div className="flex items-center gap-6 py-4">
+      <div className="flex items-center gap-6 py-6 border-b border-white/[0.05]">
         <div className="relative group">
-          <div className="size-20 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center overflow-hidden shadow-xl">
+          <div className="size-24 rounded-full bg-white/[0.03] border-2 border-white/[0.05] flex items-center justify-center overflow-hidden shadow-premium transition-transform duration-500 group-hover:scale-105">
             {user?.avatar_url ? (
               <img src={user.avatar_url} alt={user.nome} className="size-full object-cover" />
             ) : (
-              <span className="text-2xl font-black text-primary">{user ? getInitials(user.nome) : '??'}</span>
+              <span className="text-3xl font-bold text-primary/80 font-display italic">{user ? getInitials(user.nome) : '??'}</span>
             )}
           </div>
-          <label className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-full cursor-pointer">
-            <Camera size={20} className="text-white" />
+          <label className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-full cursor-pointer backdrop-blur-sm">
+            <Camera size={22} className="text-white animate-pulse" />
             <input type="file" className="hidden" accept="image/*" onChange={uploadAvatar} />
           </label>
-          <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-1 border-2 border-border">
-            <div className="bg-primary size-6 rounded-full flex items-center justify-center text-primary-foreground">
-              <CheckCircle2 size={12} fill="currentColor" />
+          <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-1 border-2 border-white/5">
+            <div className="bg-primary size-7 rounded-full flex items-center justify-center text-primary-foreground shadow-glow">
+              <CheckCircle2 size={14} fill="currentColor" />
             </div>
           </div>
         </div>
-        <div>
-          <h2 className="text-2xl font-black font-display tracking-tight leading-none mb-2">{user?.nome || 'Usuário'}</h2>
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-md bg-muted text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
+        <div className="flex-1">
+          <h2 className="text-2xl font-bold font-display tracking-tight leading-none mb-3 italic">{user?.nome || 'Usuário'}</h2>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="px-3 py-1 rounded-full bg-primary/10 text-[9px] font-black tracking-[0.15em] text-primary uppercase border border-primary/20">
               {user?.tipo || 'MORADOR'}
             </span>
-            <span className="text-xs text-muted-foreground font-medium">{user?.cidade || 'Cidade'} — {user?.bairro || 'Bairro'}</span>
+            <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-60 italic">{user?.cidade || 'Cidade'} — {user?.bairro || 'Bairro'}</span>
           </div>
         </div>
       </div>
 
       {/* Carteirinha Digital */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground ml-1">Carteirinha Digital</h3>
+      <div className="space-y-6">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-40 italic ml-1">Membro Digital C+</h3>
         
         {user?.assinante_plus ? (
           <div className="perspective-1000">
@@ -429,17 +429,17 @@ function PerfilPage() {
         ) : (
           <div 
             onClick={handleUpgrade}
-            className="relative aspect-[1.6/1] rounded-3xl overflow-hidden bg-muted/40 border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center p-8 text-center gap-4 group cursor-pointer hover:border-primary/40 transition-all"
+            className="relative aspect-[1.6/1] rounded-[32px] overflow-hidden bg-white/[0.02] border border-dashed border-white/10 flex flex-col items-center justify-center p-8 text-center gap-5 group cursor-pointer hover:bg-white/[0.04] hover:border-primary/30 transition-all duration-700 shadow-premium"
           >
-            <div className="size-16 rounded-full bg-muted flex items-center justify-center text-muted-foreground/50">
+            <div className="size-16 rounded-3xl bg-white/5 flex items-center justify-center text-muted-foreground/40 group-hover:scale-110 group-hover:text-primary transition-all duration-500">
               <Lock size={32} />
             </div>
             <div>
-              <p className="text-sm font-bold text-foreground mb-1">Clube Cidadão+ Bloqueado</p>
-              <p className="text-xs text-muted-foreground">Assine agora para ter acesso à sua carteirinha e benefícios exclusivos.</p>
+              <p className="text-sm font-bold text-foreground/90 mb-2 uppercase tracking-tight italic">Clube Cidadão+ Bloqueado</p>
+              <p className="text-[10px] text-muted-foreground font-medium max-w-[200px] leading-relaxed uppercase tracking-widest opacity-60">Assine para desbloquear benefícios e sua carteirinha premium.</p>
             </div>
-            <button className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
-              Ativar Clube Cidadão+
+            <button className="px-8 py-3 rounded-2xl bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] shadow-premium hover:scale-105 active:scale-95 transition-all duration-300">
+              Desbloquear Agora
             </button>
           </div>
         )}
@@ -493,15 +493,15 @@ function MenuButton({ icon, label, onClick }: { icon: React.ReactNode; label: st
   return (
     <button 
       onClick={onClick}
-      className="w-full flex items-center justify-between p-4 rounded-2xl bg-card border border-border hover:bg-card-hover transition-all group active:scale-[0.98]"
+      className="w-full flex items-center justify-between p-5 rounded-2xl bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.05] hover:border-white/[0.08] transition-all duration-500 group active:scale-[0.98] shadow-soft"
     >
-      <div className="flex items-center gap-3 text-foreground/80">
-        <div className="p-2 rounded-lg bg-muted group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+      <div className="flex items-center gap-4 text-foreground/80">
+        <div className="p-2.5 rounded-xl bg-white/5 group-hover:bg-primary/10 group-hover:text-primary transition-all duration-500 group-hover:scale-110">
           {icon}
         </div>
-        <span className="text-sm font-bold">{label}</span>
+        <span className="text-xs font-bold uppercase tracking-widest opacity-80 group-hover:opacity-100 transition-opacity italic">{label}</span>
       </div>
-      <ChevronRight size={16} className="text-muted-foreground group-hover:translate-x-1 transition-transform" />
+      <ChevronRight size={14} className="text-muted-foreground/40 group-hover:translate-x-1 group-hover:text-primary transition-all" />
     </button>
   );
 }
