@@ -20,6 +20,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 // Fix Leaflet default icon issues
 import "leaflet/dist/leaflet.css";
@@ -36,11 +38,63 @@ const ALERT_TYPES = [
 ];
 
 function SOSPage() {
-  const [isSubscriber, setIsSubscriber] = useState(true); // Mock
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [isSubscriber, setIsSubscriber] = useState(false);
   const [showSOSConfirm, setShowSOSConfirm] = useState(false);
   const [sosActive, setSosActive] = useState(false);
   const [showAddAlert, setShowAddAlert] = useState(false);
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
+
+  useEffect(() => {
+    fetchUserData();
+    setupGeolocation();
+  }, []);
+
+  const fetchUserData = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      const { data } = await supabase.from('usuarios').select('*').eq('auth_id', session.user.id).single();
+      if (data) {
+        setUser(data);
+        setIsSubscriber(!!data.assinante_plus);
+      }
+    } else {
+      // Demo mode
+      setIsSubscriber(true);
+    }
+    setLoading(false);
+  };
+
+  const setupGeolocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        (err) => console.error(err),
+        { enableHighAccuracy: true }
+      );
+    }
+  };
+
+  const handleSOS = () => {
+    if (!user || !location) {
+      toast.error("Localização não disponível");
+      return;
+    }
+    setSosActive(true);
+    setShowSOSConfirm(false);
+    
+    // Simulate WhatsApp SOS to a contact
+    const mensagem = encodeURIComponent(
+      `🚨 EMERGÊNCIA: ${user.nome} acionou alerta SOS.\n📍 Localização: https://maps.google.com/?q=${location.lat},${location.lng}\n⏰ ${new Date().toLocaleString('pt-BR')}`
+    );
+    // In production we would fetch a real trusted contact
+    window.open(`https://wa.me/5511999999999?text=${mensagem}`);
+    toast.success("Alerta SOS disparado para contatos de confiança!");
+  };
+
+  if (loading) return <div className="p-8 text-center font-bold">Carregando...</div>;
 
   if (!isSubscriber) {
     return <SubscriberGate onSubscribe={() => setIsSubscriber(true)} />;
@@ -209,7 +263,7 @@ function SOSPage() {
            <p className="text-muted-foreground text-sm mb-8">Vizinhos e autoridades próximas serão notificados com sua localização.</p>
            <div className="flex flex-col gap-3">
               <button 
-                onClick={() => { setSosActive(true); setShowSOSConfirm(false); }}
+                onClick={handleSOS}
                 className="w-full bg-sos text-white font-black py-4 rounded-2xl uppercase tracking-widest shadow-lg active:scale-95 transition-all"
               >
                 Sim, Confirmar

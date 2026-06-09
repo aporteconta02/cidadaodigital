@@ -16,9 +16,13 @@ import {
   Lock,
   Download,
   QrCode,
-  CheckCircle2
+  CheckCircle2,
+  Crown,
+  Camera,
+  X,
+  History
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { toPng } from "html-to-image";
 import { toast } from "sonner";
@@ -115,6 +119,86 @@ function PerfilPage() {
     navigate({ to: "/auth" });
   };
 
+  const handleUpgrade = async () => {
+    if (!user) return;
+    try {
+      setLoading(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        // Demo mode upgrade
+        const expiry = new Date();
+        expiry.setDate(expiry.getDate() + 30);
+        setUser({
+          ...user,
+          assinante_plus: true,
+          numero_membro: "00848",
+          validade_assinatura: expiry.toISOString(),
+          qr_code_token: "C+00848-demo-token"
+        });
+        toast.success("Assinatura Cidadão+ ativada (Demo)!");
+        return;
+      }
+
+      const expiry = new Date();
+      expiry.setDate(expiry.getDate() + 30);
+
+      const { error } = await supabase
+        .from('usuarios')
+        .update({ 
+          assinante_plus: true,
+          validade_assinatura: expiry.toISOString()
+        })
+        .eq('auth_id', session.user.id);
+
+      if (error) throw error;
+      
+      await fetchProfile();
+      toast.success("Bem-vindo ao Clube Cidadão+!");
+    } catch (error) {
+      console.error('Error upgrading:', error);
+      toast.error("Erro ao ativar assinatura");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const file = event.target.files?.[0];
+      if (!file || !user) return;
+
+      setLoading(true);
+      
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user.id}-${Math.random()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatares')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatares')
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from('usuarios')
+        .update({ avatar_url: publicUrl })
+        .eq('auth_id', user.id);
+
+      if (updateError) throw updateError;
+
+      await fetchProfile();
+      toast.success("Foto de perfil atualizada!");
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      toast.error("Erro no upload da foto");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const saveCard = async () => {
     if (!cardRef.current) return;
     
@@ -164,7 +248,7 @@ function PerfilPage() {
     <div className="p-6 space-y-8 pb-32 animate-in fade-in duration-500">
       {/* Header Perfil */}
       <div className="flex items-center gap-6 py-4">
-        <div className="relative">
+        <div className="relative group">
           <div className="size-20 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center overflow-hidden shadow-xl">
             {user?.avatar_url ? (
               <img src={user.avatar_url} alt={user.nome} className="size-full object-cover" />
@@ -172,6 +256,10 @@ function PerfilPage() {
               <span className="text-2xl font-black text-primary">{user ? getInitials(user.nome) : '??'}</span>
             )}
           </div>
+          <label className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-full cursor-pointer">
+            <Camera size={20} className="text-white" />
+            <input type="file" className="hidden" accept="image/*" onChange={uploadAvatar} />
+          </label>
           <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-1 border-2 border-border">
             <div className="bg-primary size-6 rounded-full flex items-center justify-center text-primary-foreground">
               <CheckCircle2 size={12} fill="currentColor" />
@@ -288,7 +376,10 @@ function PerfilPage() {
             </div>
           </div>
         ) : (
-          <div className="relative aspect-[1.6/1] rounded-3xl overflow-hidden bg-muted/40 border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center p-8 text-center gap-4 group cursor-pointer hover:border-primary/40 transition-all">
+          <div 
+            onClick={handleUpgrade}
+            className="relative aspect-[1.6/1] rounded-3xl overflow-hidden bg-muted/40 border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center p-8 text-center gap-4 group cursor-pointer hover:border-primary/40 transition-all"
+          >
             <div className="size-16 rounded-full bg-muted flex items-center justify-center text-muted-foreground/50">
               <Lock size={32} />
             </div>
