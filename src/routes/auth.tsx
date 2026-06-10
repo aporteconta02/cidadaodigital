@@ -15,7 +15,7 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import InputMask from "react-input-mask-next";
+// import InputMask from "react-input-mask-next";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/auth")({
