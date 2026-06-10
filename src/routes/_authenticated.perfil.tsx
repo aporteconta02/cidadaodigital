@@ -33,6 +33,7 @@ export const Route = createFileRoute("/_authenticated/perfil")({
 
 type UserProfile = {
   id: string;
+  auth_id: string;
   nome: string;
   email: string;
   cidade: string;
@@ -164,7 +165,7 @@ function PerfilPage() {
       const { error: updateError } = await supabase
         .from('usuarios')
         .update({ avatar_url: publicUrl })
-        .eq('auth_id', user.id);
+        .eq('id', user.id);
 
       if (updateError) throw updateError;
       
