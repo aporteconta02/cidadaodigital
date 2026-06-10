@@ -44,23 +44,41 @@ function AuthPage() {
   const [shopCategory, setShopCategory] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
 
+  // Error states
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email.trim()) newErrors.email = "E-mail obrigatório";
+    else if (!emailRegex.test(email.trim())) newErrors.email = "E-mail inválido";
+
+    if (!password) newErrors.password = "Senha obrigatória";
+    else if (password.length < 6) newErrors.password = "A senha deve ter no mínimo 6 caracteres";
+
+    if (!isLogin) {
+      if (!fullName.trim()) newErrors.fullName = "Nome obrigatório";
+      if (!phone.trim()) newErrors.phone = "Telefone obrigatório";
+      if (!city.trim()) newErrors.city = "Cidade obrigatória";
+      if (!neighborhood.trim()) newErrors.neighborhood = "Bairro obrigatório";
+      if (password !== confirmPassword) newErrors.confirmPassword = "As senhas não coincidem";
+      if (!termsAccepted) newErrors.terms = "Você precisa aceitar os termos";
+      
+      if (accountType === 'comerciante') {
+        if (!shopName.trim()) newErrors.shopName = "Nome da loja obrigatório";
+        if (!shopCategory.trim()) newErrors.shopCategory = "Categoria obrigatória";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!isLogin && password.length < 6) {
-      toast.error("A senha deve ter pelo menos 6 caracteres");
-      return;
-    }
-
-    if (!isLogin && password !== confirmPassword) {
-      toast.error("As senhas não coincidem");
-      return;
-    }
-
-    if (!isLogin && !termsAccepted) {
-      toast.error("Você precisa aceitar os termos de uso");
-      return;
-    }
+    if (!validate()) return;
 
     setLoading(true);
     try {
@@ -69,36 +87,80 @@ function AuthPage() {
           email: email.trim(), 
           password 
         });
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes("Invalid login credentials")) {
+            throw new Error("E-mail ou senha incorretos");
+          }
+          throw error;
+        }
         
         if (data.session) {
            navigate({ to: "/dashboard" });
         }
       } else {
-        // Step 1: Sign up in Auth with all metadata
-        // The trigger 'handle_new_user' will now handle creating the user record and the shop record
-        const { error: signUpError, data: authData } = await supabase.auth.signUp({ 
-          email: email.trim(), 
-          password,
-          options: {
-            data: { 
-              full_name: fullName,
-              account_type: accountType,
-              phone: phone,
-              city: city,
-              neighborhood: neighborhood,
-              shop_name: shopName,
-              shop_category: shopCategory
-            }
-          }
+        // 1. Criar conta no Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: email.trim(),
+          password: password
         });
-        
-        if (signUpError) throw signUpError;
 
-        if (!authData.session && authData.user) {
+        if (authError) {
+          let msg = "Erro ao criar conta. Tente novamente.";
+          if (authError.message.includes("User already registered")) msg = "Este e-mail já está cadastrado";
+          if (authError.message.includes("Password should be at least 6 characters")) msg = "A senha deve ter no mínimo 6 caracteres";
+          if (authError.message.includes("Invalid email")) msg = "E-mail inválido";
+          throw new Error(msg);
+        }
+
+        if (!authData.user) throw new Error("Erro ao obter dados do usuário");
+        const userId = authData.user.id;
+
+        // 2. Gerar número de membro e token QR
+        const numeroMembro = '#' + Math.floor(10000 + Math.random() * 90000).toString();
+        const qrCodeToken = crypto.randomUUID();
+
+        // 3. Inserir na tabela usuarios
+        const { error: userError } = await supabase.from('usuarios').insert({
+          auth_id: userId,
+          nome: fullName,
+          email: email.trim(),
+          telefone: phone,
+          cidade: city,
+          bairro: neighborhood,
+          tipo: accountType,
+          assinante_plus: false,
+          numero_membro: numeroMembro,
+          qr_code_token: qrCodeToken,
+          is_admin: false,
+          ativo: true
+        });
+
+        if (userError) {
+          console.error("User insert error:", userError);
+          throw new Error("Erro ao salvar perfil. Tente novamente.");
+        }
+
+        // 4. Se comerciante, inserir loja
+        if (accountType === 'comerciante') {
+          const { error: lojaError } = await supabase.from('lojas').insert({
+            usuario_id: userId,
+            nome: shopName,
+            categoria: shopCategory,
+            aprovada: false,
+            plano: 'gratuito',
+            ativo: true
+          });
+          if (lojaError) {
+            console.error("Loja insert error:", lojaError);
+            throw new Error("Erro ao salvar dados da loja. Tente novamente.");
+          }
+        }
+
+        toast.success("Conta criada com sucesso!");
+        
+        if (!authData.session) {
           setCheckEmail(true);
-          toast.success("Conta criada! Verifique seu e-mail.");
-        } else if (authData.session) {
+        } else {
           navigate({ to: "/dashboard" });
         }
       }
@@ -183,7 +245,7 @@ function AuthPage() {
                   placeholder="Nome completo" 
                   value={fullName} 
                   onChange={setFullName} 
-                  required
+                  error={errors.fullName}
                 />
               </>
             )}
@@ -194,7 +256,7 @@ function AuthPage() {
               placeholder="E-mail" 
               value={email} 
               onChange={setEmail} 
-              required
+              error={errors.email}
             />
 
             {!isLogin && (
@@ -207,9 +269,12 @@ function AuthPage() {
                     value={phone}
                     onChange={(e: any) => setPhone(e.target.value)}
                     placeholder="Telefone"
-                    required
-                    className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+                    className={cn(
+                      "w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all",
+                      errors.phone && "border-red-500 ring-red-500/10"
+                    )}
                   />
+                  {errors.phone && <p className="text-red-500 text-[10px] mt-1 ml-2 font-bold">{errors.phone}</p>}
                </div>
             )}
 
@@ -220,14 +285,14 @@ function AuthPage() {
                   placeholder="Cidade" 
                   value={city} 
                   onChange={setCity} 
-                  required
+                  error={errors.city}
                 />
                 <InputField 
                   icon={<MapPin size={18} />} 
                   placeholder="Bairro" 
                   value={neighborhood} 
                   onChange={setNeighborhood} 
-                  required
+                  error={errors.neighborhood}
                 />
               </div>
             )}
@@ -243,14 +308,14 @@ function AuthPage() {
                   placeholder="Nome da Loja" 
                   value={shopName} 
                   onChange={setShopName} 
-                  required
+                  error={errors.shopName}
                 />
                 <InputField 
                   icon={<Building2 size={18} />} 
                   placeholder="Categoria (Ex: Padaria, Farmácia)" 
                   value={shopCategory} 
                   onChange={setShopCategory} 
-                  required
+                  error={errors.shopCategory}
                 />
               </motion.div>
             )}
@@ -264,8 +329,10 @@ function AuthPage() {
                 placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-12 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+                className={cn(
+                  "w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-12 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all",
+                  errors.password && "border-red-500 ring-red-500/10"
+                )}
               />
               <button 
                 type="button"
@@ -274,6 +341,7 @@ function AuthPage() {
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
+              {errors.password && <p className="text-red-500 text-[10px] mt-1 ml-2 font-bold">{errors.password}</p>}
             </div>
 
             {!isLogin && (
@@ -283,7 +351,7 @@ function AuthPage() {
                 placeholder="Confirmar senha" 
                 value={confirmPassword} 
                 onChange={setConfirmPassword} 
-                required
+                error={errors.confirmPassword}
               />
             )}
 
@@ -299,20 +367,24 @@ function AuthPage() {
             )}
 
             {!isLogin && (
-              <div className="flex items-start gap-3 px-2 py-2">
-                <button 
-                  type="button"
-                  onClick={() => setTermsAccepted(!termsAccepted)}
-                  className={cn(
-                    "mt-0.5 size-5 rounded border flex items-center justify-center transition-all",
-                    termsAccepted ? "bg-primary border-primary text-primary-foreground" : "bg-card border-white/10"
-                  )}
-                >
-                  {termsAccepted && <CheckCircle2 size={14} strokeWidth={3} />}
-                </button>
-                <p className="text-[11px] text-muted-foreground leading-tight">
-                  Li e aceito os <span className="text-primary font-bold">Termos de Uso</span> e a <span className="text-primary font-bold">Política de Privacidade</span> do Cidadão+.
-                </p>
+              <div className="px-2 py-2">
+                <div className="flex items-start gap-3">
+                  <button 
+                    type="button"
+                    onClick={() => setTermsAccepted(!termsAccepted)}
+                    className={cn(
+                      "mt-0.5 size-5 rounded border flex items-center justify-center transition-all",
+                      termsAccepted ? "bg-primary border-primary text-primary-foreground" : "bg-card border-white/10",
+                      errors.terms && "border-red-500"
+                    )}
+                  >
+                    {termsAccepted && <CheckCircle2 size={14} strokeWidth={3} />}
+                  </button>
+                  <p className="text-[11px] text-muted-foreground leading-tight">
+                    Li e aceito os <span className="text-primary font-bold">Termos de Uso</span> e a <span className="text-primary font-bold">Política de Privacidade</span> do Cidadão+.
+                  </p>
+                </div>
+                {errors.terms && <p className="text-red-500 text-[10px] mt-1 ml-8 font-bold">{errors.terms}</p>}
               </div>
             )}
 
@@ -321,7 +393,7 @@ function AuthPage() {
               disabled={loading}
               className="w-full bg-primary text-primary-foreground font-black py-5 rounded-2xl shadow-standard text-lg uppercase tracking-wider active:scale-95 transition-all mt-4 disabled:opacity-50 disabled:active:scale-100"
             >
-              {loading ? "Processando..." : (isLogin ? "Entrar na Conta" : "Criar Minha Conta")}
+              {loading ? "Criando conta..." : (isLogin ? "Entrar na Conta" : "Criar Minha Conta")}
             </button>
 
             <div className="pt-6 text-center">
@@ -363,7 +435,7 @@ function AccountTypeCard({ active, onClick, icon, label }: { active: boolean, on
   );
 }
 
-function InputField({ icon, placeholder, type = "text", value, onChange, required = false }: any) {
+function InputField({ icon, placeholder, type = "text", value, onChange, error }: any) {
   return (
     <div className="relative">
       <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
@@ -374,9 +446,12 @@ function InputField({ icon, placeholder, type = "text", value, onChange, require
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        required={required}
-        className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+        className={cn(
+          "w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all",
+          error && "border-red-500 ring-red-500/10"
+        )}
       />
+      {error && <p className="text-red-500 text-[10px] mt-1 ml-2 font-bold">{error}</p>}
     </div>
   );
 }
