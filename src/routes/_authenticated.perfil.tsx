@@ -88,24 +88,14 @@ function PerfilPage() {
 
       if (error) {
         if (error.code === 'PGRST116') {
-          setUser({
-            id: authUser.id,
-            nome: authUser.user_metadata?.full_name || "Membro Cidadão+",
-            email: authUser.email || "",
-            cidade: "São Paulo",
-            bairro: "Jardim Paulista",
-            tipo: "MORADOR",
-            assinante_plus: true,
-            numero_membro: "00847",
-            validade_assinatura: "2027-07-01",
-            qr_code_token: "token-demo-" + authUser.id.substring(0, 5),
-            avatar_url: null
-          });
+          // Profile doesn't exist yet, retry once or show error
+          toast.error("Perfil não encontrado. Tente novamente em instantes.");
           return;
         }
         throw error;
       }
       setUser(data);
+
     } catch (error) {
       console.error('Error fetching profile:', error);
       toast.error("Erro ao carregar perfil");
@@ -170,7 +160,8 @@ function PerfilPage() {
       setLoading(true);
       
       const fileExt = file.name.split('.').pop();
-      const filePath = `${user.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${user.id}-${Date.now()}.${fileExt}`;
+
 
       const { error: uploadError } = await supabase.storage
         .from('avatares')

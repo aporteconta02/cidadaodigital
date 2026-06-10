@@ -15,8 +15,8 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-// import InputMask from "react-input-mask-next";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
@@ -28,6 +28,7 @@ function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [checkEmail, setCheckEmail] = useState(false);
   const navigate = useNavigate();
 
   // Form states
@@ -47,24 +48,31 @@ function AuthPage() {
     e.preventDefault();
     
     if (!isLogin && password !== confirmPassword) {
-      alert("As senhas não coincidem");
+      toast.error("As senhas não coincidem");
       return;
     }
 
     if (!isLogin && !termsAccepted) {
-      alert("Você precisa aceitar os termos de uso");
+      toast.error("Você precisa aceitar os termos de uso");
       return;
     }
 
     setLoading(true);
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error, data } = await supabase.auth.signInWithPassword({ 
+          email: email.trim(), 
+          password 
+        });
         if (error) throw error;
+        
+        if (data.session) {
+           navigate({ to: "/dashboard" });
+        }
       } else {
         // Step 1: Sign up in Auth with all metadata for the trigger
         const { error: signUpError, data: authData } = await supabase.auth.signUp({ 
-          email, 
+          email: email.trim(), 
           password,
           options: {
             data: { 
@@ -80,38 +88,39 @@ function AuthPage() {
         if (signUpError) throw signUpError;
 
         if (authData.user && accountType === 'comerciante') {
-          // Wait a bit for the trigger to create the profile
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          const { data: userData, error: userFetchError } = await supabase
-            .from('usuarios')
-            .select('id')
-            .eq('auth_id', authData.user.id)
-            .single();
-            
-          if (userData) {
-            const { error: shopError } = await supabase.from('lojas').insert({
-              usuario_id: userData.id,
-              nome: shopName,
-              categoria: shopCategory,
-              bairro: neighborhood,
-              cidade: city,
-              ativo: true
-            } as any);
-            
-            if (shopError) {
-              console.error("Erro ao criar loja:", shopError);
-            }
-          } else {
-            console.error("Perfil não encontrado para criar loja:", userFetchError);
-          }
+             // Retry logic for shop creation to ensure trigger has finished
+             let retries = 3;
+             let userData = null;
+             while (retries > 0 && !userData) {
+               const { data } = await supabase.from('usuarios').select('id').eq('auth_id', authData.user.id).single();
+               userData = data;
+               if (!userData) {
+                 await new Promise(resolve => setTimeout(resolve, 800));
+                 retries--;
+               }
+             }
+
+             if (userData) {
+                await supabase.from('lojas').insert({
+                  usuario_id: userData.id,
+                  nome: shopName,
+                  categoria: shopCategory,
+                  bairro: neighborhood,
+                  cidade: city,
+                  ativo: true
+                } as any);
+             }
+        }
+
+        if (!authData.session && authData.user) {
+          setCheckEmail(true);
+          toast.success("Conta criada! Verifique seu e-mail.");
+        } else if (authData.session) {
+          navigate({ to: "/dashboard" });
         }
       }
-      navigate({ to: "/dashboard" });
-
-      navigate({ to: "/dashboard" });
     } catch (error: any) {
-      alert(error.message || "Erro na autenticação");
+      toast.error(error.message || "Erro na autenticação");
     } finally {
       setLoading(false);
     }
@@ -136,195 +145,214 @@ function AuthPage() {
       <div className="flex-1 max-w-lg mx-auto w-full">
         <div className="mb-8">
           <h2 className="text-3xl font-black font-display tracking-tighter leading-none mb-2 uppercase">
-            {isLogin ? "Bem-vindo de volta" : "Crie sua conta"}
+            {checkEmail ? "Verifique seu e-mail" : (isLogin ? "Bem-vindo de volta" : "Crie sua conta")}
           </h2>
           <p className="text-muted-foreground">
-            {isLogin 
-              ? "Acesse seu bairro e aproveite os benefícios." 
-              : "Junte-se a milhares de vizinhos agora."}
+            {checkEmail 
+              ? `Enviamos um link de confirmação para ${email}.`
+              : (isLogin 
+                ? "Acesse seu bairro e aproveite os benefícios." 
+                : "Junte-se a milhares de vizinhos agora.")}
           </p>
         </div>
 
-        <form onSubmit={handleAuth} className="space-y-4 pb-12">
-          {!isLogin && (
-            <>
-              {/* Account Type Selection */}
-              <div className="grid grid-cols-3 gap-3 mb-6">
-                <AccountTypeCard 
-                  active={accountType === 'morador'} 
-                  onClick={() => setAccountType('morador')}
-                  icon={<UserIcon size={20} />}
-                  label="Morador"
+        {checkEmail ? (
+          <div className="space-y-6 text-center py-10">
+             <div className="size-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto mb-6">
+                <Mail size={40} />
+             </div>
+             <button 
+                onClick={() => setCheckEmail(false)}
+                className="text-xs font-black text-muted-foreground uppercase tracking-widest hover:text-primary transition-colors"
+             >
+                Voltar para o Login
+             </button>
+          </div>
+        ) : (
+          <form onSubmit={handleAuth} className="space-y-4 pb-12">
+            {!isLogin && (
+              <>
+                {/* Account Type Selection */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  <AccountTypeCard 
+                    active={accountType === 'morador'} 
+                    onClick={() => setAccountType('morador')}
+                    icon={<UserIcon size={20} />}
+                    label="Morador"
+                  />
+                  <AccountTypeCard 
+                    active={accountType === 'comerciante'} 
+                    onClick={() => setAccountType('comerciante')}
+                    icon={<Store size={20} />}
+                    label="Comércio"
+                  />
+                  <AccountTypeCard 
+                    active={accountType === 'entregador'} 
+                    onClick={() => setAccountType('entregador')}
+                    icon={<Building2 size={20} />}
+                    label="Entregador"
+                  />
+                </div>
+
+                <InputField 
+                  icon={<UserIcon size={18} />} 
+                  placeholder="Nome completo" 
+                  value={fullName} 
+                  onChange={setFullName} 
+                  required
                 />
-                <AccountTypeCard 
-                  active={accountType === 'comerciante'} 
-                  onClick={() => setAccountType('comerciante')}
-                  icon={<Store size={20} />}
-                  label="Comércio"
+              </>
+            )}
+
+            <InputField 
+              icon={<Mail size={18} />} 
+              type="email" 
+              placeholder="E-mail" 
+              value={email} 
+              onChange={setEmail} 
+              required
+            />
+
+            {!isLogin && (
+               <div className="relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                    <Phone size={18} />
+                  </div>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e: any) => setPhone(e.target.value)}
+                    placeholder="Telefone"
+                    required
+                    className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+                  />
+               </div>
+            )}
+
+            {!isLogin && (
+              <div className="grid grid-cols-2 gap-3">
+                <InputField 
+                  icon={<Building2 size={18} />} 
+                  placeholder="Cidade" 
+                  value={city} 
+                  onChange={setCity} 
+                  required
                 />
-                <AccountTypeCard 
-                  active={accountType === 'entregador'} 
-                  onClick={() => setAccountType('entregador')}
-                  icon={<Building2 size={20} />}
-                  label="Entregador"
+                <InputField 
+                  icon={<MapPin size={18} />} 
+                  placeholder="Bairro" 
+                  value={neighborhood} 
+                  onChange={setNeighborhood} 
+                  required
                 />
               </div>
+            )}
 
-              <InputField 
-                icon={<UserIcon size={18} />} 
-                placeholder="Nome completo" 
-                value={fullName} 
-                onChange={setFullName} 
-                required
-              />
-            </>
-          )}
-
-          <InputField 
-            icon={<Mail size={18} />} 
-            type="email" 
-            placeholder="E-mail" 
-            value={email} 
-            onChange={setEmail} 
-            required
-          />
-
-          {!isLogin && (
-             <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
-                  <Phone size={18} />
-                </div>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e: any) => setPhone(e.target.value)}
-                  placeholder="Telefone"
+            {accountType === 'comerciante' && !isLogin && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }} 
+                animate={{ opacity: 1, height: 'auto' }}
+                className="space-y-4 pt-2"
+              >
+                <InputField 
+                  icon={<Store size={18} />} 
+                  placeholder="Nome da Loja" 
+                  value={shopName} 
+                  onChange={setShopName} 
                   required
-                  className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
                 />
-             </div>
-          )}
+                <InputField 
+                  icon={<Building2 size={18} />} 
+                  placeholder="Categoria (Ex: Padaria, Farmácia)" 
+                  value={shopCategory} 
+                  onChange={setShopCategory} 
+                  required
+                />
+              </motion.div>
+            )}
 
-          {!isLogin && (
-            <div className="grid grid-cols-2 gap-3">
-              <InputField 
-                icon={<Building2 size={18} />} 
-                placeholder="Cidade" 
-                value={city} 
-                onChange={setCity} 
+            <div className="relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                <Lock size={18} />
+              </div>
+              <input 
+                type={showPassword ? "text" : "password"}
+                placeholder="Senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
+                className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-12 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
               />
-              <InputField 
-                icon={<MapPin size={18} />} 
-                placeholder="Bairro" 
-                value={neighborhood} 
-                onChange={setNeighborhood} 
-                required
-              />
-            </div>
-          )}
-
-          {accountType === 'comerciante' && !isLogin && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }} 
-              animate={{ opacity: 1, height: 'auto' }}
-              className="space-y-4 pt-2"
-            >
-              <InputField 
-                icon={<Store size={18} />} 
-                placeholder="Nome da Loja" 
-                value={shopName} 
-                onChange={setShopName} 
-                required
-              />
-              <InputField 
-                icon={<Building2 size={18} />} 
-                placeholder="Categoria (Ex: Padaria, Farmácia)" 
-                value={shopCategory} 
-                onChange={setShopCategory} 
-                required
-              />
-            </motion.div>
-          )}
-
-          <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
-              <Lock size={18} />
-            </div>
-            <input 
-              type={showPassword ? "text" : "password"}
-              placeholder="Senha"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-12 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
-            />
-            <button 
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
-
-          {!isLogin && (
-            <InputField 
-              icon={<Lock size={18} />} 
-              type="password" 
-              placeholder="Confirmar senha" 
-              value={confirmPassword} 
-              onChange={setConfirmPassword} 
-              required
-            />
-          )}
-
-          {isLogin && (
-            <div className="flex justify-end px-2">
               <button 
                 type="button"
-                className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
-                Esqueci minha senha
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-          )}
 
-          {!isLogin && (
-            <div className="flex items-start gap-3 px-2 py-2">
+            {!isLogin && (
+              <InputField 
+                icon={<Lock size={18} />} 
+                type="password" 
+                placeholder="Confirmar senha" 
+                value={confirmPassword} 
+                onChange={setConfirmPassword} 
+                required
+              />
+            )}
+
+            {isLogin && (
+              <div className="flex justify-end px-2">
+                <button 
+                  type="button"
+                  className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Esqueci minha senha
+                </button>
+              </div>
+            )}
+
+            {!isLogin && (
+              <div className="flex items-start gap-3 px-2 py-2">
+                <button 
+                  type="button"
+                  onClick={() => setTermsAccepted(!termsAccepted)}
+                  className={cn(
+                    "mt-0.5 size-5 rounded border flex items-center justify-center transition-all",
+                    termsAccepted ? "bg-primary border-primary text-primary-foreground" : "bg-card border-white/10"
+                  )}
+                >
+                  {termsAccepted && <CheckCircle2 size={14} strokeWidth={3} />}
+                </button>
+                <p className="text-[11px] text-muted-foreground leading-tight">
+                  Li e aceito os <span className="text-primary font-bold">Termos de Uso</span> e a <span className="text-primary font-bold">Política de Privacidade</span> do Cidadão+.
+                </p>
+              </div>
+            )}
+
+            <button 
+              disabled={loading}
+              className="w-full bg-primary text-primary-foreground font-black py-5 rounded-2xl shadow-standard text-lg uppercase tracking-wider active:scale-95 transition-all mt-4 disabled:opacity-50 disabled:active:scale-100"
+            >
+              {loading ? "Processando..." : (isLogin ? "Entrar na Conta" : "Criar Minha Conta")}
+            </button>
+
+            <div className="pt-6 text-center">
               <button 
                 type="button"
-                onClick={() => setTermsAccepted(!termsAccepted)}
-                className={cn(
-                  "mt-0.5 size-5 rounded border flex items-center justify-center transition-all",
-                  termsAccepted ? "bg-primary border-primary text-primary-foreground" : "bg-card border-white/10"
-                )}
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setCheckEmail(false);
+                }}
+                className="text-xs font-black text-muted-foreground uppercase tracking-widest hover:text-primary transition-colors"
               >
-                {termsAccepted && <CheckCircle2 size={14} strokeWidth={3} />}
+                {isLogin ? "Ainda não tem conta? Cadastre-se" : "Já possui conta? Faça login"}
               </button>
-              <p className="text-[11px] text-muted-foreground leading-tight">
-                Li e aceito os <span className="text-primary font-bold">Termos de Uso</span> e a <span className="text-primary font-bold">Política de Privacidade</span> do Cidadão+.
-              </p>
             </div>
-          )}
-
-          <button 
-            disabled={loading}
-            className="w-full bg-primary text-primary-foreground font-black py-5 rounded-2xl shadow-standard text-lg uppercase tracking-wider active:scale-95 transition-all mt-4 disabled:opacity-50 disabled:active:scale-100"
-          >
-            {loading ? "Processando..." : (isLogin ? "Entrar na Conta" : "Criar Minha Conta")}
-          </button>
-
-          <div className="pt-6 text-center">
-            <button 
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-xs font-black text-muted-foreground uppercase tracking-widest hover:text-primary transition-colors"
-            >
-              {isLogin ? "Ainda não tem conta? Cadastre-se" : "Já possui conta? Faça login"}
-            </button>
-          </div>
-        </form>
+          </form>
+        )}
       </div>
     </div>
   );
