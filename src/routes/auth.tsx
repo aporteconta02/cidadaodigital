@@ -171,36 +171,37 @@ function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background p-6">
-      <div className="pt-8 mb-8 flex items-center justify-between">
+    <div className="min-h-screen flex flex-col bg-background p-[clamp(1rem,5vw,2rem)] overflow-x-hidden">
+      <div className="pt-[clamp(2rem,8vh,4rem)] mb-[clamp(1.5rem,6vh,3rem)] flex items-center justify-between w-full max-w-lg mx-auto">
         <button 
           onClick={() => isLogin ? navigate({ to: '/' }) : setIsLogin(true)}
-          className="size-10 rounded-xl bg-card border border-white/5 flex items-center justify-center text-muted-foreground"
+          className="min-w-[44px] min-h-[44px] rounded-xl bg-card border border-white/5 flex items-center justify-center text-muted-foreground transition-colors active:scale-95"
+          aria-label="Voltar"
         >
           <ChevronLeft size={20} />
         </button>
-        <h1 className="text-xl font-black font-display tracking-tighter uppercase">
+        <h1 className="text-[clamp(1.1rem,4vw,1.4rem)] font-black font-display tracking-tighter uppercase whitespace-nowrap">
           CIDADÃO<span className="text-primary">+</span>
         </h1>
-        <div className="size-10" />
+        <div className="w-[44px]" aria-hidden="true" />
       </div>
 
-      <div className="flex-1 max-w-lg mx-auto w-full">
-        <div className="mb-8">
-          <h2 className="text-3xl font-black font-display tracking-tighter leading-none mb-2 uppercase">
+      <div className="flex-1 max-w-lg mx-auto w-full flex flex-col justify-center lg:justify-start">
+        <div className="mb-[clamp(1.5rem,5vh,2.5rem)] text-center lg:text-left">
+          <h2 className="text-[clamp(1.8rem,8vw,2.5rem)] font-black font-display tracking-tighter leading-tight mb-3 uppercase">
             {isLogin ? "Bem-vindo de volta" : "Crie sua conta"}
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-[clamp(0.9rem,3.5vw,1rem)] leading-relaxed max-w-[90%] mx-auto lg:mx-0">
             {isLogin 
               ? "Acesse seu bairro e aproveite os benefícios." 
               : "Junte-se a milhares de vizinhos agora."}
           </p>
         </div>
 
-        <form onSubmit={isLogin ? handleLogin : (e) => e.preventDefault()} className="space-y-4 pb-12">
+        <form onSubmit={isLogin ? handleLogin : (e) => e.preventDefault()} className="space-y-[clamp(0.75rem,3vh,1.25rem)] pb-12 w-full">
           {!isLogin && (
-            <>
-              <div className="grid grid-cols-3 gap-3 mb-6">
+            <div className="space-y-[clamp(1rem,4vh,1.5rem)]">
+              <div className="grid grid-cols-3 gap-[clamp(0.5rem,2vw,1rem)] mb-2">
                 <AccountTypeCard 
                   active={accountType === 'morador'} 
                   onClick={() => setAccountType('morador')}
@@ -227,7 +228,7 @@ function AuthPage() {
                 value={fullName} 
                 onChange={setFullName} 
               />
-            </>
+            </div>
           )}
 
           <InputField 
@@ -248,13 +249,13 @@ function AuthPage() {
                 value={phone}
                 onChange={(e: any) => setPhone(e.target.value)}
                 placeholder="Telefone"
-                className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+                className="w-full bg-card border border-white/5 rounded-2xl min-h-[56px] py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
               />
             </div>
           )}
 
           {!isLogin && (
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-[clamp(0.75rem,3vw,1rem)]">
               <InputField 
                 icon={<Building2 size={18} />} 
                 placeholder="Cidade" 
@@ -270,26 +271,29 @@ function AuthPage() {
             </div>
           )}
 
-          {accountType === 'comerciante' && !isLogin && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }} 
-              animate={{ opacity: 1, height: 'auto' }}
-              className="space-y-4 pt-2"
-            >
-              <InputField 
-                icon={<Store size={18} />} 
-                placeholder="Nome da Loja" 
-                value={shopName} 
-                onChange={setShopName} 
-              />
-              <InputField 
-                icon={<Building2 size={18} />} 
-                placeholder="Categoria (Ex: Padaria, Farmácia)" 
-                value={shopCategory} 
-                onChange={setShopCategory} 
-              />
-            </motion.div>
-          )}
+          <AnimatePresence>
+            {accountType === 'comerciante' && !isLogin && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0, overflow: 'hidden' }} 
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-[clamp(0.75rem,3vh,1rem)] pt-2"
+              >
+                <InputField 
+                  icon={<Store size={18} />} 
+                  placeholder="Nome da Loja" 
+                  value={shopName} 
+                  onChange={setShopName} 
+                />
+                <InputField 
+                  icon={<Building2 size={18} />} 
+                  placeholder="Categoria (Ex: Padaria, Farmácia)" 
+                  value={shopCategory} 
+                  onChange={setShopCategory} 
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="relative">
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
@@ -300,12 +304,13 @@ function AuthPage() {
               placeholder="Senha"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-12 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+              className="w-full bg-card border border-white/5 rounded-2xl min-h-[56px] py-4 pl-12 pr-12 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
             />
             <button 
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-0 top-0 h-full w-[56px] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -323,35 +328,44 @@ function AuthPage() {
 
           {!isLogin && (
             <div className="px-2 py-2">
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-4">
                 <button 
                   type="button"
                   onClick={() => setTermsAccepted(!termsAccepted)}
                   className={cn(
-                    "mt-0.5 size-5 rounded border flex items-center justify-center transition-all",
+                    "mt-1 min-w-[24px] min-h-[24px] rounded border flex items-center justify-center transition-all active:scale-90",
                     termsAccepted ? "bg-primary border-primary text-primary-foreground" : "bg-card border-white/10"
                   )}
+                  aria-checked={termsAccepted}
+                  role="checkbox"
                 >
-                  {termsAccepted && <CheckCircle2 size={14} strokeWidth={3} />}
+                  {termsAccepted && <CheckCircle2 size={16} strokeWidth={3} />}
                 </button>
-                <p className="text-[11px] text-muted-foreground leading-tight">
+                <p className="text-[clamp(0.7rem,3vw,0.8rem)] text-muted-foreground leading-snug">
                   Li e aceito os <span className="text-primary font-bold">Termos de Uso</span> e a <span className="text-primary font-bold">Política de Privacidade</span> do Cidadão+.
                 </p>
               </div>
             </div>
           )}
 
-          {erro && (
-            <div style={{color:'#FF4444', backgroundColor:'rgba(255,68,68,0.1)', border:'1px solid #FF4444', borderRadius:'8px', padding:'12px', marginBottom:'12px', fontSize:'14px'}}>
-              {erro}
-            </div>
-          )}
+          <AnimatePresence>
+            {erro && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{color:'#FF4444', backgroundColor:'rgba(255,68,68,0.1)', border:'1px solid #FF4444', borderRadius:'12px', padding:'16px', fontSize:'14px'}}
+                className="font-medium"
+              >
+                {erro}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <button 
             type="button"
             onClick={isLogin ? handleLogin : handleCadastro}
             disabled={loading}
-            className="w-full bg-primary text-primary-foreground font-black py-5 rounded-2xl shadow-standard text-lg uppercase tracking-wider active:scale-95 transition-all mt-4 disabled:opacity-50 disabled:active:scale-100"
+            className="w-full bg-primary text-primary-foreground font-black min-h-[64px] rounded-2xl shadow-standard text-lg uppercase tracking-wider active:scale-[0.98] transition-all mt-4 disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center"
           >
             {loading ? (isLogin ? "Entrando..." : "Criando conta...") : (isLogin ? "Entrar na Conta" : "CRIAR MINHA CONTA")}
           </button>
@@ -363,7 +377,7 @@ function AuthPage() {
                 setIsLogin(!isLogin);
                 setErro("");
               }}
-              className="text-xs font-black text-muted-foreground uppercase tracking-widest hover:text-primary transition-colors"
+              className="min-h-[44px] px-4 text-[clamp(0.65rem,3vw,0.75rem)] font-black text-muted-foreground uppercase tracking-widest hover:text-primary transition-colors active:scale-95"
             >
               {isLogin ? "Ainda não tem conta? Cadastre-se" : "Já possui conta? Faça login"}
             </button>
@@ -380,24 +394,24 @@ function AccountTypeCard({ active, onClick, icon, label }: { active: boolean, on
       type="button"
       onClick={onClick}
       className={cn(
-        "flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all",
+        "flex flex-col items-center gap-3 p-4 rounded-2xl border transition-all min-h-[110px] w-full",
         active 
           ? "bg-primary/10 border-primary text-primary shadow-[0_0_20px_rgba(0,196,255,0.1)]" 
           : "bg-card border-white/5 text-muted-foreground hover:bg-white/5"
       )}
     >
-      <div className={cn("size-10 rounded-xl flex items-center justify-center border", active ? "bg-primary/20 border-primary/30" : "bg-background border-white/5")}>
+      <div className={cn("size-11 rounded-xl flex items-center justify-center border transition-all", active ? "bg-primary/20 border-primary/30 scale-110" : "bg-background border-white/5")}>
         {icon}
       </div>
-      <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
+      <span className="text-[clamp(0.6rem,2.5vw,0.7rem)] font-black uppercase tracking-widest text-center leading-tight">{label}</span>
     </button>
   );
 }
 
 function InputField({ icon, placeholder, type = "text", value, onChange }: any) {
   return (
-    <div className="relative">
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+    <div className="relative group">
+      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none group-focus-within:text-primary transition-colors">
         {icon}
       </div>
       <input 
@@ -405,7 +419,7 @@ function InputField({ icon, placeholder, type = "text", value, onChange }: any) 
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+        className="w-full bg-card border border-white/5 rounded-2xl min-h-[56px] py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
       />
     </div>
   );
