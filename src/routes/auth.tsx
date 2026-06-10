@@ -70,7 +70,8 @@ function AuthPage() {
            navigate({ to: "/dashboard" });
         }
       } else {
-        // Step 1: Sign up in Auth with all metadata for the trigger
+        // Step 1: Sign up in Auth with all metadata
+        // The trigger 'handle_new_user' will now handle creating the user record and the shop record
         const { error: signUpError, data: authData } = await supabase.auth.signUp({ 
           email: email.trim(), 
           password,
@@ -80,37 +81,14 @@ function AuthPage() {
               account_type: accountType,
               phone: phone,
               city: city,
-              neighborhood: neighborhood
+              neighborhood: neighborhood,
+              shop_name: shopName,
+              shop_category: shopCategory
             }
           }
         });
         
         if (signUpError) throw signUpError;
-
-        if (authData.user && accountType === 'comerciante') {
-             // Retry logic for shop creation to ensure trigger has finished
-             let retries = 3;
-             let userData = null;
-             while (retries > 0 && !userData) {
-               const { data } = await supabase.from('usuarios').select('id').eq('auth_id', authData.user.id).single();
-               userData = data;
-               if (!userData) {
-                 await new Promise(resolve => setTimeout(resolve, 800));
-                 retries--;
-               }
-             }
-
-             if (userData) {
-                await supabase.from('lojas').insert({
-                  usuario_id: userData.id,
-                  nome: shopName,
-                  categoria: shopCategory,
-                  bairro: neighborhood,
-                  cidade: city,
-                  ativo: true
-                } as any);
-             }
-        }
 
         if (!authData.session && authData.user) {
           setCheckEmail(true);

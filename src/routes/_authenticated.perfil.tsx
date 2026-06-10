@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   LogOut, 
@@ -33,6 +33,7 @@ export const Route = createFileRoute("/_authenticated/perfil")({
 
 type UserProfile = {
   id: string;
+  auth_id: string;
   nome: string;
   email: string;
   cidade: string;
@@ -46,37 +47,31 @@ type UserProfile = {
 };
 
 function PerfilPage() {
+  const { profile } = Route.useRouteContext();
   const navigate = useNavigate();
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const [user, setUser] = useState<UserProfile | null>(profile as UserProfile);
+  const [loading, setLoading] = useState(!profile);
   const [isFlipped, setIsFlipped] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    if (profile) {
+      setUser(profile as UserProfile);
+      setLoading(false);
+    } else {
+      fetchProfile();
+    }
+  }, [profile]);
 
   const fetchProfile = async () => {
     try {
+      setLoading(true);
       const { data: { session } } = await supabase.auth.getSession();
       const authUser = session?.user;
       
       if (!authUser) {
-        // Fallback for preview mode without session
-        setUser({
-          id: "demo-id",
-          nome: "RICARDO OLIVEIRA",
-          email: "ricardo@exemplo.com",
-          cidade: "São Paulo",
-          bairro: "Jardim Paulista",
-          tipo: "MORADOR",
-          assinante_plus: true,
-          numero_membro: "00847",
-          validade_assinatura: "2027-07-01",
-          qr_code_token: "ricardo-token-premium-847",
-          avatar_url: null
-        });
-        setLoading(false);
+        // Fallback demo data removed for production consistency
         return;
       }
 
@@ -86,15 +81,8 @@ function PerfilPage() {
         .eq('auth_id', authUser.id)
         .single();
 
-      if (error) {
-        if (error.code === 'PGRST116') {
-          // Profile doesn't exist yet, retry once or show error
-          toast.error("Perfil não encontrado. Tente novamente em instantes.");
-          return;
-        }
-        throw error;
-      }
-      setUser(data);
+      if (error) throw error;
+      setUser(data as UserProfile);
 
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -142,6 +130,7 @@ function PerfilPage() {
 
       if (error) throw error;
       
+      await router.invalidate();
       await fetchProfile();
       toast.success("Bem-vindo ao Clube Cidadão+!");
     } catch (error) {
@@ -176,10 +165,11 @@ function PerfilPage() {
       const { error: updateError } = await supabase
         .from('usuarios')
         .update({ avatar_url: publicUrl })
-        .eq('auth_id', user.id);
+        .eq('id', user.id);
 
       if (updateError) throw updateError;
-
+      
+      await router.invalidate();
       await fetchProfile();
       toast.success("Foto de perfil atualizada!");
     } catch (error) {

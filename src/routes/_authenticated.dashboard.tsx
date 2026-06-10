@@ -44,36 +44,20 @@ const QUICK_ACTIONS = [
 ];
 
 function DashboardPage() {
+  const { profile } = Route.useRouteContext();
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000 })]);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [user, setUser] = useState<any>(null);
-  const [isSubscriber, setIsSubscriber] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  const fetchProfile = useCallback(async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      const { data, error } = await supabase
-        .from('usuarios')
-        .select('*')
-        .eq('auth_id', session.user.id)
-        .single();
-
-      if (error) throw error;
-      setUser(data);
-      setIsSubscriber(!!data.assinante_plus);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const [user, setUser] = useState<any>(profile);
+  const [isSubscriber, setIsSubscriber] = useState(!!profile?.assinante_plus);
+  const [loading, setLoading] = useState(!profile);
 
   useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    if (profile) {
+      setUser(profile);
+      setIsSubscriber(!!profile.assinante_plus);
+      setLoading(false);
+    }
+  }, [profile]);
 
 
   const onSelect = useCallback(() => {
