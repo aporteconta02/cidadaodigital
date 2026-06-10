@@ -17,6 +17,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 // import InputMask from "react-input-mask-next";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
@@ -28,7 +30,9 @@ function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [checkEmail, setCheckEmail] = useState(false);
   const navigate = useNavigate();
+
 
   // Form states
   const [email, setEmail] = useState("");
@@ -47,21 +51,29 @@ function AuthPage() {
     e.preventDefault();
     
     if (!isLogin && password !== confirmPassword) {
-      alert("As senhas não coincidem");
+      toast.error("As senhas não coincidem");
       return;
     }
 
     if (!isLogin && !termsAccepted) {
-      alert("Você precisa aceitar os termos de uso");
+      toast.error("Você precisa aceitar os termos de uso");
       return;
     }
 
     setLoading(true);
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error, data } = await supabase.auth.signInWithPassword({ 
+          email: email.trim(), 
+          password 
+        });
         if (error) throw error;
+        
+        if (data.session) {
+           navigate({ to: "/dashboard" });
+        }
       } else {
+
         // Step 1: Sign up in Auth with all metadata for the trigger
         const { error: signUpError, data: authData } = await supabase.auth.signUp({ 
           email, 
@@ -109,13 +121,20 @@ function AuthPage() {
       }
       navigate({ to: "/dashboard" });
 
-      navigate({ to: "/dashboard" });
+        if (!authData.session && authData.user) {
+          setCheckEmail(true);
+          toast.success("Conta criada! Verifique seu e-mail.");
+        } else {
+          navigate({ to: "/dashboard" });
+        }
+      }
     } catch (error: any) {
-      alert(error.message || "Erro na autenticação");
+      toast.error(error.message || "Erro na autenticação");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen flex flex-col bg-background p-6">
@@ -136,16 +155,32 @@ function AuthPage() {
       <div className="flex-1 max-w-lg mx-auto w-full">
         <div className="mb-8">
           <h2 className="text-3xl font-black font-display tracking-tighter leading-none mb-2 uppercase">
-            {isLogin ? "Bem-vindo de volta" : "Crie sua conta"}
+            {checkEmail ? "Verifique seu e-mail" : (isLogin ? "Bem-vindo de volta" : "Crie sua conta")}
           </h2>
           <p className="text-muted-foreground">
-            {isLogin 
-              ? "Acesse seu bairro e aproveite os benefícios." 
-              : "Junte-se a milhares de vizinhos agora."}
+            {checkEmail 
+              ? `Enviamos um link de confirmação para ${email}.`
+              : (isLogin 
+                ? "Acesse seu bairro e aproveite os benefícios." 
+                : "Junte-se a milhares de vizinhos agora.")}
           </p>
         </div>
 
-        <form onSubmit={handleAuth} className="space-y-4 pb-12">
+        {checkEmail ? (
+          <div className="space-y-6 text-center py-10">
+             <div className="size-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto mb-6">
+                <Mail size={40} />
+             </div>
+             <button 
+                onClick={() => setCheckEmail(false)}
+                className="text-xs font-black text-muted-foreground uppercase tracking-widest hover:text-primary transition-colors"
+             >
+                Voltar para o Login
+             </button>
+          </div>
+        ) : (
+          <form onSubmit={handleAuth} className="space-y-4 pb-12">
+
           {!isLogin && (
             <>
               {/* Account Type Selection */}
@@ -324,8 +359,10 @@ function AuthPage() {
               {isLogin ? "Ainda não tem conta? Cadastre-se" : "Já possui conta? Faça login"}
             </button>
           </div>
-        </form>
+          </form>
+        )}
       </div>
+
     </div>
   );
 }

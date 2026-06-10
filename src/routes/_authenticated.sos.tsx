@@ -17,14 +17,8 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import L from "leaflet";
-import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import Map from "@/components/Map";
 
-// Fix Leaflet default icon issues
-import "leaflet/dist/leaflet.css";
 
 export const Route = createFileRoute("/_authenticated/sos")({
   component: SOSPage,
@@ -175,32 +169,18 @@ function SOSPage() {
       {/* Map Section */}
       <section className="px-6 mb-8 h-80 relative group">
         <div className="w-full h-full rounded-3xl overflow-hidden border border-white/5 shadow-standard relative z-0">
-          <MapContainer 
+          <Map 
             center={[-23.5612, -46.6623]} 
-            zoom={15} 
-            scrollWheelZoom={false}
-            className="w-full h-full"
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            {/* Custom Marker Icons would be set here */}
-            <Marker position={[-23.5612, -46.6623]}>
-              <Popup>Você está aqui</Popup>
-            </Marker>
-            
-            {/* Mock Pins */}
-            <Marker position={[-23.5650, -46.6650]}>
-              <Popup>
-                <div className="p-2">
-                  <h4 className="font-black text-xs uppercase text-sos">Suspeito</h4>
-                  <p className="text-[10px] mt-1">Indivíduo observando casas.</p>
-                  <button className="mt-2 w-full bg-sos/10 text-sos text-[8px] font-black uppercase py-1 rounded">Confirmar</button>
-                </div>
-              </Popup>
-            </Marker>
-          </MapContainer>
+            zoom={15}
+            markers={[
+              { 
+                position: [-23.5650, -46.6650], 
+                title: 'Suspeito', 
+                description: 'Indivíduo observando casas.',
+                type: 'suspeito'
+              }
+            ]}
+          />
         </div>
         
         {/* Floating Action Button */}
