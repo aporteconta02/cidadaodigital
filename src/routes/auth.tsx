@@ -44,23 +44,41 @@ function AuthPage() {
   const [shopCategory, setShopCategory] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
 
+  // Error states
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email.trim()) newErrors.email = "E-mail obrigatório";
+    else if (!emailRegex.test(email.trim())) newErrors.email = "E-mail inválido";
+
+    if (!password) newErrors.password = "Senha obrigatória";
+    else if (password.length < 6) newErrors.password = "A senha deve ter no mínimo 6 caracteres";
+
+    if (!isLogin) {
+      if (!fullName.trim()) newErrors.fullName = "Nome obrigatório";
+      if (!phone.trim()) newErrors.phone = "Telefone obrigatório";
+      if (!city.trim()) newErrors.city = "Cidade obrigatória";
+      if (!neighborhood.trim()) newErrors.neighborhood = "Bairro obrigatório";
+      if (password !== confirmPassword) newErrors.confirmPassword = "As senhas não coincidem";
+      if (!termsAccepted) newErrors.terms = "Você precisa aceitar os termos";
+      
+      if (accountType === 'comerciante') {
+        if (!shopName.trim()) newErrors.shopName = "Nome da loja obrigatório";
+        if (!shopCategory.trim()) newErrors.shopCategory = "Categoria obrigatória";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!isLogin && password.length < 6) {
-      toast.error("A senha deve ter pelo menos 6 caracteres");
-      return;
-    }
-
-    if (!isLogin && password !== confirmPassword) {
-      toast.error("As senhas não coincidem");
-      return;
-    }
-
-    if (!isLogin && !termsAccepted) {
-      toast.error("Você precisa aceitar os termos de uso");
-      return;
-    }
+    if (!validate()) return;
 
     setLoading(true);
     try {
@@ -69,36 +87,80 @@ function AuthPage() {
           email: email.trim(), 
           password 
         });
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes("Invalid login credentials")) {
+            throw new Error("E-mail ou senha incorretos");
+          }
+          throw error;
+        }
         
         if (data.session) {
            navigate({ to: "/dashboard" });
         }
       } else {
-        // Step 1: Sign up in Auth with all metadata
-        // The trigger 'handle_new_user' will now handle creating the user record and the shop record
-        const { error: signUpError, data: authData } = await supabase.auth.signUp({ 
-          email: email.trim(), 
-          password,
-          options: {
-            data: { 
-              full_name: fullName,
-              account_type: accountType,
-              phone: phone,
-              city: city,
-              neighborhood: neighborhood,
-              shop_name: shopName,
-              shop_category: shopCategory
-            }
-          }
+        // 1. Criar conta no Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: email.trim(),
+          password: password
         });
-        
-        if (signUpError) throw signUpError;
 
-        if (!authData.session && authData.user) {
+        if (authError) {
+          let msg = "Erro ao criar conta. Tente novamente.";
+          if (authError.message.includes("User already registered")) msg = "Este e-mail já está cadastrado";
+          if (authError.message.includes("Password should be at least 6 characters")) msg = "A senha deve ter no mínimo 6 caracteres";
+          if (authError.message.includes("Invalid email")) msg = "E-mail inválido";
+          throw new Error(msg);
+        }
+
+        if (!authData.user) throw new Error("Erro ao obter dados do usuário");
+        const userId = authData.user.id;
+
+        // 2. Gerar número de membro e token QR
+        const numeroMembro = '#' + Math.floor(10000 + Math.random() * 90000).toString();
+        const qrCodeToken = crypto.randomUUID();
+
+        // 3. Inserir na tabela usuarios
+        const { error: userError } = await supabase.from('usuarios').insert({
+          auth_id: userId,
+          nome: fullName,
+          email: email.trim(),
+          telefone: phone,
+          cidade: city,
+          bairro: neighborhood,
+          tipo: accountType,
+          assinante_plus: false,
+          numero_membro: numeroMembro,
+          qr_code_token: qrCodeToken,
+          is_admin: false,
+          ativo: true
+        });
+
+        if (userError) {
+          console.error("User insert error:", userError);
+          throw new Error("Erro ao salvar perfil. Tente novamente.");
+        }
+
+        // 4. Se comerciante, inserir loja
+        if (accountType === 'comerciante') {
+          const { error: lojaError } = await supabase.from('lojas').insert({
+            usuario_id: userId,
+            nome: shopName,
+            categoria: shopCategory,
+            aprovada: false,
+            plano: 'gratuito',
+            ativo: true
+          });
+          if (lojaError) {
+            console.error("Loja insert error:", lojaError);
+            throw new Error("Erro ao salvar dados da loja. Tente novamente.");
+          }
+        }
+
+        toast.success("Conta criada com sucesso!");
+        
+        if (!authData.session) {
           setCheckEmail(true);
-          toast.success("Conta criada! Verifique seu e-mail.");
-        } else if (authData.session) {
+        } else {
           navigate({ to: "/dashboard" });
         }
       }
