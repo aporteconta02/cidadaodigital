@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ location }) => {
     const { data: { session } } = await supabase.auth.getSession();
+    
     if (!session) {
       throw redirect({
         to: "/auth",
@@ -12,7 +13,22 @@ export const Route = createFileRoute("/_authenticated")({
         },
       });
     }
-    return { session };
+
+    // Fetch user profile to avoid redundant fetches in child routes
+    const { data: profile, error } = await supabase
+      .from('usuarios')
+      .select('*')
+      .eq('auth_id', session.user.id)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error fetching profile in guard:', error);
+    }
+
+    return { 
+      session, 
+      profile 
+    };
   },
   component: () => <Outlet />,
 });
