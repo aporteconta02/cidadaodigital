@@ -245,7 +245,7 @@ function AuthPage() {
                   placeholder="Nome completo" 
                   value={fullName} 
                   onChange={setFullName} 
-                  required
+                  error={errors.fullName}
                 />
               </>
             )}
@@ -256,7 +256,7 @@ function AuthPage() {
               placeholder="E-mail" 
               value={email} 
               onChange={setEmail} 
-              required
+              error={errors.email}
             />
 
             {!isLogin && (
@@ -269,9 +269,12 @@ function AuthPage() {
                     value={phone}
                     onChange={(e: any) => setPhone(e.target.value)}
                     placeholder="Telefone"
-                    required
-                    className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+                    className={cn(
+                      "w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all",
+                      errors.phone && "border-red-500 ring-red-500/10"
+                    )}
                   />
+                  {errors.phone && <p className="text-red-500 text-[10px] mt-1 ml-2 font-bold">{errors.phone}</p>}
                </div>
             )}
 
@@ -282,14 +285,14 @@ function AuthPage() {
                   placeholder="Cidade" 
                   value={city} 
                   onChange={setCity} 
-                  required
+                  error={errors.city}
                 />
                 <InputField 
                   icon={<MapPin size={18} />} 
                   placeholder="Bairro" 
                   value={neighborhood} 
                   onChange={setNeighborhood} 
-                  required
+                  error={errors.neighborhood}
                 />
               </div>
             )}
@@ -305,14 +308,14 @@ function AuthPage() {
                   placeholder="Nome da Loja" 
                   value={shopName} 
                   onChange={setShopName} 
-                  required
+                  error={errors.shopName}
                 />
                 <InputField 
                   icon={<Building2 size={18} />} 
                   placeholder="Categoria (Ex: Padaria, Farmácia)" 
                   value={shopCategory} 
                   onChange={setShopCategory} 
-                  required
+                  error={errors.shopCategory}
                 />
               </motion.div>
             )}
@@ -326,8 +329,10 @@ function AuthPage() {
                 placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-12 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+                className={cn(
+                  "w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-12 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all",
+                  errors.password && "border-red-500 ring-red-500/10"
+                )}
               />
               <button 
                 type="button"
@@ -336,6 +341,7 @@ function AuthPage() {
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
+              {errors.password && <p className="text-red-500 text-[10px] mt-1 ml-2 font-bold">{errors.password}</p>}
             </div>
 
             {!isLogin && (
@@ -345,7 +351,7 @@ function AuthPage() {
                 placeholder="Confirmar senha" 
                 value={confirmPassword} 
                 onChange={setConfirmPassword} 
-                required
+                error={errors.confirmPassword}
               />
             )}
 
