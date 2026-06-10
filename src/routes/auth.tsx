@@ -15,7 +15,7 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import InputMask from "react-input-mask-next";
+// import InputMask from "react-input-mask-next";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/auth")({
@@ -62,54 +62,53 @@ function AuthPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       } else {
-        // Step 1: Sign up in Auth
+        // Step 1: Sign up in Auth with all metadata for the trigger
         const { error: signUpError, data: authData } = await supabase.auth.signUp({ 
           email, 
           password,
           options: {
             data: { 
               full_name: fullName,
-              account_type: accountType
+              account_type: accountType,
+              phone: phone,
+              city: city,
+              neighborhood: neighborhood
             }
           }
         });
         
         if (signUpError) throw signUpError;
 
-        if (authData.user) {
-          // Generates member number # + 5 random digits (could be sequential if handled in DB, but random is safer for front-end only gen)
-          const memberNum = "#" + Math.floor(10000 + Math.random() * 90000).toString();
+        if (authData.user && accountType === 'comerciante') {
+          // Wait a bit for the trigger to create the profile
+          await new Promise(resolve => setTimeout(resolve, 1000));
           
-          // Step 2: Create profile in 'usuarios' table
-          const { error: profileError } = await supabase.from('usuarios').insert({
-            auth_id: authData.user.id,
-            nome: fullName,
-            email: email,
-            telefone: phone,
-            cidade: city,
-            bairro: neighborhood,
-            tipo: accountType,
-            numero_membro: memberNum,
-            qr_code_token: crypto.randomUUID()
-          } as any);
-
-          if (profileError) throw profileError;
-
-          // Step 3: If comerciante, create shop
-          if (accountType === 'comerciante') {
-             const { data: userData } = await supabase.from('usuarios').select('id').eq('auth_id', authData.user.id).single();
-             if (userData) {
-                await supabase.from('lojas').insert({
-                  usuario_id: userData.id,
-                  nome: shopName,
-                  categoria: shopCategory,
-                  bairro: neighborhood,
-                  cidade: city
-                } as any);
-             }
+          const { data: userData, error: userFetchError } = await supabase
+            .from('usuarios')
+            .select('id')
+            .eq('auth_id', authData.user.id)
+            .single();
+            
+          if (userData) {
+            const { error: shopError } = await supabase.from('lojas').insert({
+              usuario_id: userData.id,
+              nome: shopName,
+              categoria: shopCategory,
+              bairro: neighborhood,
+              cidade: city,
+              ativo: true
+            } as any);
+            
+            if (shopError) {
+              console.error("Erro ao criar loja:", shopError);
+            }
+          } else {
+            console.error("Perfil não encontrado para criar loja:", userFetchError);
           }
         }
       }
+      navigate({ to: "/dashboard" });
+
       navigate({ to: "/dashboard" });
     } catch (error: any) {
       alert(error.message || "Erro na autenticação");
@@ -195,8 +194,8 @@ function AuthPage() {
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
                   <Phone size={18} />
                 </div>
-                <InputMask
-                  mask="(99) 99999-9999"
+                <input
+                  type="tel"
                   value={phone}
                   onChange={(e: any) => setPhone(e.target.value)}
                   placeholder="Telefone"
