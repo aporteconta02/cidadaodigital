@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { Home, ShoppingBag, Users, ShieldAlert, User } from "lucide-react";
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 
 
@@ -141,6 +142,7 @@ function RootComponent() {
         "flex min-h-screen flex-col bg-background text-foreground overflow-x-hidden font-body",
         !isPublicPage && "pb-24"
       )}>
+        <Toaster position="top-center" expand={true} richColors />
         {/* App Header (Hidden on landing/auth) */}
         {!isPublicPage && (
           <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl px-6 py-5 border-b border-white/5">

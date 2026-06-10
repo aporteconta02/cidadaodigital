@@ -47,6 +47,11 @@ function AuthPage() {
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!isLogin && password.length < 6) {
+      toast.error("A senha deve ter pelo menos 6 caracteres");
+      return;
+    }
+
     if (!isLogin && password !== confirmPassword) {
       toast.error("As senhas não coincidem");
       return;
@@ -98,6 +103,7 @@ function AuthPage() {
         }
       }
     } catch (error: any) {
+      console.error("Auth error:", error);
       toast.error(error.message || "Erro na autenticação");
     } finally {
       setLoading(false);
@@ -311,6 +317,7 @@ function AuthPage() {
             )}
 
             <button 
+              type="submit"
               disabled={loading}
               className="w-full bg-primary text-primary-foreground font-black py-5 rounded-2xl shadow-standard text-lg uppercase tracking-wider active:scale-95 transition-all mt-4 disabled:opacity-50 disabled:active:scale-100"
             >
