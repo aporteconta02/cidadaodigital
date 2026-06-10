@@ -194,8 +194,8 @@ function AuthPage() {
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
                   <Phone size={18} />
                 </div>
-                <InputMask
-                  mask="(99) 99999-9999"
+                <input
+                  type="tel"
                   value={phone}
                   onChange={(e: any) => setPhone(e.target.value)}
                   placeholder="Telefone"
