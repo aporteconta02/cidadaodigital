@@ -20,6 +20,9 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from 'embla-carousel-autoplay';
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardPage,
@@ -43,23 +46,48 @@ const QUICK_ACTIONS = [
 function DashboardPage() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000 })]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [user, setUser] = useState<any>(null);
+  const [isSubscriber, setIsSubscriber] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return;
-    setSelectedIndex(emblaApi.selectedScrollSnap());
-  }, [emblaApi]);
+  const fetchProfile = useCallback(async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data, error } = await supabase
+        .from('usuarios')
+        .select('*')
+        .eq('auth_id', session.user.id)
+        .single();
+
+      if (error) throw error;
+      setUser(data);
+      setIsSubscriber(!!data.assinante_plus);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    if (!emblaApi) return;
-    onSelect();
-    emblaApi.on("select", onSelect);
-  }, [emblaApi, onSelect]);
+    fetchProfile();
+  }, [fetchProfile]);
 
-  // Mock data for sections
-  const isSubscriber = true; // Temporary mock
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-primary gap-4">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-current"></div>
+        <p className="text-[10px] font-black uppercase tracking-widest animate-pulse">Carregando Dashboard...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="pb-32 animate-in fade-in duration-700">
+
       {/* Search & Header */}
       <div className="px-6 pt-6 mb-8">
         <div className="relative group">
