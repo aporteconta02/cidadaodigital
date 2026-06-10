@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   LogOut, 
@@ -48,6 +48,7 @@ type UserProfile = {
 function PerfilPage() {
   const { profile } = Route.useRouteContext();
   const navigate = useNavigate();
+  const router = useRouter();
   const [user, setUser] = useState<UserProfile | null>(profile as UserProfile);
   const [loading, setLoading] = useState(!profile);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -128,6 +129,7 @@ function PerfilPage() {
 
       if (error) throw error;
       
+      await router.invalidate();
       await fetchProfile();
       toast.success("Bem-vindo ao Clube Cidadão+!");
     } catch (error) {
@@ -165,7 +167,8 @@ function PerfilPage() {
         .eq('auth_id', user.id);
 
       if (updateError) throw updateError;
-
+      
+      await router.invalidate();
       await fetchProfile();
       toast.success("Foto de perfil atualizada!");
     } catch (error) {
