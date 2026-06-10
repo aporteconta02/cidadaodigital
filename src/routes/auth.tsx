@@ -367,20 +367,24 @@ function AuthPage() {
             )}
 
             {!isLogin && (
-              <div className="flex items-start gap-3 px-2 py-2">
-                <button 
-                  type="button"
-                  onClick={() => setTermsAccepted(!termsAccepted)}
-                  className={cn(
-                    "mt-0.5 size-5 rounded border flex items-center justify-center transition-all",
-                    termsAccepted ? "bg-primary border-primary text-primary-foreground" : "bg-card border-white/10"
-                  )}
-                >
-                  {termsAccepted && <CheckCircle2 size={14} strokeWidth={3} />}
-                </button>
-                <p className="text-[11px] text-muted-foreground leading-tight">
-                  Li e aceito os <span className="text-primary font-bold">Termos de Uso</span> e a <span className="text-primary font-bold">Política de Privacidade</span> do Cidadão+.
-                </p>
+              <div className="px-2 py-2">
+                <div className="flex items-start gap-3">
+                  <button 
+                    type="button"
+                    onClick={() => setTermsAccepted(!termsAccepted)}
+                    className={cn(
+                      "mt-0.5 size-5 rounded border flex items-center justify-center transition-all",
+                      termsAccepted ? "bg-primary border-primary text-primary-foreground" : "bg-card border-white/10",
+                      errors.terms && "border-red-500"
+                    )}
+                  >
+                    {termsAccepted && <CheckCircle2 size={14} strokeWidth={3} />}
+                  </button>
+                  <p className="text-[11px] text-muted-foreground leading-tight">
+                    Li e aceito os <span className="text-primary font-bold">Termos de Uso</span> e a <span className="text-primary font-bold">Política de Privacidade</span> do Cidadão+.
+                  </p>
+                </div>
+                {errors.terms && <p className="text-red-500 text-[10px] mt-1 ml-8 font-bold">{errors.terms}</p>}
               </div>
             )}
 
@@ -389,7 +393,7 @@ function AuthPage() {
               disabled={loading}
               className="w-full bg-primary text-primary-foreground font-black py-5 rounded-2xl shadow-standard text-lg uppercase tracking-wider active:scale-95 transition-all mt-4 disabled:opacity-50 disabled:active:scale-100"
             >
-              {loading ? "Processando..." : (isLogin ? "Entrar na Conta" : "Criar Minha Conta")}
+              {loading ? "Criando conta..." : (isLogin ? "Entrar na Conta" : "Criar Minha Conta")}
             </button>
 
             <div className="pt-6 text-center">
@@ -431,7 +435,7 @@ function AccountTypeCard({ active, onClick, icon, label }: { active: boolean, on
   );
 }
 
-function InputField({ icon, placeholder, type = "text", value, onChange, required = false }: any) {
+function InputField({ icon, placeholder, type = "text", value, onChange, error }: any) {
   return (
     <div className="relative">
       <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
@@ -442,9 +446,12 @@ function InputField({ icon, placeholder, type = "text", value, onChange, require
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        required={required}
-        className="w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+        className={cn(
+          "w-full bg-card border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all",
+          error && "border-red-500 ring-red-500/10"
+        )}
       />
+      {error && <p className="text-red-500 text-[10px] mt-1 ml-2 font-bold">{error}</p>}
     </div>
   );
 }
