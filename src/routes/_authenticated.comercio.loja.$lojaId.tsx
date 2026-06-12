@@ -8,10 +8,13 @@ import {
   Info, 
   Grid, 
   ShoppingBag,
-  Plus
+  Plus,
+  Clock,
+  Search
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/_authenticated/comercio/loja/$lojaId")({
   component: LojaPage,
@@ -19,167 +22,131 @@ export const Route = createFileRoute("/_authenticated/comercio/loja/$lojaId")({
 
 const STORE_MOCK = {
   id: '1',
-  name: "Padaria do Sol",
-  category: "Alimentação",
+  name: "Burger King",
+  category: "Lanches",
   rating: 4.8,
   reviews: 124,
-  image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=600",
-  logo: "🥖",
-  description: "A melhor padaria do bairro com pães artesanais e café fresco todos os dias.",
-  address: "Rua das Flores, 123 - Jardim Paulista",
-  phone: "(11) 98765-4321",
+  image: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80&w=800",
+  logo: "🍔",
+  description: "Os melhores hambúrgueres grelhados no fogo direto para você.",
+  address: "Rua do Comércio, 456 - Palmital",
+  phone: "(31) 98888-7777",
+  time: "25-40 min",
+  deliveryFee: 5.90
 };
 
+const CATEGORIES = [
+  { id: '1', name: "Mais Pedidos" },
+  { id: '2', name: "Promoções" },
+  { id: '3', name: "Cardápio Completo" },
+];
+
 const STORE_PRODUCTS = [
-  { id: '1', name: "Pão Francês Unit.", price: 0.80, image: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=300" },
-  { id: '4', name: "Bolo de Cenoura", price: 18.00, image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=300" },
-  { id: '5', name: "Café Expresso", price: 6.50, image: "https://images.unsplash.com/photo-1510970174576-71d5009bc247?q=80&w=300" },
-  { id: '6', name: "Pão de Queijo G", price: 4.50, image: "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?q=80&w=300" },
+  { id: '1', name: "Whopper Especial", price: 29.90, originalPrice: 34.90, image: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?q=80&w=300" },
+  { id: '2', name: "Batata Frita G", price: 12.90, image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=300" },
+  { id: '3', name: "Combo Casal", price: 54.90, image: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?q=80&w=300" },
+  { id: '4', name: "Milkshake Chocolate", price: 15.00, image: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?q=80&w=300" },
 ];
 
 function LojaPage() {
   const { lojaId } = useParams({ from: '/_authenticated/comercio/loja/$lojaId' });
-  const [activeTab, setActiveTab] = useState<'produtos' | 'sobre' | 'contato'>('produtos');
+  const [activeTab, setActiveTab] = useState('Mais Pedidos');
 
   return (
-    <div className="pb-24 animate-in fade-in duration-500">
-      {/* Hero Banner */}
-      <div className="relative h-64">
-        <img src={STORE_MOCK.image} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+    <div className="pb-32 animate-in fade-in duration-500 bg-bg-primary min-h-screen">
+      {/* Banner da Loja */}
+      <div className="relative h-[200px]">
+        <img src={STORE_MOCK.image} className="w-full h-full object-cover" alt={STORE_MOCK.name} />
+        <div className="absolute inset-0 bg-black/40" />
         
         <Link 
           to="/comercio"
-          className="absolute top-6 left-6 size-10 rounded-xl bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white"
+          className="absolute top-6 left-4 size-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white"
         >
           <ChevronLeft size={20} />
         </Link>
       </div>
 
-      {/* Store Info Header */}
-      <div className="px-6 -mt-16 relative z-10 text-center">
-        <div className="size-24 bg-card rounded-3xl border-4 border-background shadow-standard flex items-center justify-center text-4xl mx-auto mb-4">
-          {STORE_MOCK.logo}
-        </div>
-        <h1 className="text-3xl font-black font-display tracking-tighter uppercase mb-1">{STORE_MOCK.name}</h1>
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
-            {STORE_MOCK.category}
-          </span>
-          <div className="flex items-center gap-1 text-xs font-black text-premium">
-            <Star size={12} fill="currentColor" />
-            <span>{STORE_MOCK.rating}</span>
-            <span className="text-muted-foreground font-bold">({STORE_MOCK.reviews})</span>
+      {/* Header Info Sobreposto */}
+      <div className="px-4 -mt-12 relative z-10 mb-6">
+        <div className="bg-bg-card rounded-md p-5 border border-white/5 shadow-card flex flex-col items-center text-center glass">
+          <div className="size-20 bg-bg-elevated rounded-full border-4 border-bg-card shadow-card flex items-center justify-center text-4xl -mt-16 mb-3">
+            {STORE_MOCK.logo}
+          </div>
+          <h1 className="text-xl font-bold text-text-primary uppercase tracking-tight mb-1">{STORE_MOCK.name}</h1>
+          
+          <div className="flex items-center gap-4 mt-2">
+            <div className="flex items-center gap-1 text-xs font-bold text-gold">
+              <Star size={14} fill="currentColor" />
+              <span>{STORE_MOCK.rating}</span>
+            </div>
+            <span className="text-text-muted">•</span>
+            <div className="flex items-center gap-1 text-xs font-bold text-text-secondary">
+              <Clock size={14} />
+              <span>{STORE_MOCK.time}</span>
+            </div>
+            <span className="text-text-muted">•</span>
+            <span className="text-xs font-bold text-text-secondary">Frete R$ {STORE_MOCK.deliveryFee.toFixed(2)}</span>
           </div>
         </div>
+      </div>
 
-        {/* Tabs */}
-        <div className="flex gap-2 p-1.5 bg-card border border-white/5 rounded-2xl mb-8">
-          <TabButton 
-            active={activeTab === 'produtos'} 
-            onClick={() => setActiveTab('produtos')} 
-            icon={<Grid size={16} />} 
-            label="Produtos" 
-          />
-          <TabButton 
-            active={activeTab === 'sobre'} 
-            onClick={() => setActiveTab('sobre')} 
-            icon={<Info size={16} />} 
-            label="Sobre" 
-          />
-          <TabButton 
-            active={activeTab === 'contato'} 
-            onClick={() => setActiveTab('contato')} 
-            icon={<Phone size={16} />} 
-            label="Contato" 
+      {/* Tabs Sticky */}
+      <div className="sticky top-[80px] z-30 bg-bg-primary/95 backdrop-blur-md border-y border-white/5 overflow-hidden">
+        <div className="flex gap-6 px-4 overflow-x-auto no-scrollbar py-4">
+          {CATEGORIES.map((tab) => (
+            <button 
+              key={tab.id}
+              onClick={() => setActiveTab(tab.name)}
+              className={cn(
+                "whitespace-nowrap text-xs font-black uppercase tracking-widest transition-all relative pb-1",
+                activeTab === tab.name ? "text-primary" : "text-text-muted"
+              )}
+            >
+              {tab.name}
+              {activeTab === tab.name && (
+                <motion.div layoutId="tab-underline" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary" />
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Busca na Loja */}
+      <div className="px-4 mb-6">
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
+          <input 
+            placeholder="Buscar no cardápio..." 
+            className="w-full bg-[#1A1A24] border border-white/5 rounded-md py-3 pl-11 pr-4 text-sm font-medium text-text-primary"
           />
         </div>
+      </div>
 
-        {/* Content based on Tab */}
-        <div className="text-left">
-          {activeTab === 'produtos' && (
-            <div className="grid grid-cols-2 gap-4">
-              {STORE_PRODUCTS.map((product) => (
-                <StoreProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          )}
-
-          {activeTab === 'sobre' && (
-            <div className="bg-card border border-white/5 rounded-3xl p-6 shadow-standard">
-              <h3 className="text-sm font-black uppercase tracking-widest text-primary mb-3">Nossa História</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                {STORE_MOCK.description}
-              </p>
-              <div className="space-y-4">
-                 <div className="flex items-start gap-3">
-                   <MapPin className="text-primary shrink-0" size={18} />
-                   <span className="text-xs font-bold leading-normal">{STORE_MOCK.address}</span>
-                 </div>
+      {/* Grid de Produtos */}
+      <section className="px-4">
+        <h2 className="section-title mb-4 uppercase tracking-tighter">{activeTab}</h2>
+        <div className="grid grid-cols-2 gap-4">
+          {STORE_PRODUCTS.map((product) => (
+            <div key={product.id} className="bg-bg-card rounded-md overflow-hidden border border-white/5 shadow-card flex flex-col active:scale-[0.98] transition-all">
+              <Link to={`/comercio/produto/${product.id}`} className="relative aspect-square overflow-hidden shrink-0">
+                <img src={product.image} className="w-full h-full object-cover" alt={product.name} />
+              </Link>
+              <div className="p-3 flex-1 flex flex-col">
+                <h4 className="text-[12px] font-semibold text-text-primary line-clamp-2 leading-tight mb-1">{product.name}</h4>
+                <div className="mt-auto flex items-end justify-between">
+                  <span className="text-sm font-bold text-primary">
+                    R$ {product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </span>
+                  <button className="size-8 rounded-full bg-secondary text-text-primary flex items-center justify-center shadow-card active:scale-90 transition-all">
+                    <Plus size={16} strokeWidth={3} />
+                  </button>
+                </div>
               </div>
             </div>
-          )}
-
-          {activeTab === 'contato' && (
-            <div className="space-y-4">
-              <a 
-                href={`tel:${STORE_MOCK.phone}`}
-                className="w-full flex items-center justify-between p-5 rounded-2xl bg-card border border-white/5 hover:bg-card-hover transition-all"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                    <Phone size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Telefone</h4>
-                    <p className="font-bold text-sm">{STORE_MOCK.phone}</p>
-                  </div>
-                </div>
-                <ChevronRight size={18} className="text-muted-foreground" />
-              </a>
-              <button className="w-full bg-secondary text-secondary-foreground font-black py-5 rounded-2xl shadow-standard text-xs uppercase tracking-widest flex items-center justify-center gap-2">
-                 Chamar no WhatsApp
-              </button>
-            </div>
-          )}
+          ))}
         </div>
-      </div>
-    </div>
-  );
-}
-
-function TabButton({ active, onClick, icon, label }: { active: boolean, onClick: () => void, icon: React.ReactNode, label: string }) {
-  return (
-    <button 
-      onClick={onClick}
-      className={cn(
-        "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-        active ? "bg-primary text-primary-foreground shadow-lg" : "text-muted-foreground hover:bg-white/5"
-      )}
-    >
-      {icon}
-      <span>{label}</span>
-    </button>
-  );
-}
-
-function StoreProductCard({ product }: { product: any }) {
-  return (
-    <div className="bg-card rounded-3xl overflow-hidden border border-white/5 shadow-standard flex flex-col group">
-      <Link to={`/comercio/produto/${product.id}`} className="relative h-32 overflow-hidden shrink-0">
-        <img src={product.image} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" />
-      </Link>
-      <div className="p-3 flex-1 flex flex-col">
-        <h4 className="font-black text-xs uppercase tracking-tight line-clamp-1 mb-2">{product.name}</h4>
-        <div className="mt-auto flex items-center justify-between gap-1">
-          <span className="text-sm font-black text-foreground">
-            R$ {product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-          </span>
-          <button className="size-8 rounded-lg bg-secondary text-secondary-foreground flex items-center justify-center shadow-lg active:scale-90 transition-all">
-            <Plus size={16} strokeWidth={3} />
-          </button>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }
