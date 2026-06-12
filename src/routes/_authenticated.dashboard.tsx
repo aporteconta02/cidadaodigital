@@ -85,16 +85,6 @@ function DashboardPage() {
   return (
     <div className="pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
       
-      {/* Search Header */}
-      <div className="px-6 pt-6 mb-6">
-        <div className="relative group">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/40" size={18} />
-          <input 
-            placeholder="O que você procura hoje?" 
-            className="w-full bg-white/[0.03] border border-white/[0.05] rounded-2xl py-4 pl-12 pr-5 text-sm font-medium placeholder:text-muted-foreground/30 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all shadow-soft"
-          />
-        </div>
-      </div>
 
       {/* Categories Grid */}
       <section className="px-4 mb-10">
