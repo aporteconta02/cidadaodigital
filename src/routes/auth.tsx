@@ -168,7 +168,7 @@ function AuthPage() {
       }
 
       console.log("Cadastro concluído com sucesso!");
-      toast.success("Conta criada com sucesso!");
+      toast.success("Feito! 🎉");
       
       // Pequeno delay para garantir que o Auth atualizou a sessão
       setTimeout(() => {
@@ -195,15 +195,15 @@ function AuthPage() {
       
       if (error) {
         if (error.message.includes("Invalid login credentials")) {
-          setErro("E-mail ou senha incorretos");
+          setErro("Ops! E-mail ou senha incorretos. Tenta de novo?");
         } else {
-          setErro(error.message);
+          setErro("Ops! Algo deu errado. Tenta de novo?");
         }
         return;
       }
       
       if (data.session) {
-         toast.success("Login realizado!");
+         toast.success("Feito! ✅");
          // Se houver um redirecionamento pendente, use-o. 
          // Mas remova o protocolo/domínio se for um URL completo para evitar problemas com o TanStack Router
          let target: string = "/dashboard";
@@ -238,7 +238,7 @@ function AuthPage() {
       <div className="flex-1 max-w-lg mx-auto w-full flex flex-col justify-center lg:justify-start">
         <div className="mb-[clamp(1.5rem,5vh,2.5rem)] text-center lg:text-left">
           <h2 className="hero-title text-text-primary tracking-tighter leading-tight mb-3 uppercase">
-            {isLogin ? "Bem-vindo de volta" : "Crie sua conta"}
+            {isLogin ? "Olá! 👋" : "Crie sua conta"}
           </h2>
           <p className="body-text text-text-secondary leading-relaxed max-w-[90%] mx-auto lg:mx-0">
             {isLogin 
@@ -421,7 +421,7 @@ function AuthPage() {
             disabled={loading}
             className="w-full bg-primary text-text-primary font-bold min-h-[64px] rounded-md shadow-glow text-lg uppercase tracking-wider active:scale-[0.98] transition-all mt-4 disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center"
           >
-            {loading ? (isLogin ? "Entrando..." : "Criando conta...") : (isLogin ? "Entrar na Conta" : "CRIAR MINHA CONTA")}
+            {loading ? (isLogin ? "Entrando..." : "Criando conta...") : (isLogin ? "Entrar" : "CRIAR MINHA CONTA")}
           </button>
 
           <div className="pt-6 text-center">

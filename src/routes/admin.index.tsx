@@ -54,7 +54,7 @@ function AdminDashboard() {
           <p className="text-text-muted text-sm font-bold uppercase tracking-widest mt-1">Status em tempo real da plataforma</p>
         </div>
         <button className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg transition-all active:scale-95">
-          Gerar Relatório
+          Baixar Relatório
         </button>
       </div>
 

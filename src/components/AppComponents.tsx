@@ -84,7 +84,7 @@ interface AppSearchBarProps {
   onClear?: () => void;
 }
 
-export function AppSearchBar({ placeholder = "Buscar...", value, onChange, onClear }: AppSearchBarProps) {
+export function AppSearchBar({ placeholder = "O que você procura hoje?", value, onChange, onClear }: AppSearchBarProps) {
   return (
     <div className="relative group">
       <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" size={18} />

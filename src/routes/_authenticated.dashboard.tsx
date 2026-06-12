@@ -39,8 +39,8 @@ const HERO_BANNERS = [
 ];
 
 const QUICK_ACCESS = [
-  { label: "Mercado", icon: <ShoppingBag size={28} />, color: "text-primary" },
-  { label: "Denúncia", icon: <Megaphone size={28} />, color: "text-secondary" },
+  { label: "Ofertas", icon: <ShoppingBag size={28} />, color: "text-primary" },
+  { label: "Denunciar", icon: <Megaphone size={28} />, color: "text-secondary" },
   { label: "Eventos", icon: <Calendar size={28} />, color: "text-success" },
   { label: "Seguro", icon: <ShieldCheck size={28} />, color: "text-primary" },
   { label: "Voz do Povo", icon: <MessageSquare size={28} />, color: "text-secondary" },
@@ -87,7 +87,7 @@ function DashboardPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-primary gap-4">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-current"></div>
-        <p className="micro-text uppercase tracking-widest animate-pulse font-jakarta">Carregando...</p>
+        <p className="micro-text uppercase tracking-widest animate-pulse font-jakarta">Buscando informações...</p>
       </div>
     );
   }
@@ -95,6 +95,16 @@ function DashboardPage() {
   return (
     <div className="pb-32 animate-in fade-in duration-700 bg-bg-primary min-h-screen">
       
+      {/* Welcome Header */}
+      <section className="px-6 pt-10 pb-2">
+        <h1 className="text-2xl font-black font-space tracking-tighter italic text-text-primary mb-1">
+          Olá, {user?.nome?.split(' ')[0] || 'Vizinho'}! 👋
+        </h1>
+        <p className="text-[11px] font-black uppercase tracking-widest text-text-muted opacity-60">
+          O que você precisa hoje?
+        </p>
+      </section>
+
       {/* Stories Bar */}
       <section className="py-6 overflow-hidden">
         <div className="flex gap-4 px-4 overflow-x-auto no-scrollbar">
@@ -140,7 +150,7 @@ function DashboardPage() {
 
       {/* Quick Access Grid */}
       <section className="px-4 mb-10">
-        <h2 className="section-title mb-4 uppercase tracking-tighter">Acesso Rápido</h2>
+        <h2 className="section-title mb-4 uppercase tracking-tighter">O que você precisa hoje?</h2>
         <div className="grid grid-cols-4 gap-3">
           {QUICK_ACCESS.map((item, idx) => (
             <button key={idx} className="flex flex-col items-center gap-2 group active:scale-95 transition-transform">
@@ -201,7 +211,7 @@ function DashboardPage() {
             </div>
             
             <button className="w-full bg-primary text-text-primary py-3 rounded-md font-bold uppercase tracking-widest text-xs shadow-glow active:scale-[0.98] transition-all">
-              Votar agora
+              Votar
             </button>
           </div>
         </div>
@@ -235,7 +245,7 @@ function DashboardPage() {
               {offer.blur && !isSubscriber && (
                 <div className="absolute inset-0 bg-bg-card/40 backdrop-blur-md flex flex-col items-center justify-center p-4 text-center">
                   <span className="micro-text font-black text-text-primary uppercase tracking-widest mb-2">Assine para ver</span>
-                  <button className="text-[9px] font-bold text-primary uppercase underline">Desbloquear</button>
+                  <button className="text-[9px] font-bold text-primary uppercase underline">Ver oferta</button>
                 </div>
               )}
             </div>
