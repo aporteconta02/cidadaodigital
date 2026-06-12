@@ -4,145 +4,124 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
- */
-
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
-  
-  --font-display: "Syne", sans-serif;
-  --font-body: "DM Sans", sans-serif;
+  /* Radius */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-2xl: 28px;
+  --radius-full: 100px;
 
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-card-hover: var(--card-hover);
+  /* Typography */
+  --font-jakarta: "Plus Jakarta Sans", sans-serif;
+  --font-space: "Space Grotesk", sans-serif;
+
+  /* Colors mapped from the new design system */
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-card: var(--bg-card);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-border-custom: var(--border-custom);
   --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-glow: var(--primary-glow);
   --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-premium: var(--premium);
-  --color-sos: var(--sos);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --color-gold: var(--gold);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
 
-  --shadow-premium: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --shadow-glow: 0 0 20px rgba(0, 196, 255, 0.2);
+  /* Shadows */
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 20px var(--primary-glow);
 }
 
 :root {
-  --radius: 20px;
-  --background: #020408;
-  --foreground: #F8FAFF;
-  --card: #0A0F1D;
-  --card-foreground: #F8FAFF;
-  --card-hover: #10182D;
-  --primary: #00D1FF;
-  --primary-foreground: #020408;
-  --secondary: #00FF85;
-  --secondary-foreground: #020408;
-  --muted: #0F172A;
-  --muted-foreground: #94A3B8;
-  --accent: #00D1FF;
-  --accent-foreground: #020408;
-  --destructive: #FF3B3B;
-  --destructive-foreground: #F8FAFF;
-  --border: rgba(255, 255, 255, 0.06);
-  --premium: #FFD700;
-  --sos: #FF3B3B;
+  --bg-primary: #0A0A0F;
+  --bg-card: #111118;
+  --bg-elevated: #1A1A24;
+  --border-custom: #2A2A3A;
+  --primary: #6C63FF;
+  --primary-glow: rgba(108, 99, 255, 0.3);
+  --secondary: #FF6B35;
+  --success: #00D68F;
+  --danger: #FF3B5C;
+  --warning: #FFB800;
+  --gold: #FFD700;
+  --text-primary: #FFFFFF;
+  --text-secondary: #8B8FA8;
+  --text-muted: #4A4A6A;
+  
+  --gradient-hero: linear-gradient(135deg, #6C63FF 0%, #FF6B35 100%);
+  --gradient-card: linear-gradient(145deg, #1A1A24 0%, #111118 100%);
+  --gradient-gold: linear-gradient(135deg, #FFD700 0%, #FF8C00 100%);
 }
 
 @layer base {
   * {
-    border-color: var(--color-border);
+    border-color: var(--color-border-custom);
   }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    font-family: var(--font-body);
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    font-family: var(--font-jakarta);
     -webkit-font-smoothing: antialiased;
     letter-spacing: -0.01em;
     line-height: 1.6;
+    margin: 0;
+    padding: 0;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-display);
-    letter-spacing: -0.04em;
+    font-family: var(--font-space);
+    letter-spacing: -0.02em;
     line-height: 1.1;
   }
+
+  /* Utility font sizes based on specification */
+  .hero-title { font-size: 32px; font-weight: 700; }
+  .section-title { font-size: 20px; font-weight: 600; }
+  .card-title { font-size: 16px; font-weight: 600; }
+  .body-text { font-size: 14px; font-weight: 400; }
+  .caption-text { font-size: 12px; font-weight: 400; }
+  .micro-text { font-size: 11px; font-weight: 500; }
 }
 
 @utility glass {
-  background: rgba(10, 15, 29, 0.7);
-  backdrop-filter: blur(16px) saturate(180%);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-@utility glass-light {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-@utility sos-pulse {
-  animation: pulse-red 2s infinite;
-}
-
-@utility perspective-1000 {
-  perspective: 1000px;
-}
-
-@utility backface-hidden {
-  backface-visibility: hidden;
-}
-
-@keyframes pulse-red {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 45, 45, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 15px rgba(255, 45, 45, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 45, 45, 0);
+@utility pressed-state {
+  transition: transform 100ms;
+  &:active {
+    transform: scale(0.97);
   }
 }
 
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
+@utility hover-card-effect {
+  transition: transform 200ms;
+  &:hover {
+    transform: translateY(-2px);
   }
 }
 
-.animate-shimmer {
-  animation: shimmer 2s infinite linear;
+@utility bg-gradient-hero {
+  background: var(--gradient-hero);
 }
 
+@utility bg-gradient-card {
+  background: var(--gradient-card);
+}
+
+@utility bg-gradient-gold {
+  background: var(--gradient-gold);
+}
+
+.bottom-nav-height {
+  height: 72px;
+}
