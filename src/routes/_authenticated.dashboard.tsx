@@ -47,7 +47,7 @@ function DashboardPage() {
       
       const [banners, eventos, pesquisa, parceiros, alertas] = await Promise.all([
         supabase.from('banners').select('*').eq('ativo', true).order('posicao'),
-        supabase.from('eventos').select('*').eq('destaque', true).eq('aprovado', true).limit(5),
+        supabase.from('eventos').select('*').eq('destaque', true).eq('aprovado', true).gte('data_evento', new Date().toISOString()).limit(5),
         supabase.from('pesquisas').select('*').eq('ativa', true).limit(1).maybeSingle(),
         supabase.from('parceiros_clube').select('*, lojas(*)').eq('ativo', true).limit(6),
         usuario.assinante_plus 
