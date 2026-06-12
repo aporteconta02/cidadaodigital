@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import { Home, ShoppingBag, Users, ShieldAlert, User } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 
 import appCss from "../styles.css?url";
