@@ -3,25 +3,46 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ location }) => {
-    const { data: { session } } = await supabase.auth.getSession();
+    // On the server, we might not have the session in the singleton client
+    // because it relies on localStorage which isn't available on the server.
+    // We skip the redirect on the server and let the client-side execution handle it.
+    if (typeof window === 'undefined') {
+      return { session: null, profile: null };
+    }
+
+    console.log("Checking authentication for path:", location.pathname);
+    
+    // Attempt to get session
+    let { data: { session } } = await supabase.auth.getSession();
+    
+    // If no session, wait a brief moment and try once more (handles race conditions after login)
+    if (!session) {
+      console.log("Session not found immediately, retrying in 100ms...");
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const retry = await supabase.auth.getSession();
+      session = retry.data.session;
+    }
     
     if (!session) {
+      console.log("Authentication failed, redirecting to /auth");
       throw redirect({
         to: "/auth",
         search: {
-          redirect: location.href,
+          redirect: location.pathname + location.search,
         },
       });
     }
 
-    // Fetch user profile to avoid redundant fetches in child routes
+    console.log("Authenticated as:", session.user.email);
+
+    // Fetch user profile
     const { data: profile, error } = await supabase
       .from('usuarios')
       .select('*')
       .eq('auth_id', session.user.id)
-      .single();
+      .maybeSingle();
 
-    if (error && error.code !== 'PGRST116') {
+    if (error) {
       console.error('Error fetching profile in guard:', error);
     }
 
@@ -32,4 +53,3 @@ export const Route = createFileRoute("/_authenticated")({
   },
   component: () => <Outlet />,
 });
-

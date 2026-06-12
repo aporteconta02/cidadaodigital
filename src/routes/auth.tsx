@@ -19,18 +19,33 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      redirect: (search.redirect as string) || undefined,
+    }
+  },
   component: AuthPage,
 });
 
 type AccountType = 'morador' | 'comerciante' | 'entregador';
 
 function AuthPage() {
+  const { redirect: redirectPath } = Route.useSearch();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [checkEmail, setCheckEmail] = useState(false);
   const [erro, setErro] = useState("");
   const navigate = useNavigate();
+
+  // Check if already logged in
+  useState(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate({ to: '/dashboard' });
+      }
+    });
+  });
 
   // Form states
   const [email, setEmail] = useState("");
@@ -189,7 +204,13 @@ function AuthPage() {
       
       if (data.session) {
          toast.success("Login realizado!");
-         navigate({ to: "/dashboard" });
+         // Se houver um redirecionamento pendente, use-o. 
+         // Mas remova o protocolo/domínio se for um URL completo para evitar problemas com o TanStack Router
+         let target: string = "/dashboard";
+         if (redirectPath) {
+           target = redirectPath;
+         }
+         navigate({ to: target as any });
       }
     } catch (error: any) {
       setErro(error.message || "Erro na autenticação");

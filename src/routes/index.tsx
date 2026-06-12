@@ -52,8 +52,10 @@ function LandingPage() {
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (data.user) {
+      console.log("Landing page: Checking user...");
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        console.log("Landing page: Session found, redirecting to dashboard");
         navigate({ to: "/dashboard" });
       } else {
         setChecking(false);
