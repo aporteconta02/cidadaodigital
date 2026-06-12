@@ -84,7 +84,18 @@ function AdminSeguranca() {
         {/* Map View */}
         <div className="lg:col-span-2 bg-[#0A0A0F] border border-white/5 rounded-3xl overflow-hidden shadow-xl h-[500px] relative">
           <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-text-muted">Carregando mapa...</div>}>
-            <Map alerts={alertas.filter(a => a.ativo)} isAdminView={true} />
+            <Map 
+              markers={alertas.filter(a => a.ativo).map(a => ({
+                id: a.id,
+                position: [Number(a.latitude), Number(a.longitude)],
+                title: a.tipo,
+                description: a.descricao,
+                type: a.tipo.toLowerCase(),
+                created_at: a.criado_em,
+                confirmacoes: a.confirmacoes
+              }))} 
+              isAdminView={true} 
+            />
           </Suspense>
           <div className="absolute top-4 right-4 z-[400] bg-black/50 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 flex items-center gap-2">
              <div className="size-2 rounded-full bg-danger animate-pulse" />
