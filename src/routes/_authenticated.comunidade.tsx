@@ -528,7 +528,7 @@ function EventosTab() {
    VOZ DO POVO TAB
    ============================================================================ */
 
-function VozDoPovoTab() {
+function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
   const { usuario } = useAuth();
   const [pesquisas, setPesquisas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
