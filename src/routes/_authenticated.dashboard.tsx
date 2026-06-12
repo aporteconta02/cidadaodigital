@@ -52,22 +52,25 @@ function DashboardPage() {
   const [loading, setLoading] = useState(!profile);
 
   useEffect(() => {
+    let isMounted = true;
+    
     if (profile) {
       setUser(profile);
       setLoading(false);
     } else {
       const checkProfile = async () => {
         const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
+        if (session && isMounted) {
           const { data } = await supabase.from('usuarios').select('*').eq('auth_id', session.user.id).maybeSingle();
-          if (data) {
+          if (data && isMounted) {
             setUser(data);
           }
         }
-        setLoading(false);
+        if (isMounted) setLoading(false);
       };
       checkProfile();
     }
+    return () => { isMounted = false; };
   }, [profile]);
 
   if (loading) {
