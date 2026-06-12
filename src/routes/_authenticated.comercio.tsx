@@ -212,14 +212,52 @@ function ComercioPage() {
         </div>
       </section>
 
-      {/* Cart Bottom Sheet (Quick Access) */}
+      {/* Cart Quick Access Trigger */}
       <div className="fixed bottom-[88px] right-4 z-40">
-        <button className="size-14 rounded-full bg-secondary text-text-primary flex items-center justify-center shadow-[0_8px_24px_rgba(255,107,53,0.4)] active:scale-90 transition-all">
-          <ShoppingBag size={24} />
-          <div className="absolute -top-1 -right-1 size-6 bg-text-primary text-secondary rounded-full flex items-center justify-center text-xs font-black border-2 border-secondary">
-            2
-          </div>
-        </button>
+        <Drawer>
+          <DrawerTrigger asChild>
+            <button className="size-14 rounded-full bg-secondary text-text-primary flex items-center justify-center shadow-[0_8px_24px_rgba(255,107,53,0.4)] active:scale-90 transition-all cursor-pointer">
+              <ShoppingBag size={24} />
+              <div className="absolute -top-1 -right-1 size-6 bg-text-primary text-secondary rounded-full flex items-center justify-center text-xs font-black border-2 border-secondary">
+                2
+              </div>
+            </button>
+          </DrawerTrigger>
+          <DrawerContent className="bg-bg-elevated border-border-custom max-w-lg mx-auto rounded-t-3xl">
+            <div className="mx-auto mt-4 h-1.5 w-12 rounded-full bg-white/10" />
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-text-primary uppercase tracking-tight">Seu Carrinho</h3>
+                <span className="micro-text font-bold text-text-muted uppercase">2 itens</span>
+              </div>
+              
+              <div className="space-y-4 mb-8">
+                <CartItem name="X-Bacon Especial" store="Burger King" price={29.90} qty={1} />
+                <CartItem name="Whopper Especial" store="Burger King" price={34.90} qty={1} />
+              </div>
+
+              <div className="space-y-3 p-4 rounded-md bg-white/5 border border-white/5 mb-8">
+                <div className="flex justify-between text-sm">
+                  <span className="text-text-secondary">Subtotal</span>
+                  <span className="text-text-primary font-bold">R$ 64,80</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-text-secondary">Entrega</span>
+                  <span className="text-primary font-bold">R$ 5,90</span>
+                </div>
+                <div className="h-px bg-white/5" />
+                <div className="flex justify-between text-lg">
+                  <span className="text-text-primary font-bold">Total</span>
+                  <span className="text-secondary font-black">R$ 70,70</span>
+                </div>
+              </div>
+
+              <button className="w-full bg-secondary text-text-primary font-bold h-[56px] rounded-md shadow-glow active:scale-[0.98] transition-all flex items-center justify-center gap-2 mb-4">
+                Finalizar pedido • R$ 70,70
+              </button>
+            </div>
+          </DrawerContent>
+        </Drawer>
       </div>
     </div>
   );
@@ -254,6 +292,24 @@ function ProductCard({ product }: { product: any }) {
             <Plus size={18} strokeWidth={3} />
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function CartItem({ name, store, price, qty }: { name: string; store: string; price: number; qty: number }) {
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <div className="size-12 rounded-md bg-bg-elevated border border-white/5" />
+        <div>
+          <h4 className="text-sm font-bold text-text-primary">{name}</h4>
+          <p className="micro-text text-text-muted uppercase tracking-widest">{store}</p>
+        </div>
+      </div>
+      <div className="flex flex-col items-end">
+        <span className="text-sm font-bold text-text-primary">R$ {(price * qty).toFixed(2)}</span>
+        <span className="micro-text text-text-muted">{qty}x R$ {price.toFixed(2)}</span>
       </div>
     </div>
   );
