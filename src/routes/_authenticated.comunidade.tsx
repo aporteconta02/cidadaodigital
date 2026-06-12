@@ -563,7 +563,7 @@ function VozDoPovoTab() {
     const { error } = await supabase.from('respostas_pesquisa').insert({
       pesquisa_id: pesquisaId,
       usuario_id: usuario.id,
-      resposta,
+      resposta: { valor: resposta },
       bairro: usuario.bairro
     });
 
