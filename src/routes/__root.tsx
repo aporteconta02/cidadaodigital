@@ -9,7 +9,7 @@ import {
   useLocation,
 } from "@tanstack/react-router";
 import React, { useEffect, type ReactNode } from "react";
-import { Home, ShoppingBag, Users, ShieldAlert, User, Plus, Megaphone, Calendar, ClipboardList, AlertCircle, MapPin } from "lucide-react";
+import { Home, ShoppingBag, Users, ShieldAlert, User, Plus, Megaphone, Calendar, ClipboardList, AlertCircle, MapPin, MessageSquare, Phone } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/use-auth";
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
@@ -233,10 +233,10 @@ function RootComponent() {
                 </DrawerTrigger>
                 <DrawerContent className="bg-bg-elevated border-border-custom max-w-lg mx-auto rounded-t-3xl">
                   <div className="p-6 grid grid-cols-2 gap-4">
-                    <ActionButton icon={<Megaphone className="text-primary" />} label="Denunciar" />
-                    <ActionButton icon={<Calendar className="text-secondary" />} label="Novo Evento" />
-                    <ActionButton icon={<ClipboardList className="text-success" />} label="Mural" />
-                    <ActionButton icon={<AlertCircle className="text-danger" />} label="Alerta SOS" />
+                    <ActionButton onClick={() => console.log('denuncia')} icon={<Megaphone className="text-primary" />} label="Denunciar" />
+                    <ActionButton onClick={() => console.log('evento')} icon={<Calendar className="text-secondary" />} label="Novo Evento" />
+                    <ActionButton onClick={() => console.log('mural')} icon={<ClipboardList className="text-success" />} label="Mural" />
+                    <ActionButton onClick={() => console.log('alerta')} icon={<AlertCircle className="text-danger" />} label="Reportar Alerta" />
                   </div>
                   <div className="px-6 pb-8">
                     <DrawerClose asChild>
@@ -286,9 +286,9 @@ function NavLink({ to, icon, label }: { to: string; icon: React.ReactNode; label
   );
 }
 
-function ActionButton({ icon, label }: { icon: React.ReactNode; label: string }) {
+function ActionButton({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick?: () => void }) {
   return (
-    <button className="flex flex-col items-center justify-center gap-3 p-4 rounded-xl bg-white/5 border border-white/5 active:scale-95 transition-all hover:bg-white/10">
+    <button onClick={onClick} className="flex flex-col items-center justify-center gap-3 p-4 rounded-xl bg-white/5 border border-white/5 active:scale-95 transition-all hover:bg-white/10">
       <div className="size-12 rounded-full bg-bg-primary flex items-center justify-center shadow-card">
         {React.cloneElement(icon as React.ReactElement<{ size?: number }>, { size: 24 })}
       </div>

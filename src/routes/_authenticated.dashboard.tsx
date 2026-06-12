@@ -39,7 +39,7 @@ const QUICK_ACCESS = [
 function DashboardPage() {
   const { usuario, loading } = useAuth();
   const navigate = useNavigate();
-  const [data, setData] = useState({ banners: [], eventos: [], pesquisa: null, parceiros: [], alertas: [] });
+  const [data, setData] = useState<any>({ banners: [], eventos: [], pesquisa: null, parceiros: [], alertas: [] });
 
   useEffect(() => {
     async function fetchData() {
@@ -47,7 +47,7 @@ function DashboardPage() {
       
       const [banners, eventos, pesquisa, parceiros, alertas] = await Promise.all([
         supabase.from('banners').select('*').eq('ativo', true).order('posicao'),
-        supabase.from('eventos').select('*').eq('destaque', true).eq('aprovada', true).limit(5),
+        supabase.from('eventos').select('*').eq('destaque', true).eq('aprovado', true).limit(5),
         supabase.from('pesquisas').select('*').eq('ativa', true).limit(1).maybeSingle(),
         supabase.from('parceiros_clube').select('*, lojas(*)').eq('ativo', true).limit(6),
         usuario.assinante_plus 
@@ -135,7 +135,7 @@ function DashboardPage() {
       {data.pesquisa && (
         <section className="px-4 mb-10">
           <div className="bg-bg-card border border-white/5 rounded-lg p-6">
-            <h3 className="font-bold mb-2">Voz do Povo: {data.pesquisa.pergunta}</h3>
+            <h3 className="font-bold mb-2">Voz do Povo: {data.pesquisa.titulo}</h3>
             <button className="w-full bg-primary py-3 rounded text-xs font-bold uppercase">Responder</button>
           </div>
         </section>
