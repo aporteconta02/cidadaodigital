@@ -189,7 +189,7 @@ function RootComponent() {
         )}
 
         {/* Main Content Area */}
-        <main className={cn("flex-1 w-full", !isPublicPage && "max-w-lg mx-auto")}>
+        <main className={cn("flex-1 w-full", !isPublicPage && "max-w-lg mx-auto overflow-y-auto")}>
           <Outlet />
         </main>
 
