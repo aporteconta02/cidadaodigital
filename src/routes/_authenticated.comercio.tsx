@@ -123,7 +123,6 @@ function ComercioPage() {
             <div className="grid grid-cols-2 gap-4">
               {produtos.map((product) => {
                 const isParceiro = product.lojas?.parceiros_clube?.length > 0;
-                const { usuario } = useAuth();
                 const precoExibido = isParceiro && usuario?.assinante_plus ? product.preco * 0.9 : product.preco;
                 
                 return (
