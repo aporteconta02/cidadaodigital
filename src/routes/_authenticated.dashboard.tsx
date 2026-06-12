@@ -134,9 +134,20 @@ function DashboardPage() {
       {/* Voz do Povo */}
       {data.pesquisa && (
         <section className="px-4 mb-10">
-          <div className="bg-bg-card border border-white/5 rounded-lg p-6">
-            <h3 className="font-bold mb-2">Voz do Povo: {data.pesquisa.titulo}</h3>
-            <button className="w-full bg-primary py-3 rounded text-xs font-bold uppercase">Responder</button>
+          <div className="bg-bg-card border border-white/5 rounded-lg p-6 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-12 transition-transform">
+              <MessageSquare size={60} />
+            </div>
+            <div className="relative z-10">
+              <span className="text-[10px] font-black uppercase tracking-widest text-primary mb-2 block">Voz do Povo • Pesquisa Ativa</span>
+              <h3 className="font-bold text-lg mb-4 text-white">{data.pesquisa.titulo}</h3>
+              <button 
+                onClick={() => navigate({ to: '/comunidade' })}
+                className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-xl text-xs font-black uppercase tracking-widest shadow-glow active:scale-95 transition-all"
+              >
+                Votar Agora
+              </button>
+            </div>
           </div>
         </section>
       )}
