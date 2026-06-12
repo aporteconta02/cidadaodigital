@@ -29,21 +29,21 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 const CATEGORIES = [
-  { label: "Horários de ônibus", icon: <Bus size={28} />, color: "bg-blue-500/10 text-blue-500" },
-  { label: "Utilidades públicas", icon: <Info size={28} />, color: "bg-orange-500/10 text-orange-500" },
-  { label: "Vagas de empregos", icon: <Briefcase size={28} />, color: "bg-green-500/10 text-green-500" },
-  { label: "Água e gás", icon: <Flame size={28} />, color: "bg-red-500/10 text-red-500" },
-  { label: "Delivery", icon: <Truck size={28} />, color: "bg-yellow-500/10 text-yellow-500" },
-  { label: "Táxis e aplicativos", icon: <Car size={28} />, color: "bg-indigo-500/10 text-indigo-500" },
-  { label: "Turismo e cultura", icon: <Palmtree size={28} />, color: "bg-teal-500/10 text-teal-500" },
-  { label: "anuncie grátis", icon: <PlusCircle size={28} />, color: "bg-pink-500/10 text-pink-500", highlight: true },
-  { label: "Mercados e Afins", icon: <ShoppingBag size={28} />, color: "bg-lime-500/10 text-lime-500" },
-  { label: "Moda e Beleza", icon: <Scissors size={28} />, color: "bg-purple-500/10 text-purple-500" },
-  { label: "Agências e Lotéricas", icon: <Building size={28} />, color: "bg-slate-500/10 text-slate-500" },
-  { label: "Tecnologia e Car", icon: <Smartphone size={28} />, color: "bg-cyan-500/10 text-cyan-500" },
-  { label: "Tudo para Casa", icon: <Home size={28} />, color: "bg-amber-500/10 text-amber-500" },
-  { label: "Imóveis e Construção", icon: <HardHat size={28} />, color: "bg-stone-500/10 text-stone-500" },
-  { label: "Saúde e bem-estar", icon: <Heart size={28} />, color: "bg-rose-500/10 text-rose-500" },
+  { label: "Horários de ônibus", icon: <Bus size={24} />, color: "bg-blue-500 text-white" },
+  { label: "Utilidades públicas", icon: <Info size={24} />, color: "bg-orange-500 text-white" },
+  { label: "Vagas de empregos", icon: <Briefcase size={24} />, color: "bg-green-500 text-white" },
+  { label: "Água e gás", icon: <Flame size={24} />, color: "bg-red-500 text-white" },
+  { label: "Delivery", icon: <Truck size={24} />, color: "bg-yellow-500 text-white" },
+  { label: "Táxis e aplicativos", icon: <Car size={24} />, color: "bg-indigo-500 text-white" },
+  { label: "Turismo e cultura", icon: <Palmtree size={24} />, color: "bg-teal-500 text-white" },
+  { label: "anuncie grátis", icon: <PlusCircle size={24} />, color: "bg-pink-500 text-white", highlight: true },
+  { label: "Mercados e Afins", icon: <ShoppingBag size={24} />, color: "bg-lime-500 text-white" },
+  { label: "Moda e Beleza", icon: <Scissors size={24} />, color: "bg-purple-500 text-white" },
+  { label: "Agências e Lotéricas", icon: <Building size={24} />, color: "bg-slate-500 text-white" },
+  { label: "Tecnologia e Car", icon: <Smartphone size={24} />, color: "bg-cyan-500 text-white" },
+  { label: "Tudo para Casa", icon: <Home size={24} />, color: "bg-amber-500 text-white" },
+  { label: "Imóveis e Construção", icon: <HardHat size={24} />, color: "bg-stone-500 text-white" },
+  { label: "Saúde e bem-estar", icon: <Heart size={24} />, color: "bg-rose-500 text-white" },
 ];
 
 function DashboardPage() {
