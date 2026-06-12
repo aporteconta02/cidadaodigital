@@ -95,6 +95,16 @@ function DashboardPage() {
   return (
     <div className="pb-32 animate-in fade-in duration-700 bg-bg-primary min-h-screen">
       
+      {/* Welcome Header */}
+      <section className="px-6 pt-10 pb-2">
+        <h1 className="text-2xl font-black font-space tracking-tighter italic text-text-primary mb-1">
+          Olá, {user?.nome?.split(' ')[0] || 'Vizinho'}! 👋
+        </h1>
+        <p className="text-[11px] font-black uppercase tracking-widest text-text-muted opacity-60">
+          O que você precisa hoje?
+        </p>
+      </section>
+
       {/* Stories Bar */}
       <section className="py-6 overflow-hidden">
         <div className="flex gap-4 px-4 overflow-x-auto no-scrollbar">

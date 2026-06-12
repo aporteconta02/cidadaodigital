@@ -133,7 +133,7 @@ function PerfilPage() {
 
       if (error) throw error;
       await fetchProfile();
-      toast.success("Bem-vindo ao Clube Cidadão+!");
+      toast.success("Feito! ✅");
     } catch (error) {
       toast.error("Erro ao ativar assinatura");
     } finally {

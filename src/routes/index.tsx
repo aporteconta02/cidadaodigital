@@ -160,7 +160,7 @@ function LandingPage() {
             onClick={handleNext}
             className="w-full bg-white text-black font-bold py-5 rounded-md shadow-card text-sm uppercase tracking-[0.1em] active:scale-[0.98] hover:bg-white/90 transition-all duration-300 flex items-center justify-center gap-2 group"
           >
-            {isLastStep ? "Começar Jornada" : "Explorar"}
+            {isLastStep ? "Começar agora" : "Explorar"}
             <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
           </button>
         </div>
