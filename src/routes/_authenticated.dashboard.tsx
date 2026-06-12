@@ -94,23 +94,23 @@ function DashboardPage() {
       </div>
 
       {/* Categories Grid */}
-      <section className="px-4 mb-8">
-        <div className="grid grid-cols-3 gap-2">
+      <section className="px-4 mb-10">
+        <div className="grid grid-cols-3 gap-3">
           {CATEGORIES.map((category, idx) => (
             <motion.button 
               key={idx} 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: idx * 0.02 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.03 }}
               className={cn(
-                "flex flex-col items-center justify-center gap-2 p-4 rounded-2xl transition-all duration-300 active:scale-95 border border-white/[0.02]",
-                category.highlight ? "bg-primary/10 border-primary/20" : "bg-white/[0.02]"
+                "flex flex-col items-center justify-center gap-3 p-5 rounded-[28px] transition-all duration-300 active:scale-95 group",
+                category.highlight ? "bg-primary/10 border border-primary/20" : "bg-card border border-white/5"
               )}
             >
-              <div className={cn("p-3 rounded-xl transition-colors", category.color)}>
+              <div className={cn("size-14 rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110", category.color)}>
                 {category.icon}
               </div>
-              <span className="text-[9px] font-bold text-center leading-tight uppercase tracking-wide opacity-80">
+              <span className="text-[10px] font-black text-center leading-tight uppercase tracking-wider opacity-60 group-hover:opacity-100 transition-opacity">
                 {category.label}
               </span>
             </motion.button>
