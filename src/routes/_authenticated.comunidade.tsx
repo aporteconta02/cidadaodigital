@@ -491,7 +491,7 @@ function EventosTab() {
         ) : eventos.length === 0 ? (
           <div className="py-20 text-center opacity-40">
             <Calendar size={48} className="mx-auto mb-4" />
-            <p className="text-sm font-bold uppercase tracking-widest">Nenhum evento em breve</p>
+            <p className="text-sm font-bold uppercase tracking-widest">Nenhum evento em breve! 🎉</p>
           </div>
         ) : (
           eventos.map((event) => (
