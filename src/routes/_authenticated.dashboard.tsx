@@ -97,7 +97,7 @@ function DashboardPage() {
               transition={{ delay: idx * 0.03 }}
               className={cn(
                 "flex flex-col items-center justify-center gap-3 p-5 rounded-[28px] transition-all duration-300 active:scale-95 group",
-                category.highlight ? "bg-primary/10 border border-primary/20" : "bg-card border border-white/5"
+                category.highlight ? "bg-primary/10 border border-primary/20" : "hover:bg-white/5"
               )}
             >
               <div className={cn("size-14 rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110", category.color)}>
