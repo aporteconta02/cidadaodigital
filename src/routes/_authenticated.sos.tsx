@@ -207,7 +207,7 @@ function SOSPage() {
                 onClick={() => setSosActive(false)}
                 className="w-full bg-transparent text-white/60 font-black py-4 uppercase tracking-widest text-xs"
               >
-                Cancelar Alerta
+                Ops! Cancelar
               </button>
             </div>
           </motion.div>

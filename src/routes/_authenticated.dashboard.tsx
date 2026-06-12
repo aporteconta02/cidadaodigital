@@ -39,8 +39,8 @@ const HERO_BANNERS = [
 ];
 
 const QUICK_ACCESS = [
-  { label: "Mercado", icon: <ShoppingBag size={28} />, color: "text-primary" },
-  { label: "Denúncia", icon: <Megaphone size={28} />, color: "text-secondary" },
+  { label: "Ofertas", icon: <ShoppingBag size={28} />, color: "text-primary" },
+  { label: "Denunciar", icon: <Megaphone size={28} />, color: "text-secondary" },
   { label: "Eventos", icon: <Calendar size={28} />, color: "text-success" },
   { label: "Seguro", icon: <ShieldCheck size={28} />, color: "text-primary" },
   { label: "Voz do Povo", icon: <MessageSquare size={28} />, color: "text-secondary" },
@@ -87,7 +87,7 @@ function DashboardPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-primary gap-4">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-current"></div>
-        <p className="micro-text uppercase tracking-widest animate-pulse font-jakarta">Carregando...</p>
+        <p className="micro-text uppercase tracking-widest animate-pulse font-jakarta">Buscando informações...</p>
       </div>
     );
   }
