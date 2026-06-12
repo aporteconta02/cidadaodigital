@@ -178,7 +178,8 @@ export default function SOSPage() {
 
   // Fetch alerts and user location
   useEffect(() => {
-    if (isAssinante) {
+    const isValido = usuario?.validade_assinatura ? new Date(usuario.validade_assinatura) > new Date() : false;
+    if (isAssinante && isValido) {
       fetchAlerts();
       
       // Realtime subscription
