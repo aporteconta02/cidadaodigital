@@ -537,7 +537,7 @@ export default function SOSPage() {
                             {ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.label || 'Alerta'}
                           </h4>
                           <p className="text-[10px] text-text-muted font-bold uppercase tracking-tight">
-                            Há {formatDistanceToNow(new Date(alert.criado_em), { locale: ptBR })}
+                            {formatDistanceToNow(new Date(alert.criado_em), { locale: ptBR, addSuffix: true })}
                           </p>
                         </div>
                       </div>
