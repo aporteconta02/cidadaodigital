@@ -121,29 +121,51 @@ function ComercioPage() {
           <section className="px-4">
             <h2 className="section-title uppercase tracking-tighter mb-4">Produtos</h2>
             <div className="grid grid-cols-2 gap-4">
-              {produtos.map((product) => (
-                <div key={product.id} className="bg-bg-card rounded-md overflow-hidden border border-white/5 flex flex-col">
-                  <Link to={`/comercio/produto/${product.id}`} className="aspect-square bg-white/5">
-                    {product.imagem_url && <img src={product.imagem_url} className="w-full h-full object-cover" alt={product.nome} />}
-                  </Link>
-                  <div className="p-3">
-                    <h4 className="text-[13px] font-semibold text-text-primary line-clamp-1">{product.nome}</h4>
-                    <p className="micro-text text-text-muted font-bold uppercase mb-2">{product.lojas?.nome}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-base font-bold text-primary">R$ {product.preco.toFixed(2)}</span>
-                      <button 
-                        onClick={() => {
-                          adicionarItem({ id: product.id, nome: product.nome, preco: product.preco, imagem_url: product.imagem_url, loja_id: product.loja_id });
-                          toast.success("Adicionado!");
-                        }}
-                        className="size-8 rounded-full bg-secondary text-text-primary flex items-center justify-center"
-                      >
-                        <Plus size={18} />
-                      </button>
+              {produtos.map((product) => {
+                const isParceiro = product.lojas?.parceiros_clube?.length > 0;
+                const { usuario } = useAuth();
+                const precoExibido = isParceiro && usuario?.assinante_plus ? product.preco * 0.9 : product.preco;
+                
+                return (
+                  <div key={product.id} className="bg-bg-card rounded-md overflow-hidden border border-white/5 flex flex-col relative">
+                    <Link to={`/comercio/produto/${product.id}`} className="aspect-square bg-white/5 relative">
+                      {product.imagem_url && <img src={product.imagem_url} className="w-full h-full object-cover" alt={product.nome} />}
+                      {isParceiro && usuario?.assinante_plus && (
+                        <div className="absolute top-2 left-2 px-2 py-1 bg-primary text-white text-[8px] font-black uppercase rounded shadow-lg">
+                          -10% CLUBE+
+                        </div>
+                      )}
+                    </Link>
+                    <div className="p-3">
+                      <h4 className="text-[13px] font-semibold text-text-primary line-clamp-1">{product.nome}</h4>
+                      <p className="micro-text text-text-muted font-bold uppercase mb-2">{product.lojas?.nome}</p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-col">
+                          {isParceiro && usuario?.assinante_plus && (
+                            <span className="text-[9px] text-text-muted line-through">R$ {product.preco.toFixed(2)}</span>
+                          )}
+                          <span className="text-base font-bold text-primary">R$ {precoExibido.toFixed(2)}</span>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            adicionarItem({ 
+                              id: product.id, 
+                              nome: product.nome, 
+                              preco: precoExibido, 
+                              imagem_url: product.imagem_url, 
+                              loja_id: product.loja_id 
+                            });
+                            toast.success("Adicionado!");
+                          }}
+                          className="size-8 rounded-full bg-secondary text-text-primary flex items-center justify-center"
+                        >
+                          <Plus size={18} />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         </>
