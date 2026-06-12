@@ -24,11 +24,13 @@ vi.mock('@/integrations/supabase/client', () => ({
 }));
 
 // Mock do TanStack Router
+const mockRoute = {
+  useSearch: vi.fn(() => ({ redirect: undefined })),
+  useRouteContext: vi.fn(() => ({ profile: null })),
+};
+
 vi.mock('@tanstack/react-router', () => ({
-  createFileRoute: vi.fn(() => ({
-    useSearch: vi.fn(() => ({ redirect: undefined })),
-    useRouteContext: vi.fn(() => ({ profile: null })),
-  })),
+  createFileRoute: vi.fn(() => vi.fn(() => mockRoute)),
   useNavigate: vi.fn(() => vi.fn()),
   Link: ({ children, ...props }: any) => React.createElement('a', props, children),
   useRouter: vi.fn(() => ({ invalidate: vi.fn() })),
