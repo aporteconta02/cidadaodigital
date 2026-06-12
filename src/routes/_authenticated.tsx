@@ -3,6 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ location }) => {
+    // On the server, we might not have the session in the singleton client
+    // because it relies on localStorage which isn't available on the server.
+    // We skip the redirect on the server and let the client-side execution handle it.
+    if (typeof window === 'undefined') {
+      return { session: null, profile: null };
+    }
+
     console.log("Checking authentication for path:", location.pathname);
     
     // Attempt to get session
