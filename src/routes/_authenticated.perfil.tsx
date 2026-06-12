@@ -400,6 +400,14 @@ function PerfilPage() {
               sub="Histórico de compras" 
               onClick={() => navigate({ to: "/comercio" })}
             />
+            {usuario.tipo === 'comerciante' && (
+              <ProfileItem 
+                icon={<Store className="text-secondary" />} 
+                title="Minha Loja" 
+                sub="Gerenciar produtos e pedidos" 
+                onClick={() => navigate({ to: "/comercio" })}
+              />
+            )}
             <ProfileItem 
               icon={<Megaphone className="text-secondary" />} 
               title="Minhas Denúncias" 
