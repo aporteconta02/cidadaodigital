@@ -49,13 +49,28 @@ function DashboardPage() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [user, setUser] = useState<any>(profile);
   const [isSubscriber, setIsSubscriber] = useState(!!profile?.assinante_plus);
-  const [loading, setLoading] = useState(!profile);
+  const [loading, setLoading] = useState(false); // Change: don't start as loading if we already have context
 
   useEffect(() => {
     if (profile) {
       setUser(profile);
       setIsSubscriber(!!profile.assinante_plus);
       setLoading(false);
+    } else {
+      // If profile is missing in context, it might be loading or truly missing
+      // We can try to fetch it here as a fallback
+      const checkProfile = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          const { data } = await supabase.from('usuarios').select('*').eq('auth_id', session.user.id).maybeSingle();
+          if (data) {
+            setUser(data);
+            setIsSubscriber(!!data.assinante_plus);
+          }
+        }
+        setLoading(false);
+      };
+      checkProfile();
     }
   }, [profile]);
 
