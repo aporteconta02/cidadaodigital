@@ -100,13 +100,18 @@ function ComercioPage() {
             </div>
             <div className="flex gap-4 px-4 overflow-x-auto no-scrollbar pb-2">
               {lojas.map((store) => (
-                <Link key={store.id} to={`/comercio/loja/${store.id}`} className="flex-[0_0_200px] group">
+                <Link key={store.id} to={`/comercio/loja/${store.id}`} className="flex-[0_0_200px] group relative">
                   <div className="h-[100px] rounded-t-md overflow-hidden bg-white/5">
                     {store.logo_url && <img src={store.logo_url} className="w-full h-full object-cover" alt={store.nome} />}
                   </div>
                   <div className="bg-bg-card rounded-b-md p-3 border border-white/5">
-                    <h4 className="text-sm font-bold text-text-primary truncate">{store.nome}</h4>
-                    <p className="text-[10px] text-text-muted mt-1 uppercase font-black">{store.categoria}</p>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="text-sm font-bold text-text-primary truncate flex-1">{store.nome}</h4>
+                      {store.parceiros_clube?.length > 0 && (
+                        <span className="text-[8px] font-black text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 whitespace-nowrap">CLUBE+</span>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-text-muted uppercase font-black">{store.categoria}</p>
                   </div>
                 </Link>
               ))}
