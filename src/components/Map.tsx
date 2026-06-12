@@ -1,8 +1,8 @@
 import { lazy, Suspense } from 'react';
 
 interface MapProps {
-  center: [number, number];
-  zoom: number;
+  center?: [number, number];
+  zoom?: number;
   markers?: Array<{
     id: string;
     position: [number, number];
@@ -13,6 +13,7 @@ interface MapProps {
     confirmacoes?: number;
   }>;
   onConfirmAlert?: (alertId: string) => void;
+  isAdminView?: boolean;
 }
 
 const MapInner = lazy(() => import('./MapInner'));

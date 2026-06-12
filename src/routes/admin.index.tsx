@@ -7,7 +7,8 @@ import {
   TrendingUp,
   TrendingDown,
   ArrowUpRight,
-  Clock
+  Clock,
+  DollarSign
 } from "lucide-react";
 import { 
   LineChart, 
@@ -23,29 +24,111 @@ import {
   Legend
 } from "recharts";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { format, subDays } from "date-fns";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
 });
 
-const lineData = [
-  { name: 'Sem 1', usuarios: 400 },
-  { name: 'Sem 2', usuarios: 700 },
-  { name: 'Sem 3', usuarios: 600 },
-  { name: 'Sem 4', usuarios: 1200 },
-  { name: 'Sem 5', usuarios: 1500 },
-  { name: 'Sem 6', usuarios: 1400 },
-  { name: 'Sem 7', usuarios: 1800 },
-];
-
-const pieData = [
-  { name: 'Iluminação', value: 40, color: '#6C63FF' },
-  { name: 'Buracos', value: 30, color: '#FF6B35' },
-  { name: 'Lixo', value: 20, color: '#00D68F' },
-  { name: 'Segurança', value: 10, color: '#FF3B5C' },
-];
-
 function AdminDashboard() {
+  const [stats, setStats] = useState({
+    totalUsuarios: 0,
+    assinantes: 0,
+    lojasAtivas: 0,
+    pedidosHoje: 0,
+    receitaEstimada: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [lineData, setLineData] = useState<any[]>([]);
+  const [pieData, setPieData] = useState<any[]>([]);
+  const [atividades, setAtividades] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        // Basic Stats
+        const { count: userCount } = await supabase.from('usuarios').select('*', { count: 'exact', head: true });
+        const { count: subCount } = await supabase.from('usuarios').select('*', { count: 'exact', head: true }).eq('assinante_plus', true);
+        const { count: lojaCount } = await supabase.from('lojas').select('*', { count: 'exact', head: true }).eq('aprovada', true);
+        const { count: pedidoHojeCount } = await supabase.from('pedidos').select('*', { count: 'exact', head: true }).gte('criado_em', new Date().toISOString().split('T')[0]);
+
+        setStats({
+          totalUsuarios: userCount || 0,
+          assinantes: subCount || 0,
+          lojasAtivas: lojaCount || 0,
+          pedidosHoje: pedidoHojeCount || 0,
+          receitaEstimada: (subCount || 0) * 9.90
+        });
+
+        // Line Chart Data (Last 7 days)
+        const days = Array.from({ length: 7 }, (_, i) => subDays(new Date(), 6 - i));
+        const chartData = await Promise.all(days.map(async (day) => {
+          const dateStr = format(day, 'yyyy-MM-dd');
+          const { count } = await supabase
+            .from('usuarios')
+            .select('*', { count: 'exact', head: true })
+            .gte('criado_em', `${dateStr}T00:00:00`)
+            .lte('criado_em', `${dateStr}T23:59:59`);
+          return { name: format(day, 'dd/MM'), usuarios: count || 0 };
+        }));
+        setLineData(chartData);
+
+        // Pie Chart Data (Denúncias by Categoria)
+        const { data: denuncias } = await supabase.from('denuncias').select('categoria');
+        const counts: Record<string, number> = {};
+        denuncias?.forEach(d => {
+          counts[d.categoria] = (counts[d.categoria] || 0) + 1;
+        });
+        const colors = ['#6C63FF', '#FF6B35', '#00D68F', '#FF3B5C', '#FFD700', '#00BFFF'];
+        setPieData(Object.entries(counts).map(([name, value], i) => ({
+          name,
+          value,
+          color: colors[i % colors.length]
+        })));
+
+        // Recent Activity
+        const { data: recentUsers } = await supabase
+          .from('usuarios')
+          .select('*')
+          .order('criado_em', { ascending: false })
+          .limit(4);
+        
+        setAtividades(recentUsers?.map(u => ({
+          name: u.nome,
+          email: u.email,
+          action: "Novo usuário cadastrado",
+          status: u.ativo ? "Ativo" : "Inativo",
+          date: u.criado_em ? format(new Date(u.criado_em), 'HH:mm') : '--:--',
+          color: u.ativo ? "text-success" : "text-danger"
+        })) || []);
+
+      } catch (error) {
+        console.error("Erro ao carregar estatísticas:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchStats();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-8 animate-pulse">
+        <div className="h-20 bg-white/5 rounded-2xl w-1/3" />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map(i => <div key={i} className="h-32 bg-white/5 rounded-3xl" />)}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 h-80 bg-white/5 rounded-3xl" />
+          <div className="h-80 bg-white/5 rounded-3xl" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
@@ -53,40 +136,46 @@ function AdminDashboard() {
           <h2 className="text-2xl font-bold font-space uppercase tracking-tight">Visão Geral</h2>
           <p className="text-text-muted text-sm font-bold uppercase tracking-widest mt-1">Status em tempo real da plataforma</p>
         </div>
-        <button className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg transition-all active:scale-95">
-          Baixar Relatório
-        </button>
+        <div className="flex gap-4">
+          <div className="bg-[#0A0A0F] border border-white/5 px-4 py-2 rounded-xl">
+             <p className="text-[10px] text-text-muted font-black uppercase tracking-widest">Receita Recorrente</p>
+             <p className="text-lg font-black text-primary">R$ {stats.receitaEstimada.toFixed(2)}</p>
+          </div>
+          <button className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg transition-all active:scale-95">
+            Baixar Relatório
+          </button>
+        </div>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <KPICard 
           title="Total Usuários" 
-          value="12.482" 
-          trend="+12%" 
+          value={stats.totalUsuarios.toLocaleString()} 
+          trend="+5%" 
           trendUp={true} 
           icon={<Users size={20} className="text-primary" />} 
           color="bg-primary/10" 
         />
         <KPICard 
-          title="Pedidos Mês" 
-          value="3.840" 
+          title="Assinantes Plus" 
+          value={stats.assinantes.toLocaleString()} 
           trend="+8%" 
           trendUp={true} 
-          icon={<ShoppingBag size={20} className="text-secondary" />} 
+          icon={<DollarSign size={20} className="text-secondary" />} 
           color="bg-secondary/10" 
         />
         <KPICard 
-          title="Ocorrências" 
-          value="842" 
-          trend="-2%" 
-          trendUp={false} 
-          icon={<Megaphone size={20} className="text-success" />} 
+          title="Lojas Ativas" 
+          value={stats.lojasAtivas.toLocaleString()} 
+          trend="+2%" 
+          trendUp={true} 
+          icon={<ShoppingBag size={20} className="text-success" />} 
           color="bg-success/10" 
         />
         <KPICard 
-          title="Alertas SOS" 
-          value="12" 
+          title="Pedidos Hoje" 
+          value={stats.pedidosHoje.toLocaleString()} 
           trend="+4" 
           trendUp={true} 
           icon={<ShieldAlert size={20} className="text-danger" />} 
@@ -98,10 +187,10 @@ function AdminDashboard() {
         {/* Line Chart */}
         <div className="lg:col-span-2 bg-[#0A0A0F] border border-white/5 rounded-3xl p-6 shadow-xl">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-sm font-black uppercase tracking-widest text-text-muted italic">Crescimento de Usuários</h3>
+            <h3 className="text-sm font-black uppercase tracking-widest text-text-muted italic">Novos Usuários (7 dias)</h3>
             <div className="flex items-center gap-2">
               <span className="size-2 rounded-full bg-primary" />
-              <span className="text-[10px] font-bold text-text-muted uppercase">Novos Cadastros</span>
+              <span className="text-[10px] font-bold text-text-muted uppercase">Cadastros</span>
             </div>
           </div>
           <div className="h-80 w-full">
@@ -192,17 +281,12 @@ function AdminDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {[
-                { name: "João Silva", email: "joao@exemplo.com", action: "Abriu denúncia: Buraco na via", status: "Pendente", date: "Há 2 min", color: "text-warning" },
-                { name: "Maria Oliveira", email: "maria@exemplo.com", action: "Novo pedido no Marketplace", status: "Concluído", date: "Há 15 min", color: "text-success" },
-                { name: "Carlos Souza", email: "carlos@exemplo.com", action: "Acionou SOS Emergência", status: "Crítico", date: "Há 45 min", color: "text-danger" },
-                { name: "Ana Paula", email: "ana@exemplo.com", action: "Publicou novo aviso no Mural", status: "Aprovado", date: "Há 2h", color: "text-primary" },
-              ].map((row, i) => (
+              {atividades.map((row, i) => (
                 <tr key={i} className="hover:bg-white/[0.02] transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="size-8 rounded-full bg-gradient-hero flex items-center justify-center text-[10px] font-black border border-white/10">
-                        {row.name.charAt(0)}
+                        {row.name ? row.name.charAt(0) : '?'}
                       </div>
                       <div>
                         <p className="text-sm font-bold leading-none">{row.name}</p>

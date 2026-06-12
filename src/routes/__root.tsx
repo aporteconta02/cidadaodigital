@@ -145,7 +145,7 @@ function RootComponent() {
   const router = useRouter();
   const location = useLocation();
   const { profile, logout } = useAuthStore();
-  const isPublicPage = ['/', '/auth'].includes(location.pathname);
+  const isPublicPage = ['/', '/auth'].includes(location.pathname) || location.pathname.startsWith('/admin');
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {

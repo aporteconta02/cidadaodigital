@@ -14,6 +14,15 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
+import { Route as AdminTelefonesRouteImport } from './routes/admin.telefones'
+import { Route as AdminSegurancaRouteImport } from './routes/admin.seguranca'
+import { Route as AdminPesquisasRouteImport } from './routes/admin.pesquisas'
+import { Route as AdminLojasRouteImport } from './routes/admin.lojas'
+import { Route as AdminFinanceiroRouteImport } from './routes/admin.financeiro'
+import { Route as AdminEventosRouteImport } from './routes/admin.eventos'
+import { Route as AdminDenunciasRouteImport } from './routes/admin.denuncias'
+import { Route as AdminBannersRouteImport } from './routes/admin.banners'
 import { Route as AuthenticatedSosRouteImport } from './routes/_authenticated.sos'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated.perfil'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
@@ -44,6 +53,51 @@ const IndexRoute = IndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
+  id: '/usuarios',
+  path: '/usuarios',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTelefonesRoute = AdminTelefonesRouteImport.update({
+  id: '/telefones',
+  path: '/telefones',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSegurancaRoute = AdminSegurancaRouteImport.update({
+  id: '/seguranca',
+  path: '/seguranca',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPesquisasRoute = AdminPesquisasRouteImport.update({
+  id: '/pesquisas',
+  path: '/pesquisas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLojasRoute = AdminLojasRouteImport.update({
+  id: '/lojas',
+  path: '/lojas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFinanceiroRoute = AdminFinanceiroRouteImport.update({
+  id: '/financeiro',
+  path: '/financeiro',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEventosRoute = AdminEventosRouteImport.update({
+  id: '/eventos',
+  path: '/eventos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDenunciasRoute = AdminDenunciasRouteImport.update({
+  id: '/denuncias',
+  path: '/denuncias',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminBannersRoute = AdminBannersRouteImport.update({
+  id: '/banners',
+  path: '/banners',
   getParentRoute: () => AdminRoute,
 } as any)
 const AuthenticatedSosRoute = AuthenticatedSosRouteImport.update({
@@ -93,6 +147,15 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
+  '/admin/banners': typeof AdminBannersRoute
+  '/admin/denuncias': typeof AdminDenunciasRoute
+  '/admin/eventos': typeof AdminEventosRoute
+  '/admin/financeiro': typeof AdminFinanceiroRoute
+  '/admin/lojas': typeof AdminLojasRoute
+  '/admin/pesquisas': typeof AdminPesquisasRoute
+  '/admin/seguranca': typeof AdminSegurancaRoute
+  '/admin/telefones': typeof AdminTelefonesRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/': typeof AdminIndexRoute
   '/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
   '/comercio/produto/$produtoId': typeof AuthenticatedComercioProdutoProdutoIdRoute
@@ -105,6 +168,15 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
+  '/admin/banners': typeof AdminBannersRoute
+  '/admin/denuncias': typeof AdminDenunciasRoute
+  '/admin/eventos': typeof AdminEventosRoute
+  '/admin/financeiro': typeof AdminFinanceiroRoute
+  '/admin/lojas': typeof AdminLojasRoute
+  '/admin/pesquisas': typeof AdminPesquisasRoute
+  '/admin/seguranca': typeof AdminSegurancaRoute
+  '/admin/telefones': typeof AdminTelefonesRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin': typeof AdminIndexRoute
   '/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
   '/comercio/produto/$produtoId': typeof AuthenticatedComercioProdutoProdutoIdRoute
@@ -120,6 +192,15 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/sos': typeof AuthenticatedSosRoute
+  '/admin/banners': typeof AdminBannersRoute
+  '/admin/denuncias': typeof AdminDenunciasRoute
+  '/admin/eventos': typeof AdminEventosRoute
+  '/admin/financeiro': typeof AdminFinanceiroRoute
+  '/admin/lojas': typeof AdminLojasRoute
+  '/admin/pesquisas': typeof AdminPesquisasRoute
+  '/admin/seguranca': typeof AdminSegurancaRoute
+  '/admin/telefones': typeof AdminTelefonesRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/': typeof AdminIndexRoute
   '/_authenticated/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
   '/_authenticated/comercio/produto/$produtoId': typeof AuthenticatedComercioProdutoProdutoIdRoute
@@ -135,6 +216,15 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/perfil'
     | '/sos'
+    | '/admin/banners'
+    | '/admin/denuncias'
+    | '/admin/eventos'
+    | '/admin/financeiro'
+    | '/admin/lojas'
+    | '/admin/pesquisas'
+    | '/admin/seguranca'
+    | '/admin/telefones'
+    | '/admin/usuarios'
     | '/admin/'
     | '/comercio/loja/$lojaId'
     | '/comercio/produto/$produtoId'
@@ -147,6 +237,15 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/perfil'
     | '/sos'
+    | '/admin/banners'
+    | '/admin/denuncias'
+    | '/admin/eventos'
+    | '/admin/financeiro'
+    | '/admin/lojas'
+    | '/admin/pesquisas'
+    | '/admin/seguranca'
+    | '/admin/telefones'
+    | '/admin/usuarios'
     | '/admin'
     | '/comercio/loja/$lojaId'
     | '/comercio/produto/$produtoId'
@@ -161,6 +260,15 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/perfil'
     | '/_authenticated/sos'
+    | '/admin/banners'
+    | '/admin/denuncias'
+    | '/admin/eventos'
+    | '/admin/financeiro'
+    | '/admin/lojas'
+    | '/admin/pesquisas'
+    | '/admin/seguranca'
+    | '/admin/telefones'
+    | '/admin/usuarios'
     | '/admin/'
     | '/_authenticated/comercio/loja/$lojaId'
     | '/_authenticated/comercio/produto/$produtoId'
@@ -208,6 +316,69 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/usuarios': {
+      id: '/admin/usuarios'
+      path: '/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof AdminUsuariosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/telefones': {
+      id: '/admin/telefones'
+      path: '/telefones'
+      fullPath: '/admin/telefones'
+      preLoaderRoute: typeof AdminTelefonesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/seguranca': {
+      id: '/admin/seguranca'
+      path: '/seguranca'
+      fullPath: '/admin/seguranca'
+      preLoaderRoute: typeof AdminSegurancaRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/pesquisas': {
+      id: '/admin/pesquisas'
+      path: '/pesquisas'
+      fullPath: '/admin/pesquisas'
+      preLoaderRoute: typeof AdminPesquisasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/lojas': {
+      id: '/admin/lojas'
+      path: '/lojas'
+      fullPath: '/admin/lojas'
+      preLoaderRoute: typeof AdminLojasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/financeiro': {
+      id: '/admin/financeiro'
+      path: '/financeiro'
+      fullPath: '/admin/financeiro'
+      preLoaderRoute: typeof AdminFinanceiroRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/eventos': {
+      id: '/admin/eventos'
+      path: '/eventos'
+      fullPath: '/admin/eventos'
+      preLoaderRoute: typeof AdminEventosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/denuncias': {
+      id: '/admin/denuncias'
+      path: '/denuncias'
+      fullPath: '/admin/denuncias'
+      preLoaderRoute: typeof AdminDenunciasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/banners': {
+      id: '/admin/banners'
+      path: '/banners'
+      fullPath: '/admin/banners'
+      preLoaderRoute: typeof AdminBannersRouteImport
       parentRoute: typeof AdminRoute
     }
     '/_authenticated/sos': {
@@ -299,10 +470,28 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminBannersRoute: typeof AdminBannersRoute
+  AdminDenunciasRoute: typeof AdminDenunciasRoute
+  AdminEventosRoute: typeof AdminEventosRoute
+  AdminFinanceiroRoute: typeof AdminFinanceiroRoute
+  AdminLojasRoute: typeof AdminLojasRoute
+  AdminPesquisasRoute: typeof AdminPesquisasRoute
+  AdminSegurancaRoute: typeof AdminSegurancaRoute
+  AdminTelefonesRoute: typeof AdminTelefonesRoute
+  AdminUsuariosRoute: typeof AdminUsuariosRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminBannersRoute: AdminBannersRoute,
+  AdminDenunciasRoute: AdminDenunciasRoute,
+  AdminEventosRoute: AdminEventosRoute,
+  AdminFinanceiroRoute: AdminFinanceiroRoute,
+  AdminLojasRoute: AdminLojasRoute,
+  AdminPesquisasRoute: AdminPesquisasRoute,
+  AdminSegurancaRoute: AdminSegurancaRoute,
+  AdminTelefonesRoute: AdminTelefonesRoute,
+  AdminUsuariosRoute: AdminUsuariosRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 

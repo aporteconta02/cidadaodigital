@@ -1,4 +1,6 @@
-import { createFileRoute, Outlet, Link, useLocation } from "@tanstack/react-router";
+import { createFileRoute, Outlet, Link, useLocation, useNavigate } from "@tanstack/react-router";
+import { useAuth } from "@/hooks/use-auth";
+import { useEffect } from "react";
 import { 
   LayoutDashboard, 
   Users, 
@@ -8,7 +10,12 @@ import {
   Settings, 
   LogOut,
   Bell,
-  Search
+  Search,
+  Calendar,
+  MessageSquare,
+  Image as ImageIcon,
+  Phone,
+  DollarSign
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,21 +24,45 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminLayout() {
+  const { usuario, isAdmin, loading } = useAuth();
+  const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    if (!loading) {
+      if (!usuario) {
+        navigate({ to: "/auth" });
+      } else if (!isAdmin) {
+        navigate({ to: "/dashboard" });
+      }
+    }
+  }, [usuario, isAdmin, loading, navigate]);
+
+  if (loading || !isAdmin) {
+    return (
+      <div className="min-h-screen bg-[#0F0F16] flex items-center justify-center">
+        <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   const menuItems = [
     { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
     { label: "Usuários", icon: Users, path: "/admin/usuarios" },
-    { label: "Marketplace", icon: ShoppingBag, path: "/admin/marketplace" },
+    { label: "Lojas", icon: ShoppingBag, path: "/admin/lojas" },
+    { label: "Denúncias", icon: Megaphone, path: "/admin/denuncias" },
+    { label: "Eventos", icon: Calendar, path: "/admin/eventos" },
+    { label: "Voz do Povo", icon: MessageSquare, path: "/admin/pesquisas" },
     { label: "Segurança", icon: ShieldAlert, path: "/admin/seguranca" },
-    { label: "Comunidade", icon: Megaphone, path: "/admin/comunidade" },
-    { label: "Configurações", icon: Settings, path: "/admin/config" },
+    { label: "Banners", icon: ImageIcon, path: "/admin/banners" },
+    { label: "Telefones", icon: Phone, path: "/admin/telefones" },
+    { label: "Financeiro", icon: DollarSign, path: "/admin/financeiro" },
   ];
 
   return (
     <div className="flex min-h-screen bg-[#0F0F16] text-white">
       {/* Sidebar */}
-      <aside className="w-[240px] bg-[#0A0A0F] border-r border-white/5 flex flex-col fixed inset-y-0">
+      <aside className="w-[260px] bg-[#0A0A0F] border-r border-white/5 flex flex-col fixed inset-y-0 overflow-y-auto">
         <div className="p-6">
           <h1 className="text-xl font-bold font-space uppercase italic tracking-tighter">
             ADMIN<span className="text-primary">.PLUS</span>
@@ -59,8 +90,13 @@ function AdminLayout() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-white/5">
-          <button className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-bold text-danger hover:bg-danger/10 transition-all">
+        <div className="p-4 border-t border-white/5 mt-auto">
+          <button 
+            onClick={() => {
+              import('@/integrations/supabase/client').then(({ supabase }) => supabase.auth.signOut());
+            }}
+            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-bold text-danger hover:bg-danger/10 transition-all"
+          >
             <LogOut size={18} />
             Sair
           </button>
@@ -68,7 +104,7 @@ function AdminLayout() {
       </aside>
 
       {/* Main Area */}
-      <main className="flex-1 ml-[240px]">
+      <main className="flex-1 ml-[260px]">
         {/* Top Header */}
         <header className="h-20 bg-[#0A0A0F]/50 backdrop-blur-xl border-b border-white/5 px-8 flex items-center justify-between sticky top-0 z-10">
           <div className="relative w-96">
@@ -87,10 +123,18 @@ function AdminLayout() {
             </button>
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <p className="text-sm font-bold leading-none">Admin Master</p>
+                <p className="text-sm font-bold leading-none">{usuario?.nome || 'Admin'}</p>
                 <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest mt-1">Super Usuário</p>
               </div>
-              <div className="size-10 rounded-full bg-gradient-hero border-2 border-white/10" />
+              <div className="size-10 rounded-full bg-gradient-hero border-2 border-white/10 overflow-hidden">
+                {usuario?.avatar_url ? (
+                  <img src={usuario.avatar_url} alt={usuario.nome} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-xs font-black">
+                    {usuario?.nome?.charAt(0)}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </header>
