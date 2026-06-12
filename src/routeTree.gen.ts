@@ -20,6 +20,7 @@ import { Route as AdminPesquisasRouteImport } from './routes/admin.pesquisas'
 import { Route as AdminLojasRouteImport } from './routes/admin.lojas'
 import { Route as AdminEventosRouteImport } from './routes/admin.eventos'
 import { Route as AdminDenunciasRouteImport } from './routes/admin.denuncias'
+import { Route as AdminBannersRouteImport } from './routes/admin.banners'
 import { Route as AuthenticatedSosRouteImport } from './routes/_authenticated.sos'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated.perfil'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
@@ -82,6 +83,11 @@ const AdminDenunciasRoute = AdminDenunciasRouteImport.update({
   path: '/denuncias',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminBannersRoute = AdminBannersRouteImport.update({
+  id: '/banners',
+  path: '/banners',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AuthenticatedSosRoute = AuthenticatedSosRouteImport.update({
   id: '/sos',
   path: '/sos',
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
+  '/admin/banners': typeof AdminBannersRoute
   '/admin/denuncias': typeof AdminDenunciasRoute
   '/admin/eventos': typeof AdminEventosRoute
   '/admin/lojas': typeof AdminLojasRoute
@@ -147,6 +154,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
+  '/admin/banners': typeof AdminBannersRoute
   '/admin/denuncias': typeof AdminDenunciasRoute
   '/admin/eventos': typeof AdminEventosRoute
   '/admin/lojas': typeof AdminLojasRoute
@@ -168,6 +176,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/sos': typeof AuthenticatedSosRoute
+  '/admin/banners': typeof AdminBannersRoute
   '/admin/denuncias': typeof AdminDenunciasRoute
   '/admin/eventos': typeof AdminEventosRoute
   '/admin/lojas': typeof AdminLojasRoute
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/perfil'
     | '/sos'
+    | '/admin/banners'
     | '/admin/denuncias'
     | '/admin/eventos'
     | '/admin/lojas'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/perfil'
     | '/sos'
+    | '/admin/banners'
     | '/admin/denuncias'
     | '/admin/eventos'
     | '/admin/lojas'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/perfil'
     | '/_authenticated/sos'
+    | '/admin/banners'
     | '/admin/denuncias'
     | '/admin/eventos'
     | '/admin/lojas'
@@ -324,6 +336,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDenunciasRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/banners': {
+      id: '/admin/banners'
+      path: '/banners'
+      fullPath: '/admin/banners'
+      preLoaderRoute: typeof AdminBannersRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_authenticated/sos': {
       id: '/_authenticated/sos'
       path: '/sos'
@@ -413,6 +432,7 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminBannersRoute: typeof AdminBannersRoute
   AdminDenunciasRoute: typeof AdminDenunciasRoute
   AdminEventosRoute: typeof AdminEventosRoute
   AdminLojasRoute: typeof AdminLojasRoute
@@ -423,6 +443,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminBannersRoute: AdminBannersRoute,
   AdminDenunciasRoute: AdminDenunciasRoute,
   AdminEventosRoute: AdminEventosRoute,
   AdminLojasRoute: AdminLojasRoute,
@@ -443,3 +464,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
