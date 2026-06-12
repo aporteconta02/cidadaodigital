@@ -717,7 +717,7 @@ function MuralTab() {
         ) : avisos.length === 0 ? (
           <div className="py-20 text-center opacity-40">
             <ClipboardList size={48} className="mx-auto mb-4" />
-            <p className="text-sm font-bold uppercase tracking-widest">Mural vazio por enquanto</p>
+            <p className="text-sm font-bold uppercase tracking-widest">Mural vazio por enquanto. Seja o primeiro a publicar um aviso! 📋</p>
           </div>
         ) : (
           avisos.map((post) => (
