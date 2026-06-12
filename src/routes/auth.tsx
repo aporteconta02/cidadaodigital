@@ -151,14 +151,14 @@ function AuthPage() {
 
       if (accountType === 'comerciante' && shopName) {
         console.log("Inserindo loja...");
-        const { error: shopError } = await supabase.from('lojas').insert({
+        const { error: shopError } = await supabase.from('lojas').upsert({
           usuario_id: uid,
           nome: shopName.trim(),
           categoria: shopCategory || 'geral',
           aprovada: false,
           plano: 'gratuito',
           ativo: true
-        });
+        }, { onConflict: 'usuario_id' });
         
         if (shopError) {
           console.error("Erro no insert lojas:", shopError);
