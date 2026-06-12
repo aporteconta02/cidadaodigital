@@ -12,6 +12,7 @@ import React, { useEffect, type ReactNode } from "react";
 import { Home, ShoppingBag, Users, ShieldAlert, User, Plus, Megaphone, Calendar, ClipboardList, AlertCircle, MapPin, MessageSquare, Phone } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/use-auth";
+import { CartProvider } from "@/hooks/use-cart";
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -168,6 +169,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <CartProvider>
         <div className={cn(
           "flex min-h-screen flex-col bg-bg-primary text-text-primary overflow-x-hidden font-jakarta",
           !isPublicPage && "pb-[72px]"
@@ -222,7 +224,7 @@ function RootComponent() {
           <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#0A0A0F]/90 backdrop-blur-[20px] border-t border-white/5 pb-safe shadow-card">
             <div className="flex items-center justify-around bottom-nav-height max-w-lg mx-auto relative px-4">
               <NavLink to="/dashboard" icon={<Home size={22} />} label="Início" />
-              <NavLink to="/comercio" icon={<ShoppingBag size={22} />} label="Mercado" />
+              <NavLink to="/comercio" icon={<ShoppingBag size={22} />} label="Mercado" cartBadge />
               
               {/* Central Plus Button */}
               <Drawer>
@@ -259,13 +261,15 @@ function RootComponent() {
             </div>
           </nav>
         )}
-      </div>
-    </AuthProvider>
-  </QueryClientProvider>
+        </div>
+        </CartProvider>
+      </AuthProvider>
+    </QueryClientProvider>
 );
 }
 
-function NavLink({ to, icon, label }: { to: string; icon: React.ReactNode; label: string }) {
+function NavLink({ to, icon, label, cartBadge }: { to: string; icon: React.ReactNode; label: string; cartBadge?: boolean }) {
+  const { totalItens } = useCart();
   return (
     <Link 
       to={to} 
@@ -273,8 +277,13 @@ function NavLink({ to, icon, label }: { to: string; icon: React.ReactNode; label
       activeProps={{ className: "text-primary active-link" }}
       inactiveProps={{ className: "text-text-muted" }}
     >
-      <div className="transition-all group-active:scale-90">
+      <div className="transition-all group-active:scale-90 relative">
         {icon}
+        {cartBadge && totalItens > 0 && (
+          <div className="absolute -top-1 -right-1 size-4 bg-primary text-white text-[8px] font-black rounded-full flex items-center justify-center border border-bg-primary">
+            {totalItens}
+          </div>
+        )}
       </div>
       <span className="text-[10px] font-bold uppercase tracking-tight hidden group-[.active-link]:block">
         {label}
