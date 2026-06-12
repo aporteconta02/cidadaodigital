@@ -14,6 +14,7 @@ interface UserProfile {
   assinante_plus: boolean;
   numero_membro: string;
   qr_code_token: string;
+  validade_assinatura: string;
   avatar_url?: string;
   is_admin: boolean;
   ativo: boolean;
