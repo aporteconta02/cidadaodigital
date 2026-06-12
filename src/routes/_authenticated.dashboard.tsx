@@ -137,7 +137,39 @@ function DashboardPage() {
           <div className="bg-bg-card border border-white/5 rounded-lg p-6 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-12 transition-transform">
               <MessageSquare size={60} />
-            </div>
+      {/* Eventos em Destaque */}
+      {data.eventos.length > 0 && (
+        <section className="px-4 mb-10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-black uppercase tracking-tight ml-1">Eventos no Bairro</h2>
+            <button onClick={() => navigate({ to: '/comunidade' })} className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline">Ver todos</button>
+          </div>
+          <Carousel opts={{ align: "start" }} className="w-full">
+            <CarouselContent className="-ml-4">
+              {data.eventos.map((event: any) => (
+                <CarouselItem key={event.id} className="pl-4 basis-[85%]">
+                  <div 
+                    onClick={() => navigate({ to: '/comunidade' })}
+                    className="bg-bg-card rounded-2xl overflow-hidden border border-white/5 active:scale-[0.98] transition-all cursor-pointer"
+                  >
+                    <div className="h-32 w-full relative">
+                      <img src={event.banner_url || "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=800"} className="w-full h-full object-cover" alt="" />
+                      <div className="absolute top-2 left-2 px-2 py-1 bg-white text-black text-[9px] font-black uppercase rounded">
+                        {new Date(event.data_evento).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h4 className="font-bold text-sm text-white line-clamp-1">{event.titulo}</h4>
+                      <p className="text-[10px] text-text-muted mt-1 uppercase font-black">{event.categoria}</p>
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+        </section>
+      )}
+    </div>
             <div className="relative z-10">
               <span className="text-[10px] font-black uppercase tracking-widest text-primary mb-2 block">Voz do Povo • Pesquisa Ativa</span>
               <h3 className="font-bold text-lg mb-4 text-white">{data.pesquisa.titulo}</h3>
