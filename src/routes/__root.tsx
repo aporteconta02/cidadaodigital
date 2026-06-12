@@ -258,10 +258,11 @@ function RootComponent() {
               />
             </div>
           </nav>
-        </div>
-      </AuthProvider>
-    </QueryClientProvider>
-  );
+        )}
+      </div>
+    </AuthProvider>
+  </QueryClientProvider>
+);
 }
 
 function NavLink({ to, icon, label }: { to: string; icon: React.ReactNode; label: string }) {
