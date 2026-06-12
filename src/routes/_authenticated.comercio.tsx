@@ -1,13 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Search, Star, ChevronRight, Plus, MapPin, ShoppingBag, Map as MapIcon } from "lucide-react";
+import { Search, Star, ChevronRight, Plus, MapPin, ShoppingBag, Map as MapIcon, Store } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/use-cart";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/comercio")({
   component: ComercioPage,
@@ -35,30 +34,39 @@ function ComercioPage() {
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      let lojasQuery = supabase.from('lojas').select('*, parceiros_clube(id)').eq('aprovada', true).eq('ativo', true);
-      let produtosQuery = supabase.from('produtos').select('*, lojas!inner(*, parceiros_clube(id))').eq('ativo', true);
+      try {
+        let lojasQuery = supabase.from('lojas').select('*, parceiros_clube(id)').eq('aprovada', true).eq('ativo', true);
+        let produtosQuery = supabase.from('produtos').select('*, lojas!inner(*, parceiros_clube(id))').eq('ativo', true);
 
-      if (activeCategory) {
-        lojasQuery = lojasQuery.eq('categoria', activeCategory.toLowerCase());
-        produtosQuery = produtosQuery.eq('categoria', activeCategory.toLowerCase());
+        if (activeCategory) {
+          lojasQuery = lojasQuery.eq('categoria', activeCategory.toLowerCase());
+          produtosQuery = produtosQuery.eq('categoria', activeCategory.toLowerCase());
+        }
+
+        if (search) {
+          lojasQuery = lojasQuery.ilike('nome', `%${search}%`);
+          produtosQuery = produtosQuery.ilike('nome', `%${search}%`);
+        }
+
+        const [lRes, pRes] = await Promise.all([lojasQuery, produtosQuery]);
+        
+        if (lRes.error) throw new Error("Erro ao carregar lojas");
+        if (pRes.error) throw new Error("Erro ao carregar produtos");
+        
+        setLojas(lRes.data || []);
+        setProdutos(pRes.data || []);
+      } catch (err: any) {
+        toast.error(err.message || "Erro de conexão. Verifique sua internet.");
+      } finally {
+        setLoading(false);
       }
-
-      if (search) {
-        lojasQuery = lojasQuery.ilike('nome', `%${search}%`);
-        produtosQuery = produtosQuery.ilike('nome', `%${search}%`);
-      }
-
-      const [lRes, pRes] = await Promise.all([lojasQuery, produtosQuery]);
-      setLojas(lRes.data || []);
-      setProdutos(pRes.data || []);
-      setLoading(false);
     }
     const timer = setTimeout(fetchData, 300);
     return () => clearTimeout(timer);
   }, [activeCategory, search]);
 
   return (
-    <div className="pb-32 animate-in fade-in duration-500 bg-bg-primary">
+    <div className="pb-32 animate-in fade-in duration-500 bg-bg-primary min-h-screen">
       <header className="px-4 pt-4 mb-4">
         <div className="relative group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
@@ -66,7 +74,7 @@ function ComercioPage() {
             placeholder="Buscar produtos ou lojas..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#1A1A24] border border-white/5 rounded-md py-3.5 pl-12 pr-4 text-sm font-medium text-text-primary"
+            className="w-full bg-[#1A1A24] border border-white/5 rounded-xl py-3.5 pl-12 pr-4 text-sm font-medium text-text-primary focus:outline-none focus:border-primary/50 transition-all"
           />
         </div>
       </header>
@@ -78,7 +86,7 @@ function ComercioPage() {
               key={cat.id}
               onClick={() => setActiveCategory(activeCategory === cat.label ? null : cat.label)}
               className={cn(
-                "whitespace-nowrap px-4 py-2.5 rounded-full text-xs font-bold transition-all border flex items-center gap-2",
+                "whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-bold transition-all border flex items-center gap-2",
                 activeCategory === cat.label 
                   ? "bg-primary border-primary text-text-primary shadow-glow" 
                   : "bg-[#1A1A24] border-white/5 text-text-secondary"
@@ -91,83 +99,111 @@ function ComercioPage() {
       </section>
 
       {loading ? (
-        <div className="px-4 space-y-4">
-          {[1, 2, 3].map(i => <div key={i} className="h-24 bg-white/5 animate-pulse rounded-lg" />)}
+        <div className="px-4 space-y-8">
+           <div className="space-y-4">
+              <Skeleton className="h-6 w-24" />
+              <div className="flex gap-4 overflow-hidden">
+                 {[1,2].map(i => <Skeleton key={i} className="h-32 w-[200px] flex-shrink-0 rounded-xl" />)}
+              </div>
+           </div>
+           <div className="space-y-4">
+              <Skeleton className="h-6 w-32" />
+              <div className="grid grid-cols-2 gap-4">
+                 {[1,2,3,4].map(i => <Skeleton key={i} className="aspect-square rounded-xl" />)}
+              </div>
+           </div>
         </div>
       ) : (
         <>
-          <section className="mb-8">
-            <div className="px-4 flex items-center justify-between mb-4">
-              <h2 className="section-title uppercase tracking-tighter">Lojas</h2>
-            </div>
-            <div className="flex gap-4 px-4 overflow-x-auto no-scrollbar pb-2">
-              {lojas.map((store) => (
-                <Link key={store.id} to={`/comercio/loja/${store.id}`} className="flex-[0_0_200px] group relative">
-                  <div className="h-[100px] rounded-t-md overflow-hidden bg-white/5">
-                    {store.logo_url && <img src={store.logo_url} className="w-full h-full object-cover" alt={store.nome} />}
-                  </div>
-                  <div className="bg-bg-card rounded-b-md p-3 border border-white/5">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h4 className="text-sm font-bold text-text-primary truncate flex-1">{store.nome}</h4>
-                      {store.parceiros_clube?.length > 0 && (
-                        <span className="text-[8px] font-black text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 whitespace-nowrap">CLUBE+</span>
+          {lojas.length > 0 && (
+            <section className="mb-8">
+              <div className="px-4 flex items-center justify-between mb-4">
+                <h2 className="section-title uppercase tracking-tighter italic">Lojas</h2>
+              </div>
+              <div className="flex gap-4 px-4 overflow-x-auto no-scrollbar pb-2">
+                {lojas.map((store) => (
+                  <Link key={store.id} to={`/comercio/loja/${store.id}`} className="flex-[0_0_200px] group relative">
+                    <div className="h-[100px] rounded-t-xl overflow-hidden bg-white/5">
+                      {store.logo_url ? (
+                        <img src={store.logo_url} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" alt={store.nome} />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-text-muted opacity-20"><Store size={32} /></div>
                       )}
                     </div>
-                    <p className="text-[10px] text-text-muted uppercase font-black">{store.categoria}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
+                    <div className="bg-bg-card rounded-b-xl p-3 border border-white/5">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="text-sm font-bold text-text-primary truncate flex-1">{store.nome}</h4>
+                        {store.parceiros_clube?.length > 0 && (
+                          <span className="text-[8px] font-black text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 whitespace-nowrap">CLUBE+</span>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-text-muted uppercase font-black tracking-widest">{store.categoria}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
 
           <section className="px-4">
-            <h2 className="section-title uppercase tracking-tighter mb-4">Produtos</h2>
-            <div className="grid grid-cols-2 gap-4">
-              {produtos.map((product) => {
-                const isParceiro = product.lojas?.parceiros_clube?.length > 0;
-                const precoExibido = isParceiro && usuario?.assinante_plus ? product.preco * 0.9 : product.preco;
-                
-                return (
-                  <div key={product.id} className="bg-bg-card rounded-md overflow-hidden border border-white/5 flex flex-col relative">
-                    <Link to={`/comercio/produto/${product.id}`} className="aspect-square bg-white/5 relative">
-                      {product.imagem_url && <img src={product.imagem_url} className="w-full h-full object-cover" alt={product.nome} />}
-                      {isParceiro && usuario?.assinante_plus && (
-                        <div className="absolute top-2 left-2 px-2 py-1 bg-primary text-white text-[8px] font-black uppercase rounded shadow-lg">
-                          -10% CLUBE+
+            <h2 className="section-title uppercase tracking-tighter mb-4 italic">Produtos</h2>
+            {produtos.length === 0 ? (
+              <div className="py-20 text-center opacity-40">
+                <ShoppingBag size={48} className="mx-auto mb-4" />
+                <p className="text-sm font-bold uppercase tracking-widest max-w-[200px] mx-auto">Nenhum produto ainda. Em breve novidades! 🛍️</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4">
+                {produtos.map((product) => {
+                  const isParceiro = product.lojas?.parceiros_clube?.length > 0;
+                  const precoExibido = isParceiro && usuario?.assinante_plus ? product.preco * 0.9 : product.preco;
+                  
+                  return (
+                    <div key={product.id} className="bg-bg-card rounded-2xl overflow-hidden border border-white/5 flex flex-col relative group">
+                      <Link to={`/comercio/produto/${product.id}`} className="aspect-square bg-white/5 relative overflow-hidden">
+                        {product.imagem_url ? (
+                          <img src={product.imagem_url} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" alt={product.nome} />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-text-muted opacity-10"><ShoppingBag size={48} /></div>
+                        )}
+                        {isParceiro && usuario?.assinante_plus && (
+                          <div className="absolute top-2 left-2 px-2 py-1 bg-primary text-white text-[8px] font-black uppercase rounded shadow-lg z-10">
+                            -10% CLUBE+
+                          </div>
+                        )}
+                      </Link>
+                      <div className="p-3">
+                        <h4 className="text-[13px] font-semibold text-text-primary line-clamp-1">{product.nome}</h4>
+                        <p className="micro-text text-text-muted font-bold uppercase mb-2 line-clamp-1">{product.lojas?.nome}</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-col">
+                            {isParceiro && usuario?.assinante_plus && (
+                              <span className="text-[9px] text-text-muted line-through">R$ {product.preco.toFixed(2)}</span>
+                            )}
+                            <span className="text-base font-bold text-primary italic">R$ {precoExibido.toFixed(2)}</span>
+                          </div>
+                          <button 
+                            onClick={() => {
+                              adicionarItem({ 
+                                id: product.id, 
+                                nome: product.nome, 
+                                preco: precoExibido, 
+                                imagem_url: product.imagem_url, 
+                                loja_id: product.loja_id 
+                              });
+                              toast.success("Adicionado!");
+                            }}
+                            className="size-9 rounded-xl bg-secondary text-text-primary flex items-center justify-center active:scale-90 transition-transform shadow-lg shadow-secondary/20"
+                          >
+                            <Plus size={20} />
+                          </button>
                         </div>
-                      )}
-                    </Link>
-                    <div className="p-3">
-                      <h4 className="text-[13px] font-semibold text-text-primary line-clamp-1">{product.nome}</h4>
-                      <p className="micro-text text-text-muted font-bold uppercase mb-2">{product.lojas?.nome}</p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex flex-col">
-                          {isParceiro && usuario?.assinante_plus && (
-                            <span className="text-[9px] text-text-muted line-through">R$ {product.preco.toFixed(2)}</span>
-                          )}
-                          <span className="text-base font-bold text-primary">R$ {precoExibido.toFixed(2)}</span>
-                        </div>
-                        <button 
-                          onClick={() => {
-                            adicionarItem({ 
-                              id: product.id, 
-                              nome: product.nome, 
-                              preco: precoExibido, 
-                              imagem_url: product.imagem_url, 
-                              loja_id: product.loja_id 
-                            });
-                            toast.success("Adicionado!");
-                          }}
-                          className="size-8 rounded-full bg-secondary text-text-primary flex items-center justify-center"
-                        >
-                          <Plus size={18} />
-                        </button>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </section>
         </>
       )}
