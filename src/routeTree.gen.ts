@@ -19,6 +19,7 @@ import { Route as AdminTelefonesRouteImport } from './routes/admin.telefones'
 import { Route as AdminSegurancaRouteImport } from './routes/admin.seguranca'
 import { Route as AdminPesquisasRouteImport } from './routes/admin.pesquisas'
 import { Route as AdminLojasRouteImport } from './routes/admin.lojas'
+import { Route as AdminFinanceiroRouteImport } from './routes/admin.financeiro'
 import { Route as AdminEventosRouteImport } from './routes/admin.eventos'
 import { Route as AdminDenunciasRouteImport } from './routes/admin.denuncias'
 import { Route as AdminBannersRouteImport } from './routes/admin.banners'
@@ -77,6 +78,11 @@ const AdminPesquisasRoute = AdminPesquisasRouteImport.update({
 const AdminLojasRoute = AdminLojasRouteImport.update({
   id: '/lojas',
   path: '/lojas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFinanceiroRoute = AdminFinanceiroRouteImport.update({
+  id: '/financeiro',
+  path: '/financeiro',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminEventosRoute = AdminEventosRouteImport.update({
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/admin/banners': typeof AdminBannersRoute
   '/admin/denuncias': typeof AdminDenunciasRoute
   '/admin/eventos': typeof AdminEventosRoute
+  '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/lojas': typeof AdminLojasRoute
   '/admin/pesquisas': typeof AdminPesquisasRoute
   '/admin/seguranca': typeof AdminSegurancaRoute
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/admin/banners': typeof AdminBannersRoute
   '/admin/denuncias': typeof AdminDenunciasRoute
   '/admin/eventos': typeof AdminEventosRoute
+  '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/lojas': typeof AdminLojasRoute
   '/admin/pesquisas': typeof AdminPesquisasRoute
   '/admin/seguranca': typeof AdminSegurancaRoute
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   '/admin/banners': typeof AdminBannersRoute
   '/admin/denuncias': typeof AdminDenunciasRoute
   '/admin/eventos': typeof AdminEventosRoute
+  '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/lojas': typeof AdminLojasRoute
   '/admin/pesquisas': typeof AdminPesquisasRoute
   '/admin/seguranca': typeof AdminSegurancaRoute
@@ -210,6 +219,7 @@ export interface FileRouteTypes {
     | '/admin/banners'
     | '/admin/denuncias'
     | '/admin/eventos'
+    | '/admin/financeiro'
     | '/admin/lojas'
     | '/admin/pesquisas'
     | '/admin/seguranca'
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/admin/banners'
     | '/admin/denuncias'
     | '/admin/eventos'
+    | '/admin/financeiro'
     | '/admin/lojas'
     | '/admin/pesquisas'
     | '/admin/seguranca'
@@ -252,6 +263,7 @@ export interface FileRouteTypes {
     | '/admin/banners'
     | '/admin/denuncias'
     | '/admin/eventos'
+    | '/admin/financeiro'
     | '/admin/lojas'
     | '/admin/pesquisas'
     | '/admin/seguranca'
@@ -339,6 +351,13 @@ declare module '@tanstack/react-router' {
       path: '/lojas'
       fullPath: '/admin/lojas'
       preLoaderRoute: typeof AdminLojasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/financeiro': {
+      id: '/admin/financeiro'
+      path: '/financeiro'
+      fullPath: '/admin/financeiro'
+      preLoaderRoute: typeof AdminFinanceiroRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/eventos': {
@@ -454,6 +473,7 @@ interface AdminRouteChildren {
   AdminBannersRoute: typeof AdminBannersRoute
   AdminDenunciasRoute: typeof AdminDenunciasRoute
   AdminEventosRoute: typeof AdminEventosRoute
+  AdminFinanceiroRoute: typeof AdminFinanceiroRoute
   AdminLojasRoute: typeof AdminLojasRoute
   AdminPesquisasRoute: typeof AdminPesquisasRoute
   AdminSegurancaRoute: typeof AdminSegurancaRoute
@@ -466,6 +486,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBannersRoute: AdminBannersRoute,
   AdminDenunciasRoute: AdminDenunciasRoute,
   AdminEventosRoute: AdminEventosRoute,
+  AdminFinanceiroRoute: AdminFinanceiroRoute,
   AdminLojasRoute: AdminLojasRoute,
   AdminPesquisasRoute: AdminPesquisasRoute,
   AdminSegurancaRoute: AdminSegurancaRoute,
