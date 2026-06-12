@@ -33,8 +33,8 @@ function ComercioPage() {
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      let lojasQuery = supabase.from('lojas').select('*').eq('aprovada', true).eq('ativo', true);
-      let produtosQuery = supabase.from('produtos').select('*, lojas(*)').eq('ativo', true);
+      let lojasQuery = supabase.from('lojas').select('*, parceiros_clube(id)').eq('aprovada', true).eq('ativo', true);
+      let produtosQuery = supabase.from('produtos').select('*, lojas!inner(*, parceiros_clube(id))').eq('ativo', true);
 
       if (activeCategory) {
         lojasQuery = lojasQuery.eq('categoria', activeCategory.toLowerCase());
