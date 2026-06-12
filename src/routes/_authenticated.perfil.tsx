@@ -220,7 +220,7 @@ function PerfilPage() {
           return toast.error("⚠️ Assinatura inativa");
         }
 
-        const validade = new Date(member.validade_assinatura);
+        const validade = new Date(member.validade_assinatura as string);
         if (validade < new Date()) {
           return toast.warning("⚠️ Assinatura vencida");
         }
@@ -229,7 +229,7 @@ function PerfilPage() {
         
         // Log validation
         await supabase.from('validacoes_qr').insert({
-          validador_id: usuario?.id,
+          validador_id: usuario.id,
           membro_id: member.id,
           resultado: 'sucesso'
         });
