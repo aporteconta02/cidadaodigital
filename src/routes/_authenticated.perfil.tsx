@@ -59,14 +59,14 @@ function PerfilPage() {
   const { profile, setProfile, logout } = useAuthStore();
   const navigate = useNavigate();
   const router = useRouter();
-  const [user, setUser] = useState<UserProfile | null>(profile as UserProfile);
+  const [user, setUser] = useState<UserProfile | null>(profile as any);
   const [loading, setLoading] = useState(!profile);
   const [isFlipped, setIsFlipped] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (profile) {
-      setUser(profile as UserProfile);
+      setUser(profile as any);
       setLoading(false);
     } else {
       fetchProfile();
@@ -114,7 +114,7 @@ function PerfilPage() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         setUser({
-          ...user,
+          ...(user as any),
           assinante_plus: true,
           numero_membro: "00847",
           validade_assinatura: expiry.toISOString(),
