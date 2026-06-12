@@ -16,7 +16,8 @@ import {
   Home,
   HardHat,
   Heart,
-  MessageSquare
+  MessageSquare,
+  ChevronRight
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
