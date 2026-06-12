@@ -600,7 +600,10 @@ function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
           const hasVoted = !!userVotes[poll.id];
 
           return (
-            <div key={poll.id} className="bg-bg-card border border-white/5 rounded-[40px] p-7 shadow-sm">
+            <div key={poll.id} id={`poll-${poll.id}`} className={cn(
+              "bg-bg-card border border-white/5 rounded-[40px] p-7 shadow-sm transition-all",
+              defaultPesquisaId === poll.id && "ring-2 ring-primary ring-offset-4 ring-offset-bg-primary"
+            )}>
               <div className="flex items-center gap-2 mb-4">
                 <span className="px-3 py-1 bg-secondary/10 text-secondary text-[9px] font-black uppercase tracking-widest rounded-lg">{poll.categoria}</span>
                 {hasVoted && <span className="flex items-center gap-1 text-success text-[9px] font-black uppercase tracking-widest bg-success/10 px-3 py-1 rounded-lg">
