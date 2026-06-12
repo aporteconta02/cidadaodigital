@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import React from 'react';
 
 // Acessar o componente interno da Rota
-const AuthPage = (Route as any).options.component;
+const AuthPage = (Route as any)().options.component;
 
 describe('AuthPage', () => {
   it('deve exibir erros de validação quando campos estão vazios', async () => {
