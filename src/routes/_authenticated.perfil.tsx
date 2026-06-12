@@ -34,6 +34,8 @@ import { toPng } from "html-to-image";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+import { useAuthStore } from "@/hooks/use-auth-store";
+
 export const Route = createFileRoute("/_authenticated/perfil")({
   component: PerfilPage,
 });
@@ -54,7 +56,7 @@ type UserProfile = {
 };
 
 function PerfilPage() {
-  const { profile } = Route.useRouteContext();
+  const { profile, setProfile, logout } = useAuthStore();
   const navigate = useNavigate();
   const router = useRouter();
   const [user, setUser] = useState<UserProfile | null>(profile as UserProfile);
@@ -98,6 +100,7 @@ function PerfilPage() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    logout();
     navigate({ to: "/auth" });
   };
 
@@ -133,6 +136,9 @@ function PerfilPage() {
 
       if (error) throw error;
       await fetchProfile();
+      if (user) {
+        setProfile({ ...user, assinante_plus: true } as any);
+      }
       toast.success("Feito! ✅");
     } catch (error) {
       toast.error("Erro ao ativar assinatura");
