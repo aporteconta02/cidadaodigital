@@ -224,7 +224,7 @@ function DenunciasTab() {
         ) : denuncias.length === 0 ? (
           <div className="py-20 text-center opacity-40">
             <Megaphone size={48} className="mx-auto mb-4" />
-            <p className="text-sm font-bold uppercase tracking-widest">Nenhuma denúncia encontrada</p>
+            <p className="text-sm font-bold uppercase tracking-widest">Nenhuma denúncia por aqui. Ótimo sinal! ✅</p>
           </div>
         ) : (
           denuncias.map((item) => (
