@@ -9,8 +9,9 @@ import {
   useLocation,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
-import { Home, ShoppingBag, Users, ShieldAlert, User } from "lucide-react";
+import { Home, ShoppingBag, Users, ShieldAlert, User, Plus, Megaphone, Calendar, ClipboardList, AlertCircle } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
+import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -186,12 +187,37 @@ function RootComponent() {
 
         {/* Bottom Navigation (Hidden on landing/auth) */}
         {!isPublicPage && (
-          <nav className="fixed bottom-0 left-0 right-0 z-50 bg-bg-primary/95 backdrop-blur-2xl border-t border-white/5 pb-safe shadow-card">
+          <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#0A0A0F]/90 backdrop-blur-[20px] border-t border-white/5 pb-safe shadow-card">
             <div className="flex items-center justify-around bottom-nav-height max-w-lg mx-auto relative px-4">
-              <NavLink to="/dashboard" icon={<Home size={22} />} label="Home" />
-              <NavLink to="/comercio" icon={<ShoppingBag size={22} />} label="Delivery" />
-              <NavLink to="/sos" icon={<ShieldAlert size={22} />} label="Utilidades" />
-              <NavLink to="/perfil" icon={<User size={22} />} label="Login" />
+              <NavLink to="/dashboard" icon={<Home size={22} />} label="Início" />
+              <NavLink to="/comercio" icon={<ShoppingBag size={22} />} label="Mercado" />
+              
+              {/* Central Plus Button */}
+              <Drawer>
+                <DrawerTrigger asChild>
+                  <button className="relative z-10 size-14 rounded-full bg-gradient-hero -translate-y-4 flex items-center justify-center text-white shadow-[0_8px_24px_rgba(108,99,255,0.5)] active:scale-90 transition-transform cursor-pointer">
+                    <Plus size={28} strokeWidth={3} />
+                  </button>
+                </DrawerTrigger>
+                <DrawerContent className="bg-bg-elevated border-border-custom max-w-lg mx-auto rounded-t-3xl">
+                  <div className="p-6 grid grid-cols-2 gap-4">
+                    <ActionButton icon={<Megaphone className="text-primary" />} label="Fazer Denúncia" />
+                    <ActionButton icon={<Calendar className="text-secondary" />} label="Criar Evento" />
+                    <ActionButton icon={<ClipboardList className="text-success" />} label="Publicar Aviso" />
+                    <ActionButton icon={<AlertCircle className="text-danger" />} label="Reportar Alerta" />
+                  </div>
+                  <div className="px-6 pb-8">
+                    <DrawerClose asChild>
+                      <button className="w-full py-4 rounded-md bg-white/5 text-text-secondary font-bold uppercase tracking-wider text-xs">
+                        Cancelar
+                      </button>
+                    </DrawerClose>
+                  </div>
+                </DrawerContent>
+              </Drawer>
+
+              <NavLink to="/comunidade" icon={<Users size={22} />} label="Cidade" />
+              <NavLink to="/perfil" icon={<User size={22} />} label="Perfil" />
             </div>
           </nav>
         )}
@@ -204,18 +230,33 @@ function NavLink({ to, icon, label }: { to: string; icon: React.ReactNode; label
   return (
     <Link 
       to={to} 
-      className="flex flex-col items-center gap-1 group relative py-2"
-      activeProps={{ className: "text-primary" }}
+      className="flex flex-col items-center gap-1 group relative py-2 w-14"
+      activeProps={{ className: "text-primary active-link" }}
       inactiveProps={{ className: "text-text-muted" }}
     >
-      <div className="transition-transform group-active:scale-90">
+      <div className="transition-all group-active:scale-90">
         {icon}
       </div>
-      <span className="text-[10px] font-bold uppercase tracking-tight">{label}</span>
+      <span className="text-[10px] font-bold uppercase tracking-tight hidden group-[.active-link]:block">
+        {label}
+      </span>
       
-      {/* Active Underline */}
-      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-1 bg-primary rounded-full transition-all group-data-[status=active]:w-4" />
+      {/* Active Indicator Point */}
+      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full opacity-0 transition-opacity group-[.active-link]:opacity-100" />
     </Link>
+  );
+}
+
+function ActionButton({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <button className="flex flex-col items-center justify-center gap-3 p-4 rounded-xl bg-white/5 border border-white/5 active:scale-95 transition-all hover:bg-white/10">
+      <div className="size-12 rounded-full bg-bg-primary flex items-center justify-center shadow-card">
+        {React.cloneElement(icon as React.ReactElement, { size: 24 })}
+      </div>
+      <span className="micro-text font-bold text-text-primary uppercase tracking-wider text-center">
+        {label}
+      </span>
+    </button>
   );
 }
 
