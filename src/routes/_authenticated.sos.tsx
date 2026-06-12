@@ -173,7 +173,7 @@ export default function SOSPage() {
       return;
     }
 
-    const { error } = await supabase.rpc('increment_confirmacoes', { alert_id: alertId });
+    const { error } = await supabase.rpc('increment_confirmacoes' as any, { alert_id: alertId });
     
     if (error) {
       // Fallback if RPC doesn't exist
