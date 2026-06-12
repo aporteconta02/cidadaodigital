@@ -41,8 +41,8 @@ const getIcon = (type: string) => {
 };
 
 interface MapProps {
-  center: [number, number];
-  zoom: number;
+  center?: [number, number];
+  zoom?: [number, number] | number;
   markers?: Array<{
     id: string;
     position: [number, number];
@@ -53,6 +53,7 @@ interface MapProps {
     confirmacoes?: number;
   }>;
   onConfirmAlert?: (alertId: string) => void;
+  isAdminView?: boolean;
 }
 
 function ChangeView({ center, zoom }: { center: [number, number]; zoom: number }) {
@@ -63,10 +64,18 @@ function ChangeView({ center, zoom }: { center: [number, number]; zoom: number }
   return null;
 }
 
-export default function MapInner({ center, zoom, markers = [], onConfirmAlert }: MapProps) {
+export default function MapInner({ 
+  center = [-23.5505, -46.6333], 
+  zoom = 13, 
+  markers = [], 
+  onConfirmAlert,
+  isAdminView 
+}: MapProps) {
+  const actualZoom = typeof zoom === 'number' ? zoom : 13;
+  
   return (
-    <MapContainer center={center} zoom={zoom} scrollWheelZoom={false} className="w-full h-full">
-      <ChangeView center={center} zoom={zoom} />
+    <MapContainer center={center} zoom={actualZoom} scrollWheelZoom={false} className="w-full h-full">
+      <ChangeView center={center} zoom={actualZoom} />
       <TileLayer
         attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
@@ -84,7 +93,7 @@ export default function MapInner({ center, zoom, markers = [], onConfirmAlert }:
                 )}
               </div>
               <p className="text-[10px] text-text-secondary leading-tight mb-2">{marker.description || 'Sem descrição.'}</p>
-              {marker.type !== 'user' && (
+              {!isAdminView && marker.type !== 'user' && (
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-1">
                     <ShieldCheck size={10} className="text-success" />
@@ -97,6 +106,11 @@ export default function MapInner({ center, zoom, markers = [], onConfirmAlert }:
                     Confirmar Alerta
                   </button>
                 </div>
+              )}
+              {isAdminView && (
+                 <div className="pt-2 border-t border-gray-100 mt-2">
+                    <p className="text-[8px] text-danger font-black uppercase tracking-widest">Painel Admin</p>
+                 </div>
               )}
             </div>
           </Popup>
