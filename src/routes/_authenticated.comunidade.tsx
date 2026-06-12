@@ -601,6 +601,11 @@ function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
         <div className="space-y-6">
           {[1, 2].map(i => <div key={i} className="h-64 bg-white/5 rounded-[32px] animate-pulse" />)}
         </div>
+      ) : pesquisas.length === 0 ? (
+        <div className="py-20 text-center opacity-40">
+          <Vote size={48} className="mx-auto mb-4" />
+          <p className="text-sm font-bold uppercase tracking-widest">Nenhuma pesquisa ativa no momento</p>
+        </div>
       ) : (
         pesquisas.map((poll) => {
           const options = poll.opcoes as any[];
