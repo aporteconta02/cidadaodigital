@@ -100,7 +100,7 @@ function AdminDashboard() {
           email: u.email,
           action: "Novo usuário cadastrado",
           status: u.ativo ? "Ativo" : "Inativo",
-          date: format(new Date(u.criado_em), 'HH:mm'),
+          date: u.criado_em ? format(new Date(u.criado_em), 'HH:mm') : '--:--',
           color: u.ativo ? "text-success" : "text-danger"
         })) || []);
 
