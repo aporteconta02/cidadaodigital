@@ -147,3 +147,30 @@
   animation: sos-pulse 2s infinite;
 }
 
+@keyframes shimmer {
+  0% { background-position: -200% 0 }
+  100% { background-position: 200% 0 }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, #1A1A24 25%, #2A2A3A 50%, #1A1A24 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.page-transition-container {
+  animation: page-fade-slide 0.2s ease-out;
+}
+
+@keyframes page-fade-slide {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
