@@ -97,7 +97,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Syne:wght@400..800&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&family=Space+Grotesk:wght@500;600;700&display=swap",
       },
       {
         rel: "stylesheet",
@@ -155,24 +155,24 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className={cn(
-        "flex min-h-screen flex-col bg-background text-foreground overflow-x-hidden font-body",
-        !isPublicPage && "pb-24"
+        "flex min-h-screen flex-col bg-bg-primary text-text-primary overflow-x-hidden font-jakarta",
+        !isPublicPage && "pb-[72px]"
       )}>
         <Toaster position="top-center" expand={true} richColors />
         {/* App Header (Hidden on landing/auth) */}
         {!isPublicPage && (
-          <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl px-6 py-5 border-b border-white/5">
+          <header className="sticky top-0 z-40 bg-bg-primary/80 backdrop-blur-xl px-6 py-5 border-b border-white/5">
             <div className="flex items-center justify-between max-w-lg mx-auto">
               <h1 className="text-xl font-bold tracking-tight text-primary font-display uppercase italic">
-                CIDADÃO<span className="text-foreground">.</span><span className="text-secondary">PLUS</span>
+                CIDADÃO<span className="text-text-primary">.</span><span className="text-secondary">PLUS</span>
               </h1>
               <div className="flex items-center gap-4">
                 <div className="flex flex-col items-end">
-                  <span className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground font-display font-black leading-none mb-1 opacity-70">SÃO PAULO</span>
-                  <span className="text-[11px] font-bold text-foreground/90 uppercase tracking-wider">Jardim Paulista</span>
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-text-secondary font-space font-black leading-none mb-1 opacity-70">SÃO PAULO</span>
+                  <span className="text-[11px] font-bold text-text-primary/90 uppercase tracking-wider">Jardim Paulista</span>
                 </div>
                 <div className="size-9 rounded-full bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center transition-transform active:scale-95 cursor-pointer">
-                  <User size={18} className="text-muted-foreground" />
+                  <User size={18} className="text-text-secondary" />
                 </div>
               </div>
             </div>
@@ -186,8 +186,8 @@ function RootComponent() {
 
         {/* Bottom Navigation (Hidden on landing/auth) */}
         {!isPublicPage && (
-          <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-2xl border-t border-white/5 pb-safe shadow-premium">
-            <div className="flex items-center justify-around h-18 max-w-lg mx-auto relative px-4">
+          <nav className="fixed bottom-0 left-0 right-0 z-50 bg-bg-primary/95 backdrop-blur-2xl border-t border-white/5 pb-safe shadow-card">
+            <div className="flex items-center justify-around bottom-nav-height max-w-lg mx-auto relative px-4">
               <NavLink to="/dashboard" icon={<Home size={22} />} label="Home" />
               <NavLink to="/comercio" icon={<ShoppingBag size={22} />} label="Delivery" />
               <NavLink to="/sos" icon={<ShieldAlert size={22} />} label="Utilidades" />
@@ -206,7 +206,7 @@ function NavLink({ to, icon, label }: { to: string; icon: React.ReactNode; label
       to={to} 
       className="flex flex-col items-center gap-1 group relative py-2"
       activeProps={{ className: "text-primary" }}
-      inactiveProps={{ className: "text-muted-foreground" }}
+      inactiveProps={{ className: "text-text-muted" }}
     >
       <div className="transition-transform group-active:scale-90">
         {icon}
