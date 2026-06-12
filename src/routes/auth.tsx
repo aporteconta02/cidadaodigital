@@ -54,56 +54,65 @@ function AuthPage() {
       setErro('Preencha todos os campos obrigatórios.');
       return;
     }
+    
     if (password.length < 6) {
       setErro('A senha deve ter no mínimo 6 caracteres.');
       return;
     }
+    
     if (password !== confirmPassword) {
       setErro('As senhas não coincidem.');
       return;
     }
+    
     if (!termsAccepted) {
       setErro('Você precisa aceitar os termos de uso.');
+      return;
+    }
+
+    if (accountType === 'comerciante' && !shopName) {
+      setErro('Nome da loja é obrigatório para comerciantes.');
       return;
     }
 
     setLoading(true);
 
     try {
+      console.log("Iniciando signUp...");
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: email.trim(),
         password: password,
         options: {
-          emailRedirectTo: undefined,
           data: { nome: fullName }
         }
       });
 
       if (authError) {
+        console.error("Erro no signUp:", authError);
         if (authError.message.includes('already registered')) {
           setErro('Este e-mail já está cadastrado. Faça login.');
-        } else if (authError.message.includes('password')) {
-          setErro('A senha deve ter no mínimo 6 caracteres.');
-        } else if (authError.message.includes('email')) {
-          setErro('E-mail inválido.');
         } else {
-          setErro('Erro ao criar conta: ' + authError.message);
+          setErro(authError.message);
         }
         setLoading(false);
         return;
       }
 
       if (!authData || !authData.user) {
-        setErro('Erro inesperado. Verifique se a confirmação de e-mail está desativada no Supabase Dashboard em Authentication > Providers > Email > desmarcar Confirm email.');
+        setErro('Erro ao criar conta: Usuário não retornado. Verifique se a confirmação de e-mail está desativada no Supabase.');
         setLoading(false);
         return;
       }
 
       const uid = authData.user.id;
-      const numeroMembro = '#' + Math.floor(10000 + Math.random() * 90000).toString();
-      const qrToken = crypto.randomUUID();
+      console.log("Usuário criado no Auth:", uid);
 
+      const numeroMembro = '#' + Math.floor(10000 + Math.random() * 90000).toString();
+      const qrToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
+
+      console.log("Inserindo no perfil usuarios...");
       const { error: insertError } = await supabase.from('usuarios').insert({
+        id: uid, // Importante: vincular o ID da tabela ao ID do Auth
         auth_id: uid,
         nome: fullName.trim(),
         email: email.trim().toLowerCase(),
@@ -119,13 +128,15 @@ function AuthPage() {
       });
 
       if (insertError) {
-        setErro('Conta criada mas erro ao salvar perfil: ' + insertError.message + '. Verifique as políticas RLS da tabela usuarios no Supabase.');
+        console.error("Erro no insert usuarios:", insertError);
+        setErro('Erro ao salvar perfil: ' + insertError.message);
         setLoading(false);
         return;
       }
 
       if (accountType === 'comerciante' && shopName) {
-        await supabase.from('lojas').insert({
+        console.log("Inserindo loja...");
+        const { error: shopError } = await supabase.from('lojas').insert({
           usuario_id: uid,
           nome: shopName.trim(),
           categoria: shopCategory || 'geral',
@@ -133,38 +144,55 @@ function AuthPage() {
           plano: 'gratuito',
           ativo: true
         });
+        
+        if (shopError) {
+          console.error("Erro no insert lojas:", shopError);
+          // Não bloqueia o cadastro principal, mas avisa
+          toast.error("Erro ao criar loja: " + shopError.message);
+        }
       }
 
-      setLoading(false);
+      console.log("Cadastro concluído com sucesso!");
       toast.success("Conta criada com sucesso!");
-      navigate({ to: '/dashboard' });
+      
+      // Pequeno delay para garantir que o Auth atualizou a sessão
+      setTimeout(() => {
+        navigate({ to: '/dashboard' });
+      }, 500);
 
     } catch (err: any) {
+      console.error("Erro inesperado no cadastro:", err);
       setErro('Erro inesperado: ' + err.message);
+    } finally {
       setLoading(false);
     }
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogin = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setErro("");
     setLoading(true);
     try {
       const { error, data } = await supabase.auth.signInWithPassword({ 
         email: email.trim(), 
         password 
       });
+      
       if (error) {
         if (error.message.includes("Invalid login credentials")) {
-          throw new Error("E-mail ou senha incorretos");
+          setErro("E-mail ou senha incorretos");
+        } else {
+          setErro(error.message);
         }
-        throw error;
+        return;
       }
       
       if (data.session) {
+         toast.success("Login realizado!");
          navigate({ to: "/dashboard" });
       }
     } catch (error: any) {
-      toast.error(error.message || "Erro na autenticação");
+      setErro(error.message || "Erro na autenticação");
     } finally {
       setLoading(false);
     }
@@ -198,7 +226,13 @@ function AuthPage() {
           </p>
         </div>
 
-        <form onSubmit={isLogin ? handleLogin : (e) => e.preventDefault()} className="space-y-[clamp(0.75rem,3vh,1.25rem)] pb-12 w-full">
+        <form 
+          onSubmit={(e) => {
+            e.preventDefault();
+            isLogin ? handleLogin() : handleCadastro();
+          }} 
+          className="space-y-[clamp(0.75rem,3vh,1.25rem)] pb-12 w-full"
+        >
           {!isLogin && (
             <div className="space-y-[clamp(1rem,4vh,1.5rem)]">
               <div className="grid grid-cols-3 gap-[clamp(0.5rem,2vw,1rem)] mb-2">
@@ -362,8 +396,7 @@ function AuthPage() {
           </AnimatePresence>
 
           <button 
-            type="button"
-            onClick={isLogin ? handleLogin : handleCadastro}
+            type="submit"
             disabled={loading}
             className="w-full bg-primary text-primary-foreground font-black min-h-[64px] rounded-2xl shadow-standard text-lg uppercase tracking-wider active:scale-[0.98] transition-all mt-4 disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center"
           >
