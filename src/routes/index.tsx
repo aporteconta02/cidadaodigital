@@ -77,7 +77,7 @@ function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background relative overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-bg-primary relative overflow-hidden">
       {/* Background blobs */}
       <AnimatePresence>
         <motion.div 
@@ -100,7 +100,7 @@ function LandingPage() {
           {!isLastStep && (
              <button 
               onClick={() => navigate({ to: "/auth" })}
-              className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-all opacity-60 hover:opacity-100"
+              className="text-[9px] font-black uppercase tracking-[0.2em] text-text-muted hover:text-text-primary transition-all opacity-60 hover:opacity-100"
              >
               Pular
              </button>
@@ -115,7 +115,7 @@ function LandingPage() {
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ type: "spring", damping: 20, stiffness: 100 }}
-                  className="size-40 rounded-[40px] bg-card border border-white/5 shadow-premium flex items-center justify-center mb-10 relative group"
+                  className="size-40 rounded-[40px] bg-bg-card border border-white/5 shadow-card flex items-center justify-center mb-10 relative group"
                 >
                   <div className={`absolute inset-0 blur-3xl opacity-10 rounded-full transition-all duration-500 group-hover:opacity-20 ${step.color}`} />
                   {step.icon}
@@ -125,7 +125,7 @@ function LandingPage() {
                   initial={{ y: 30, opacity: 0 }}
                   whileInView={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                  className="text-3xl font-bold font-display tracking-tight leading-tight mb-4 uppercase"
+                  className="text-3xl font-bold font-space tracking-tight leading-tight mb-4 uppercase"
                 >
                   {step.title}
                 </motion.h2>
@@ -134,7 +134,7 @@ function LandingPage() {
                   initial={{ y: 20, opacity: 0 }}
                   whileInView={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.15, duration: 0.6 }}
-                  className="text-base text-muted-foreground leading-relaxed font-medium opacity-80"
+                  className="text-base text-text-secondary leading-relaxed font-medium opacity-80"
                 >
                   {step.description}
                 </motion.p>
@@ -158,7 +158,7 @@ function LandingPage() {
 
           <button 
             onClick={handleNext}
-            className="w-full bg-white text-black font-bold py-5 rounded-2xl shadow-premium text-sm uppercase tracking-[0.1em] active:scale-[0.98] hover:bg-white/90 transition-all duration-300 flex items-center justify-center gap-2 group"
+            className="w-full bg-white text-black font-bold py-5 rounded-md shadow-card text-sm uppercase tracking-[0.1em] active:scale-[0.98] hover:bg-white/90 transition-all duration-300 flex items-center justify-center gap-2 group"
           >
             {isLastStep ? "Começar Jornada" : "Explorar"}
             <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
