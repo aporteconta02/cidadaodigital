@@ -380,7 +380,7 @@ function PerfilPage() {
         </div>
 
         {/* Botão de Validar QR (Só Comerciantes) */}
-        {usuario.tipo === 'comerciante' && (
+        {usuario.tipo === 'comerciante' && usuario.assinante_plus && usuario.validade_assinatura && new Date(usuario.validade_assinatura) > new Date() && (
           <div className="mb-8">
             <button 
               onClick={startScanner}
