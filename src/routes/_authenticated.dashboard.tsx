@@ -83,12 +83,12 @@ function DashboardPage() {
   }
 
   return (
-    <div className="pb-32 animate-in fade-in duration-700 bg-background min-h-screen">
+    <div className="pb-32 animate-in fade-in duration-700 bg-bg-primary min-h-screen">
       
 
       {/* Categories Grid */}
-      <section className="px-4 mb-10">
-        <div className="grid grid-cols-3 gap-4">
+      <section className="px-3 mb-10">
+        <div className="grid grid-cols-3 gap-3">
           {CATEGORIES.map((category, idx) => (
             <motion.button 
               key={idx} 
@@ -96,17 +96,17 @@ function DashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.03 }}
               className={cn(
-                "flex flex-col items-center justify-center gap-3 p-4 rounded-[32px] transition-all duration-300 active:scale-95 group",
-                category.highlight ? "bg-white/[0.05] border border-primary/30 shadow-[0_0_15px_rgba(0,209,255,0.1)]" : "hover:bg-white/[0.03]"
+                "flex flex-col items-center justify-center gap-2 p-3 rounded-lg transition-all duration-300 active:scale-95 group hover-card-effect glass",
+                category.highlight ? "border-primary/30 shadow-glow" : ""
               )}
             >
               <div 
                 style={{ backgroundColor: category.color }}
-                className="size-14 rounded-full flex items-center justify-center transition-transform duration-500 group-hover:scale-110 shadow-lg text-white"
+                className="size-12 rounded-full flex items-center justify-center transition-transform duration-500 group-hover:scale-110 shadow-card text-white"
               >
                 {category.icon}
               </div>
-              <span className="text-[10px] font-black text-center leading-tight uppercase tracking-wider text-white opacity-90 group-hover:opacity-100 transition-opacity">
+              <span className="micro-text text-center leading-tight uppercase tracking-wider text-text-primary opacity-90 group-hover:opacity-100 transition-opacity font-jakarta">
                 {category.label}
               </span>
             </motion.button>
@@ -116,17 +116,17 @@ function DashboardPage() {
 
       {/* Banner */}
       <section className="px-6 mb-8">
-        <div className="bg-gradient-to-r from-primary to-secondary rounded-3xl p-6 shadow-premium relative overflow-hidden group cursor-pointer">
+        <div className="bg-gradient-hero rounded-md p-6 shadow-card relative overflow-hidden group cursor-pointer hover-card-effect">
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform duration-700">
              <MessageSquare size={100} />
           </div>
           <div className="relative z-10">
-            <h3 className="text-white font-black text-lg leading-tight uppercase italic mb-2">
+            <h3 className="hero-title text-text-primary leading-tight uppercase italic mb-2">
               ENTRE EM NOSSO GRUPO E<br />
               SAIA NA FRENTE DO CONCORRENTE
             </h3>
             <div className="flex items-center gap-2">
-              <span className="text-white/80 text-[10px] font-bold uppercase tracking-widest">Acesse agora</span>
+              <span className="micro-text text-text-primary font-bold uppercase tracking-widest">Acesse agora</span>
               <div className="size-5 rounded-full bg-white/20 flex items-center justify-center">
                 <ChevronRight size={12} className="text-white" />
               </div>
