@@ -120,10 +120,11 @@ function AdminPesquisas() {
       pesquisa.opcoes?.forEach((opt: string) => counts[opt] = 0);
       
       respostas?.forEach(r => {
-        const resp = r.resposta.valor;
+        const respostaObj = r.resposta as any;
+        const resp = respostaObj?.valor;
         if (Array.isArray(resp)) {
-          resp.forEach(v => counts[v] = (counts[v] || 0) + 1);
-        } else {
+          resp.forEach((v: string) => counts[v] = (counts[v] || 0) + 1);
+        } else if (resp) {
           counts[resp] = (counts[resp] || 0) + 1;
         }
 
