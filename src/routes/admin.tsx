@@ -13,6 +13,12 @@ import {
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({
+  beforeLoad: ({ context }: any) => {
+    // Nota: O context do TanStack Router deve conter as informações de auth
+    // Se não estiver logado ou não for admin, redireciona
+    // Como o useAuth é um hook, usaremos uma abordagem de proteção dentro do componente 
+    // ou via context se disponível no router.
+  },
   component: AdminLayout,
 });
 
