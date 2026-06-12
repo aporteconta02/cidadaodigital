@@ -341,7 +341,7 @@ function PerfilPage() {
                   style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                 >
                   <div className="p-2 bg-white rounded-xl shadow-inner border border-gray-100">
-                    <QRCodeSVG value={usuario.qr_code_token || "DEMO"} size={110} />
+                        <QRCodeSVG value={usuario.qr_code_token || "DEMO"} size={110} />
                   </div>
                   <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight text-center">
                     Apresente para validar desconto
