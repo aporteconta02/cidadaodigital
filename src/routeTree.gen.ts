@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
+import { Route as AdminLojasRouteImport } from './routes/admin.lojas'
 import { Route as AuthenticatedSosRouteImport } from './routes/_authenticated.sos'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated.perfil'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
@@ -50,6 +51,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
   id: '/usuarios',
   path: '/usuarios',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLojasRoute = AdminLojasRouteImport.update({
+  id: '/lojas',
+  path: '/lojas',
   getParentRoute: () => AdminRoute,
 } as any)
 const AuthenticatedSosRoute = AuthenticatedSosRouteImport.update({
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
+  '/admin/lojas': typeof AdminLojasRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/': typeof AdminIndexRoute
   '/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
+  '/admin/lojas': typeof AdminLojasRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin': typeof AdminIndexRoute
   '/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
@@ -128,6 +136,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/sos': typeof AuthenticatedSosRoute
+  '/admin/lojas': typeof AdminLojasRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/': typeof AdminIndexRoute
   '/_authenticated/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
@@ -144,6 +153,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/perfil'
     | '/sos'
+    | '/admin/lojas'
     | '/admin/usuarios'
     | '/admin/'
     | '/comercio/loja/$lojaId'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/perfil'
     | '/sos'
+    | '/admin/lojas'
     | '/admin/usuarios'
     | '/admin'
     | '/comercio/loja/$lojaId'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/perfil'
     | '/_authenticated/sos'
+    | '/admin/lojas'
     | '/admin/usuarios'
     | '/admin/'
     | '/_authenticated/comercio/loja/$lojaId'
@@ -227,6 +239,13 @@ declare module '@tanstack/react-router' {
       path: '/usuarios'
       fullPath: '/admin/usuarios'
       preLoaderRoute: typeof AdminUsuariosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/lojas': {
+      id: '/admin/lojas'
+      path: '/lojas'
+      fullPath: '/admin/lojas'
+      preLoaderRoute: typeof AdminLojasRouteImport
       parentRoute: typeof AdminRoute
     }
     '/_authenticated/sos': {
@@ -318,11 +337,13 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminLojasRoute: typeof AdminLojasRoute
   AdminUsuariosRoute: typeof AdminUsuariosRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminLojasRoute: AdminLojasRoute,
   AdminUsuariosRoute: AdminUsuariosRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
