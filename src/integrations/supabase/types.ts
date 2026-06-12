@@ -824,6 +824,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_confirmacoes: { Args: { alert_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { ShieldCheck } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 // Fix for default marker icons
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -20,18 +23,49 @@ const DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
+// Custom icons based on type
+const getIcon = (type: string) => {
+  let color = '#6C63FF'; // default
+  if (type === 'suspeito') color = '#FF3B5C';
+  if (type === 'perturbacao') color = '#FF8C00';
+  if (type === 'acidente') color = '#FFB800';
+  if (type === 'crime') color = '#6C63FF';
+  if (type === 'sos') color = '#FF3B5C';
+  if (type === 'user') color = '#00D68F';
+
+  return L.divIcon({
+    className: 'custom-div-icon',
+    html: `<div style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>`,
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+    popupAnchor: [0, -10],
+  });
+};
+
 interface MapProps {
   center: [number, number];
   zoom: number;
   markers?: Array<{
+    id: string;
     position: [number, number];
     title: string;
     description: string;
     type: string;
+    created_at?: string;
+    confirmacoes?: number;
   }>;
+  onConfirmAlert?: (alertId: string) => void;
 }
 
-export default function Map({ center, zoom, markers = [] }: MapProps) {
+function ChangeView({ center, zoom }: { center: [number, number], zoom: number }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(center, zoom);
+  }, [center, zoom, map]);
+  return null;
+}
+
+export default function Map({ center, zoom, markers = [], onConfirmAlert }: MapProps) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -53,21 +87,44 @@ export default function Map({ center, zoom, markers = [] }: MapProps) {
       scrollWheelZoom={false}
       className="w-full h-full"
     >
+      <ChangeView center={center} zoom={zoom} />
       <TileLayer
         attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
       />
-      <Marker position={center}>
-        <Popup>Você está aqui</Popup>
-      </Marker>
       
       {markers.map((marker, i) => (
-        <Marker key={i} position={marker.position}>
+        <Marker 
+          key={marker.id || i} 
+          position={marker.position} 
+          icon={getIcon(marker.type)}
+        >
           <Popup>
-            <div className="p-2">
-              <h4 className="font-black text-xs uppercase text-sos">{marker.title}</h4>
-              <p className="text-[10px] mt-1">{marker.description}</p>
-              <button className="mt-2 w-full bg-sos/10 text-sos text-[8px] font-black uppercase py-1 rounded">Confirmar</button>
+            <div className="p-2 min-w-[150px]">
+              <div className="flex items-center justify-between mb-1">
+                <h4 className="font-black text-[10px] uppercase text-text-primary tracking-wider">{marker.title}</h4>
+                {marker.created_at && (
+                  <span className="text-[8px] text-text-muted font-bold">
+                    {formatDistanceToNow(new Date(marker.created_at), { addSuffix: true, locale: ptBR })}
+                  </span>
+                )}
+              </div>
+              <p className="text-[10px] text-text-secondary leading-tight mb-2">{marker.description || 'Sem descrição.'}</p>
+              
+              {marker.type !== 'user' && (
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-1">
+                    <ShieldCheck size={10} className="text-success" />
+                    <span className="text-[9px] font-bold">{marker.confirmacoes || 0} confirmações</span>
+                  </div>
+                  <button 
+                    onClick={() => onConfirmAlert?.(marker.id)}
+                    className="w-full bg-primary/10 hover:bg-primary/20 text-primary text-[9px] font-black uppercase py-1.5 rounded transition-colors"
+                  >
+                    Confirmar Alerta
+                  </button>
+                </div>
+              )}
             </div>
           </Popup>
         </Marker>
