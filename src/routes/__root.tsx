@@ -258,9 +258,8 @@ function RootComponent() {
               />
             </div>
           </nav>
-        )}
-        </AuthProvider>
-      </div>
+        </div>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
