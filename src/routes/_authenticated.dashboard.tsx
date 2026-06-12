@@ -88,7 +88,7 @@ function DashboardPage() {
 
       {/* Categories Grid */}
       <section className="px-4 mb-10">
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-4">
           {CATEGORIES.map((category, idx) => (
             <motion.button 
               key={idx} 
@@ -96,8 +96,8 @@ function DashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.03 }}
               className={cn(
-                "flex flex-col items-center justify-center gap-3 p-5 rounded-[28px] transition-all duration-300 active:scale-95 group",
-                category.highlight ? "bg-primary/10 border border-primary/20" : "hover:bg-white/5"
+                "flex flex-col items-center justify-center gap-3 p-4 rounded-[32px] transition-all duration-300 active:scale-95 group",
+                category.highlight ? "bg-white/[0.05] border border-primary/30 shadow-[0_0_15px_rgba(0,209,255,0.1)]" : "hover:bg-white/[0.03]"
               )}
             >
               <div 
