@@ -53,7 +53,7 @@ function SOSPage() {
   const fetchUserData = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
-      const { data } = await supabase.from('usuarios').select('*').eq('auth_id', session.user.id).single();
+      const { data } = await supabase.from('usuarios').select('*').eq('auth_id', session.user.id).maybeSingle();
       if (data) {
         setUser(data);
         setIsSubscriber(!!data.assinante_plus);
