@@ -11,6 +11,7 @@ import {
 import React, { useEffect, type ReactNode } from "react";
 import { Home, ShoppingBag, Users, ShieldAlert, User, Plus, Megaphone, Calendar, ClipboardList, AlertCircle, MapPin } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/hooks/use-auth";
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -166,10 +167,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className={cn(
-        "flex min-h-screen flex-col bg-bg-primary text-text-primary overflow-x-hidden font-jakarta",
-        !isPublicPage && "pb-[72px]"
-      )}>
+      <AuthProvider>
+        <div className={cn(
+          "flex min-h-screen flex-col bg-bg-primary text-text-primary overflow-x-hidden font-jakarta",
+          !isPublicPage && "pb-[72px]"
+        )}>
         <Toaster position="top-center" expand={true} richColors />
         {/* App Header (Hidden on landing/auth) */}
         {!isPublicPage && (
@@ -258,8 +260,9 @@ function RootComponent() {
           </nav>
         )}
       </div>
-    </QueryClientProvider>
-  );
+    </AuthProvider>
+  </QueryClientProvider>
+);
 }
 
 function NavLink({ to, icon, label }: { to: string; icon: React.ReactNode; label: string }) {
