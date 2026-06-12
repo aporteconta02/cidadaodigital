@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Search, Star, ChevronRight, Plus, MapPin, Filter } from "lucide-react";
+import { Search, Star, ChevronRight, Plus, MapPin, Filter, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
