@@ -2,26 +2,30 @@ import { createFileRoute } from "@tanstack/react-router";
 import { 
   Search, 
   MapPin, 
-  AlertCircle, 
-  ShoppingBasket, 
-  Bell, 
-  Megaphone, 
-  Calendar, 
-  ShieldCheck, 
-  ClipboardList, 
-  Phone,
+  Bus,
+  Info,
+  Briefcase,
+  Flame,
+  Truck,
+  Car,
+  Palmtree,
+  PlusCircle,
+  ShoppingBag,
+  Scissors,
+  Building,
+  Smartphone,
+  Home,
+  HardHat,
+  Heart,
   ChevronRight,
-  TrendingUp,
-  Star,
   Users
 } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
-import useEmblaCarousel from "embla-carousel-react";
-import Autoplay from 'embla-carousel-autoplay';
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { NavLink } from "@/components/NavLink"; // I'll create this or use from __root
+
 
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
