@@ -149,7 +149,7 @@ function DashboardPage() {
               {data.eventos.map((event: any) => (
                 <CarouselItem key={event.id} className="pl-4 basis-[85%]">
                   <div 
-                    onClick={() => navigate({ to: '/comunidade' })}
+                onClick={() => navigate({ to: '/comunidade', search: { tab: 'voz', pesquisaId: data.pesquisa.id } as any })}
                     className="bg-bg-card rounded-2xl overflow-hidden border border-white/5 active:scale-[0.98] transition-all cursor-pointer"
                   >
                     <div className="h-32 w-full relative">
