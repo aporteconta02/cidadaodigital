@@ -30,6 +30,7 @@ function ComercioPage() {
   const [produtos, setProdutos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { adicionarItem } = useCart();
+  const { usuario } = useAuth();
 
   useEffect(() => {
     async function fetchData() {
