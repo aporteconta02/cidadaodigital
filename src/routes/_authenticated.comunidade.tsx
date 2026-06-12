@@ -557,7 +557,14 @@ function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
     setLoading(false);
   }, [usuario?.id]);
 
-  useEffect(() => { fetchPesquisas(); }, [fetchPesquisas]);
+  useEffect(() => { 
+    fetchPesquisas().then(() => {
+      if (defaultPesquisaId) {
+        const el = document.getElementById(`poll-${defaultPesquisaId}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }); 
+  }, [fetchPesquisas, defaultPesquisaId]);
 
   const navigate = useNavigate();
 
