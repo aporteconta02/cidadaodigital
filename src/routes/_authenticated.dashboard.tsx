@@ -150,7 +150,7 @@ function DashboardPage() {
 
       {/* Quick Access Grid */}
       <section className="px-4 mb-10">
-        <h2 className="section-title mb-4 uppercase tracking-tighter">Acesso Rápido</h2>
+        <h2 className="section-title mb-4 uppercase tracking-tighter">O que você precisa hoje?</h2>
         <div className="grid grid-cols-4 gap-3">
           {QUICK_ACCESS.map((item, idx) => (
             <button key={idx} className="flex flex-col items-center gap-2 group active:scale-95 transition-transform">
@@ -211,7 +211,7 @@ function DashboardPage() {
             </div>
             
             <button className="w-full bg-primary text-text-primary py-3 rounded-md font-bold uppercase tracking-widest text-xs shadow-glow active:scale-[0.98] transition-all">
-              Votar agora
+              Votar
             </button>
           </div>
         </div>
@@ -245,7 +245,7 @@ function DashboardPage() {
               {offer.blur && !isSubscriber && (
                 <div className="absolute inset-0 bg-bg-card/40 backdrop-blur-md flex flex-col items-center justify-center p-4 text-center">
                   <span className="micro-text font-black text-text-primary uppercase tracking-widest mb-2">Assine para ver</span>
-                  <button className="text-[9px] font-bold text-primary uppercase underline">Desbloquear</button>
+                  <button className="text-[9px] font-bold text-primary uppercase underline">Ver oferta</button>
                 </div>
               )}
             </div>

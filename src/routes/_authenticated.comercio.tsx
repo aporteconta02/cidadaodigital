@@ -253,7 +253,7 @@ function ComercioPage() {
               </div>
 
               <button className="w-full bg-secondary text-text-primary font-bold h-[56px] rounded-md shadow-glow active:scale-[0.98] transition-all flex items-center justify-center gap-2 mb-4">
-                Finalizar pedido • R$ 70,70
+                Pedir agora • R$ 70,70
               </button>
             </div>
           </DrawerContent>
