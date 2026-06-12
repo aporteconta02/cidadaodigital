@@ -132,6 +132,18 @@
   background: var(--gradient-gold);
 }
 
+}
+
 .bottom-nav-height {
   height: 72px;
 }
+
+@keyframes sos-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,59,92,0.7) }
+  70% { box-shadow: 0 0 0 20px rgba(255,59,92,0) }
+  100% { box-shadow: 0 0 0 0 rgba(255,59,92,0) }
+}
+.sos-pulse {
+  animation: sos-pulse 2s infinite;
+}
+
