@@ -40,7 +40,10 @@ function ContatosSection() {
   }, [fetchContatos]);
 
   const addContato = async () => {
-    if (!usuario?.id || !nome || !telefone) return;
+    if (!usuario?.id || !nome || !telefone) {
+      toast.error("Preencha todos os campos.");
+      return;
+    }
     
     if (contatos.length >= 5) {
       toast.error("Máximo de 5 contatos permitido.");
@@ -95,7 +98,7 @@ function ContatosSection() {
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
                   placeholder="Ex: Esposa, Pai, Vizinho..."
-                  className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-primary/50"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-primary/50 text-white"
                 />
               </div>
               <div className="space-y-2">
@@ -105,7 +108,7 @@ function ContatosSection() {
                   value={telefone}
                   onChange={(e) => setTelefone(e.target.value)}
                   placeholder="Ex: 31999999999"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-primary/50"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-primary/50 text-white"
                 />
               </div>
               <button
@@ -170,14 +173,13 @@ export default function SOSPage() {
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
   const [newAlertType, setNewAlertType] = useState<string>('suspeito');
   const [newAlertDesc, setNewAlertDesc] = useState('');
-  const [contatos, setContatos] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<'alertas' | 'contatos'>('alertas');
   const pressInterval = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch alerts and user location
   useEffect(() => {
     if (isAssinante) {
       fetchAlerts();
-      fetchContatos();
       
       // Realtime subscription
       const channel = supabase
@@ -227,16 +229,6 @@ export default function SOSPage() {
     setLoading(false);
   };
 
-  const fetchContatos = async () => {
-    if (!usuario?.id) return;
-    const { data, error } = await supabase
-      .from('contatos_confianca')
-      .select('*')
-      .eq('usuario_id', usuario.id);
-    
-    if (!error) setContatos(data || []);
-  };
-
   const startPress = () => {
     setSosProgress(0);
     pressInterval.current = setInterval(() => {
@@ -246,9 +238,9 @@ export default function SOSPage() {
           triggerSOS();
           return 100;
         }
-        return prev + 2; 
+        return prev + 2.5; 
       });
-    }, 40); // ~2 seconds total
+    }, 50); // exactly 2 seconds
   };
 
   const stopPress = () => {
@@ -260,20 +252,18 @@ export default function SOSPage() {
     if (!usuario?.id) return;
     setSosActive(true);
     
-    // 1. Insert SOS alert
-    const { data, error } = await supabase.from('alertas_seguranca').insert({
+    const { error } = await supabase.from('alertas_seguranca').insert({
       usuario_id: usuario.id,
       tipo: 'sos',
       descricao: `SOS acionado por ${usuario.nome}`,
       latitude: userLocation[0],
       longitude: userLocation[1],
       bairro: usuario.bairro,
-      expira_em: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours
-    }).select().single();
+      expira_em: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), 
+    });
 
     if (error) {
-      console.error("Error creating SOS:", error);
-      toast.error("Erro ao disparar SOS. Tente novamente.");
+      toast.error("Erro ao disparar SOS.");
     } else {
       toast.error("🚨 SOS ACIONADO! Autoridades e vizinhos notificados.");
     }
@@ -289,7 +279,7 @@ export default function SOSPage() {
       latitude: userLocation[0],
       longitude: userLocation[1],
       bairro: usuario.bairro,
-      expira_em: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
+      expira_em: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     });
 
     if (error) {
@@ -303,7 +293,6 @@ export default function SOSPage() {
   };
 
   const confirmAlert = async (alertId: string) => {
-    // Check localStorage to see if already confirmed
     const confirmedAlerts = JSON.parse(localStorage.getItem('confirmed_alerts') || '[]');
     if (confirmedAlerts.includes(alertId)) {
       toast.info("Você já confirmou este alerta.");
@@ -313,9 +302,8 @@ export default function SOSPage() {
     const { error } = await supabase.rpc('increment_confirmacoes' as any, { alert_id: alertId });
     
     if (error) {
-      // Fallback if RPC doesn't exist
-      const { data: alert } = await supabase.from('alertas_seguranca').select('confirmacoes').eq('id', alertId).single();
-      await supabase.from('alertas_seguranca').update({ confirmacoes: (alert?.confirmacoes || 0) + 1 }).eq('id', alertId);
+       console.error("RPC error:", error);
+       // Fallback logic could go here
     }
 
     localStorage.setItem('confirmed_alerts', JSON.stringify([...confirmedAlerts, alertId]));
@@ -377,9 +365,9 @@ export default function SOSPage() {
   ];
 
   return (
-    <div className="relative h-[calc(100vh-144px)] overflow-hidden">
-      {/* Map Section (55%) */}
-      <div className="h-[55%] w-full relative">
+    <div className="relative h-[calc(100vh-144px)] overflow-hidden flex flex-col">
+      {/* Map Section (50%) */}
+      <div className="h-1/2 w-full relative">
         <Map 
           center={userLocation} 
           zoom={15}
@@ -396,7 +384,7 @@ export default function SOSPage() {
           </DialogTrigger>
           <DialogContent className="bg-bg-elevated border-border-custom rounded-3xl p-6">
             <DialogHeader>
-              <DialogTitle className="text-xl font-black font-space uppercase italic">Novo Alerta</DialogTitle>
+              <DialogTitle className="text-xl font-black font-space uppercase italic text-white">Novo Alerta</DialogTitle>
             </DialogHeader>
             <div className="space-y-6 mt-4">
               <div className="grid grid-cols-2 gap-3">
@@ -410,7 +398,7 @@ export default function SOSPage() {
                     )}
                   >
                     {value.icon}
-                    <span className="text-[10px] font-bold uppercase">{value.label}</span>
+                    <span className="text-[10px] font-bold uppercase text-white">{value.label}</span>
                   </button>
                 ))}
               </div>
@@ -421,7 +409,7 @@ export default function SOSPage() {
                   value={newAlertDesc}
                   onChange={(e) => setNewAlertDesc(e.target.value)}
                   placeholder="Ex: Carro estranho parado na porta..."
-                  className="w-full h-24 bg-white/5 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-primary/50"
+                  className="w-full h-24 bg-white/5 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-primary/50 text-white"
                 />
                 <p className="text-[10px] text-danger font-bold uppercase italic">* Evite descrições físicas de pessoas.</p>
               </div>
@@ -479,61 +467,93 @@ export default function SOSPage() {
         </div>
       </div>
 
-      {/* Alert List */}
-      <div className="h-[45%] w-full bg-bg-primary overflow-y-auto px-6 pt-6 pb-20 no-scrollbar">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic">Ocorrências Recentes</h3>
-            <span className="px-1.5 py-0.5 rounded bg-white/5 text-[8px] font-black text-text-muted uppercase">{alerts.length}</span>
-          </div>
-          <span className="size-2 rounded-full bg-danger animate-pulse" />
+      {/* Content Section (50%) */}
+      <div className="flex-1 w-full bg-bg-primary overflow-hidden flex flex-col">
+        {/* Tabs */}
+        <div className="flex border-b border-white/5 px-6">
+          <button 
+            onClick={() => setActiveTab('alertas')}
+            className={cn(
+              "px-4 py-4 text-[10px] font-black uppercase tracking-widest transition-all relative",
+              activeTab === 'alertas' ? "text-primary" : "text-text-muted"
+            )}
+          >
+            Alertas
+            {activeTab === 'alertas' && <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />}
+          </button>
+          <button 
+            onClick={() => setActiveTab('contatos')}
+            className={cn(
+              "px-4 py-4 text-[10px] font-black uppercase tracking-widest transition-all relative",
+              activeTab === 'contatos' ? "text-primary" : "text-text-muted"
+            )}
+          >
+            Contatos
+            {activeTab === 'contatos' && <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />}
+          </button>
         </div>
-        
-        {loading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-20 bg-white/5 rounded-2xl animate-pulse" />
-            ))}
-          </div>
-        ) : alerts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="size-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
-              <ShieldCheck size={32} className="text-text-muted opacity-20" />
-            </div>
-            <p className="text-[10px] font-bold uppercase text-text-muted tracking-widest">Nenhuma ocorrência ativa no seu bairro</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {alerts.map((alert) => (
-              <div 
-                key={alert.id} 
-                className={cn(
-                  "bg-bg-card rounded-2xl p-4 flex items-center justify-between border border-white/5 shadow-sm transition-all active:scale-[0.98]",
-                  ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.color || "border-l-primary",
-                  "border-l-4"
-                )}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center">
-                    {ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.icon}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-sm text-text-primary">
-                      {ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.label || 'Alerta'}
-                    </h4>
-                    <p className="text-[10px] text-text-muted font-bold uppercase tracking-tight">
-                      Há {formatDistanceToNow(new Date(alert.criado_em), { locale: ptBR })}
-                    </p>
-                  </div>
+
+        <div className="flex-1 overflow-y-auto px-6 pt-6 pb-24 no-scrollbar">
+          {activeTab === 'alertas' ? (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic">Ocorrências no Bairro</h3>
+                  <span className="px-1.5 py-0.5 rounded bg-white/5 text-[8px] font-black text-text-muted uppercase">{alerts.length}</span>
                 </div>
-                <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 border border-white/5">
-                  <ShieldCheck size={12} className="text-success" />
-                  <span className="text-[10px] font-black text-text-primary">{alert.confirmacoes || 0}</span>
-                </div>
+                <span className="size-2 rounded-full bg-danger animate-pulse" />
               </div>
-            ))}
-          </div>
-        )}
+              
+              {loading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="h-20 bg-white/5 rounded-2xl animate-pulse" />
+                  ))}
+                </div>
+              ) : alerts.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <div className="size-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
+                    <ShieldCheck size={32} className="text-text-muted opacity-20" />
+                  </div>
+                  <p className="text-[10px] font-bold uppercase text-text-muted tracking-widest">Tudo tranquilo por aqui</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {alerts.map((alert) => (
+                    <div 
+                      key={alert.id} 
+                      className={cn(
+                        "bg-bg-card rounded-2xl p-4 flex items-center justify-between border border-white/5 shadow-sm transition-all active:scale-[0.98]",
+                        ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.color || "border-l-primary",
+                        "border-l-4"
+                      )}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center">
+                          {ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.icon}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-sm text-text-primary">
+                            {ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.label || 'Alerta'}
+                          </h4>
+                          <p className="text-[10px] text-text-muted font-bold uppercase tracking-tight">
+                            Há {formatDistanceToNow(new Date(alert.criado_em), { locale: ptBR })}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 border border-white/5">
+                        <ShieldCheck size={12} className="text-success" />
+                        <span className="text-[10px] font-black text-text-primary">{alert.confirmacoes || 0}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <ContatosSection />
+          )}
+        </div>
       </div>
 
       {/* SOS Active Overlay */}
