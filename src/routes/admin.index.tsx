@@ -286,7 +286,7 @@ function AdminDashboard() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="size-8 rounded-full bg-gradient-hero flex items-center justify-center text-[10px] font-black border border-white/10">
-                        {row.name?.charAt(0)}
+                        {row.name ? row.name.charAt(0) : '?'}
                       </div>
                       <div>
                         <p className="text-sm font-bold leading-none">{row.name}</p>
