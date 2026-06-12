@@ -19,12 +19,18 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      redirect: (search.redirect as string) || undefined,
+    }
+  },
   component: AuthPage,
 });
 
 type AccountType = 'morador' | 'comerciante' | 'entregador';
 
 function AuthPage() {
+  const { redirect: redirectPath } = Route.useSearch();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -198,7 +204,18 @@ function AuthPage() {
       
       if (data.session) {
          toast.success("Login realizado!");
-         navigate({ to: "/dashboard" });
+         // Se houver um redirecionamento pendente, use-o. 
+         // Mas remova o protocolo/domínio se for um URL completo para evitar problemas com o TanStack Router
+         let target: any = "/dashboard";
+         if (redirectPath) {
+           try {
+             const url = new URL(redirectPath);
+             target = url.pathname + url.search;
+           } catch (e) {
+             target = redirectPath;
+           }
+         }
+         navigate({ to: target });
       }
     } catch (error: any) {
       setErro(error.message || "Erro na autenticação");
