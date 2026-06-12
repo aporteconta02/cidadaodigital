@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
+import { Route as AdminSegurancaRouteImport } from './routes/admin.seguranca'
 import { Route as AdminPesquisasRouteImport } from './routes/admin.pesquisas'
 import { Route as AdminLojasRouteImport } from './routes/admin.lojas'
 import { Route as AdminEventosRouteImport } from './routes/admin.eventos'
@@ -54,6 +55,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
   id: '/usuarios',
   path: '/usuarios',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSegurancaRoute = AdminSegurancaRouteImport.update({
+  id: '/seguranca',
+  path: '/seguranca',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminPesquisasRoute = AdminPesquisasRouteImport.update({
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/admin/eventos': typeof AdminEventosRoute
   '/admin/lojas': typeof AdminLojasRoute
   '/admin/pesquisas': typeof AdminPesquisasRoute
+  '/admin/seguranca': typeof AdminSegurancaRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/': typeof AdminIndexRoute
   '/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/admin/eventos': typeof AdminEventosRoute
   '/admin/lojas': typeof AdminLojasRoute
   '/admin/pesquisas': typeof AdminPesquisasRoute
+  '/admin/seguranca': typeof AdminSegurancaRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin': typeof AdminIndexRoute
   '/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
@@ -164,6 +172,7 @@ export interface FileRoutesById {
   '/admin/eventos': typeof AdminEventosRoute
   '/admin/lojas': typeof AdminLojasRoute
   '/admin/pesquisas': typeof AdminPesquisasRoute
+  '/admin/seguranca': typeof AdminSegurancaRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/': typeof AdminIndexRoute
   '/_authenticated/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
@@ -184,6 +193,7 @@ export interface FileRouteTypes {
     | '/admin/eventos'
     | '/admin/lojas'
     | '/admin/pesquisas'
+    | '/admin/seguranca'
     | '/admin/usuarios'
     | '/admin/'
     | '/comercio/loja/$lojaId'
@@ -201,6 +211,7 @@ export interface FileRouteTypes {
     | '/admin/eventos'
     | '/admin/lojas'
     | '/admin/pesquisas'
+    | '/admin/seguranca'
     | '/admin/usuarios'
     | '/admin'
     | '/comercio/loja/$lojaId'
@@ -220,6 +231,7 @@ export interface FileRouteTypes {
     | '/admin/eventos'
     | '/admin/lojas'
     | '/admin/pesquisas'
+    | '/admin/seguranca'
     | '/admin/usuarios'
     | '/admin/'
     | '/_authenticated/comercio/loja/$lojaId'
@@ -275,6 +287,13 @@ declare module '@tanstack/react-router' {
       path: '/usuarios'
       fullPath: '/admin/usuarios'
       preLoaderRoute: typeof AdminUsuariosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/seguranca': {
+      id: '/admin/seguranca'
+      path: '/seguranca'
+      fullPath: '/admin/seguranca'
+      preLoaderRoute: typeof AdminSegurancaRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/pesquisas': {
@@ -398,6 +417,7 @@ interface AdminRouteChildren {
   AdminEventosRoute: typeof AdminEventosRoute
   AdminLojasRoute: typeof AdminLojasRoute
   AdminPesquisasRoute: typeof AdminPesquisasRoute
+  AdminSegurancaRoute: typeof AdminSegurancaRoute
   AdminUsuariosRoute: typeof AdminUsuariosRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -407,6 +427,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminEventosRoute: AdminEventosRoute,
   AdminLojasRoute: AdminLojasRoute,
   AdminPesquisasRoute: AdminPesquisasRoute,
+  AdminSegurancaRoute: AdminSegurancaRoute,
   AdminUsuariosRoute: AdminUsuariosRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
