@@ -9,7 +9,7 @@ import {
   useLocation,
 } from "@tanstack/react-router";
 import React, { useEffect, type ReactNode } from "react";
-import { Home, ShoppingBag, Users, ShieldAlert, User, Plus, Megaphone, Calendar, ClipboardList, AlertCircle } from "lucide-react";
+import { Home, ShoppingBag, Users, ShieldAlert, User, Plus, Megaphone, Calendar, ClipboardList, AlertCircle, MapPin } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
@@ -162,20 +162,28 @@ function RootComponent() {
         <Toaster position="top-center" expand={true} richColors />
         {/* App Header (Hidden on landing/auth) */}
         {!isPublicPage && (
-          <header className="sticky top-0 z-40 bg-bg-primary/80 backdrop-blur-xl px-6 py-5 border-b border-white/5">
-            <div className="flex items-center justify-between max-w-lg mx-auto">
-              <h1 className="text-xl font-bold tracking-tight text-primary font-display uppercase italic">
-                CIDADÃO<span className="text-text-primary">.</span><span className="text-secondary">PLUS</span>
-              </h1>
-              <div className="flex items-center gap-4">
-                <div className="flex flex-col items-end">
-                  <span className="text-[9px] uppercase tracking-[0.2em] text-text-secondary font-space font-black leading-none mb-1 opacity-70">SÃO PAULO</span>
-                  <span className="text-[11px] font-bold text-text-primary/90 uppercase tracking-wider">Jardim Paulista</span>
-                </div>
-                <div className="size-9 rounded-full bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center transition-transform active:scale-95 cursor-pointer">
-                  <User size={18} className="text-text-secondary" />
+          <header className="sticky top-0 z-40 bg-bg-primary/80 backdrop-blur-xl px-4 py-4 border-b border-white/5">
+            <div className="flex flex-col gap-3 max-w-lg mx-auto">
+              <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-bold tracking-tighter font-space uppercase italic bg-gradient-hero bg-clip-text text-transparent">
+                  CIDADÃO<span className="">.</span><span className="">PLUS</span>
+                </h1>
+                <div className="flex items-center gap-3">
+                  <div className="relative size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-transform active:scale-95 cursor-pointer">
+                    <ShieldAlert size={20} className="text-text-primary" />
+                    <div className="absolute -top-1 -right-1 size-5 bg-danger rounded-full flex items-center justify-center text-[10px] font-bold text-white border-2 border-bg-primary">
+                      3
+                    </div>
+                  </div>
+                  <div className="size-10 rounded-full bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center transition-transform active:scale-95 cursor-pointer">
+                    <User size={20} className="text-text-secondary" />
+                  </div>
                 </div>
               </div>
+              <button className="flex items-center gap-1.5 w-fit px-3 py-1.5 rounded-full bg-white/5 border border-white/10 active:scale-95 transition-transform">
+                <MapPin size={14} className="text-primary" />
+                <span className="micro-text font-bold text-text-primary uppercase tracking-wider">Santa Luzia, MG</span>
+              </button>
             </div>
           </header>
         )}
