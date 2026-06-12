@@ -110,7 +110,7 @@ function LojaPage() {
             </button>
           ))}
         </div>
-      </header>
+      </div>
 
       {/* Busca na Loja */}
       <div className="px-4 mb-6">
