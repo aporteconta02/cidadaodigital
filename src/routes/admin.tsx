@@ -22,22 +22,66 @@ export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
+import { useAuth } from "@/hooks/use-auth";
+import { useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { 
+  LayoutDashboard, 
+  Users, 
+  ShoppingBag, 
+  ShieldAlert, 
+  Megaphone, 
+  Settings, 
+  LogOut,
+  Bell,
+  Search,
+  Calendar,
+  MessageSquare,
+  Image as ImageIcon,
+  Phone,
+  DollarSign
+} from "lucide-react";
+
 function AdminLayout() {
+  const { usuario, isAdmin, loading } = useAuth();
+  const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    if (!loading) {
+      if (!usuario) {
+        navigate({ to: "/auth" });
+      } else if (!isAdmin) {
+        navigate({ to: "/dashboard" });
+      }
+    }
+  }, [usuario, isAdmin, loading, navigate]);
+
+  if (loading || !isAdmin) {
+    return (
+      <div className="min-h-screen bg-[#0F0F16] flex items-center justify-center">
+        <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   const menuItems = [
     { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
     { label: "Usuários", icon: Users, path: "/admin/usuarios" },
-    { label: "Marketplace", icon: ShoppingBag, path: "/admin/marketplace" },
+    { label: "Lojas", icon: ShoppingBag, path: "/admin/lojas" },
+    { label: "Denúncias", icon: Megaphone, path: "/admin/denuncias" },
+    { label: "Eventos", icon: Calendar, path: "/admin/eventos" },
+    { label: "Voz do Povo", icon: MessageSquare, path: "/admin/pesquisas" },
     { label: "Segurança", icon: ShieldAlert, path: "/admin/seguranca" },
-    { label: "Comunidade", icon: Megaphone, path: "/admin/comunidade" },
-    { label: "Configurações", icon: Settings, path: "/admin/config" },
+    { label: "Banners", icon: ImageIcon, path: "/admin/banners" },
+    { label: "Telefones", icon: Phone, path: "/admin/telefones" },
+    { label: "Financeiro", icon: DollarSign, path: "/admin/financeiro" },
   ];
 
   return (
     <div className="flex min-h-screen bg-[#0F0F16] text-white">
       {/* Sidebar */}
-      <aside className="w-[240px] bg-[#0A0A0F] border-r border-white/5 flex flex-col fixed inset-y-0">
+      <aside className="w-[260px] bg-[#0A0A0F] border-r border-white/5 flex flex-col fixed inset-y-0 overflow-y-auto">
         <div className="p-6">
           <h1 className="text-xl font-bold font-space uppercase italic tracking-tighter">
             ADMIN<span className="text-primary">.PLUS</span>
@@ -65,8 +109,14 @@ function AdminLayout() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-white/5">
-          <button className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-bold text-danger hover:bg-danger/10 transition-all">
+        <div className="p-4 border-t border-white/5 mt-auto">
+          <button 
+            onClick={() => {
+              // Sign out logic already in supabase client usually, but we'll use a direct call
+              import('@/integrations/supabase/client').then(({ supabase }) => supabase.auth.signOut());
+            }}
+            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-bold text-danger hover:bg-danger/10 transition-all"
+          >
             <LogOut size={18} />
             Sair
           </button>
