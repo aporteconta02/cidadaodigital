@@ -79,7 +79,7 @@ function PerfilPage() {
         .from('usuarios')
         .select('*')
         .eq('auth_id', authUser.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       setUser(data as UserProfile);
