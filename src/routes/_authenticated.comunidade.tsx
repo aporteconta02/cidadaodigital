@@ -558,6 +558,8 @@ function VozDoPovoTab() {
 
   useEffect(() => { fetchPesquisas(); }, [fetchPesquisas]);
 
+  const navigate = useNavigate();
+
   const handleVote = async (pesquisaId: string, resposta: any) => {
     if (!usuario?.id) return;
     const { error } = await supabase.from('respostas_pesquisa').insert({
