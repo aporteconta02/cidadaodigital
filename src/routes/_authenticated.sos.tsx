@@ -15,6 +15,143 @@ export const Route = createFileRoute("/_authenticated/sos")({
   component: SOSPage,
 });
 
+function ContatosSection() {
+  const { usuario } = useAuth();
+  const [contatos, setContatos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [nome, setNome] = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+
+  const fetchContatos = useCallback(async () => {
+    if (!usuario?.id) return;
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('contatos_confianca')
+      .select('*')
+      .eq('usuario_id', usuario.id);
+    
+    if (!error) setContatos(data || []);
+    setLoading(false);
+  }, [usuario?.id]);
+
+  useEffect(() => {
+    fetchContatos();
+  }, [fetchContatos]);
+
+  const addContato = async () => {
+    if (!usuario?.id || !nome || !telefone) return;
+    
+    if (contatos.length >= 5) {
+      toast.error("Máximo de 5 contatos permitido.");
+      return;
+    }
+
+    const { error } = await supabase.from('contatos_confianca').insert({
+      usuario_id: usuario.id,
+      nome,
+      telefone
+    });
+
+    if (error) {
+      toast.error("Erro ao adicionar contato.");
+    } else {
+      toast.success("Contato adicionado!");
+      setNome('');
+      setTelefone('');
+      setIsOpen(false);
+      fetchContatos();
+    }
+  };
+
+  const removeContato = async (id: string) => {
+    const { error } = await supabase.from('contatos_confianca').delete().eq('id', id);
+    if (!error) {
+      toast.success("Contato removido.");
+      fetchContatos();
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic">Contatos de Confiança</h3>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogTrigger asChild>
+            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 active:scale-95 transition-all">
+              <Plus size={12} className="text-primary" />
+              <span className="text-[10px] font-bold uppercase tracking-tight">Adicionar</span>
+            </button>
+          </DialogTrigger>
+          <DialogContent className="bg-bg-elevated border-border-custom rounded-3xl p-6">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-black font-space uppercase italic">Novo Contato</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-text-muted">Nome do Contato</label>
+                <input
+                  type="text"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  placeholder="Ex: Esposa, Pai, Vizinho..."
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-primary/50"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-text-muted">Telefone (WhatsApp)</label>
+                <input
+                  type="tel"
+                  value={telefone}
+                  onChange={(e) => setTelefone(e.target.value)}
+                  placeholder="Ex: 31999999999"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-primary/50"
+                />
+              </div>
+              <button
+                onClick={addContato}
+                className="w-full bg-primary text-white font-black py-4 rounded-2xl uppercase tracking-widest shadow-glow active:scale-95 transition-all"
+              >
+                Salvar Contato
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div className="space-y-2">
+        {loading ? (
+          <div className="h-20 bg-white/5 rounded-2xl animate-pulse" />
+        ) : contatos.length === 0 ? (
+          <div className="p-8 rounded-2xl border border-dashed border-white/10 text-center">
+            <p className="text-[10px] font-bold uppercase text-text-muted tracking-widest">Nenhum contato cadastrado</p>
+          </div>
+        ) : (
+          contatos.map((contato) => (
+            <div key={contato.id} className="bg-bg-card rounded-2xl p-4 flex items-center justify-between border border-white/5 shadow-sm">
+              <div className="flex items-center gap-4">
+                <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center">
+                  <User size={18} className="text-text-muted" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-text-primary">{contato.nome}</h4>
+                  <p className="text-[10px] text-text-muted font-bold tracking-tight">{contato.telefone}</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => removeContato(contato.id)}
+                className="size-8 rounded-lg bg-danger/10 flex items-center justify-center text-danger active:scale-90 transition-all"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
 const ALERT_TYPES = {
   suspeito: { color: "border-l-[#FF3B5C]", icon: <Eye size={18} className="text-[#FF3B5C]" />, label: "Suspeito", hex: "#FF3B5C" },
   perturbacao: { color: "border-l-[#FF8C00]", icon: <AlertTriangle size={18} className="text-[#FF8C00]" />, label: "Perturbação", hex: "#FF8C00" },
