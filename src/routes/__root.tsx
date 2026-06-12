@@ -197,7 +197,9 @@ function RootComponent() {
 
         {/* Main Content Area */}
         <main className={cn("flex-1 w-full", !isPublicPage && "max-w-lg mx-auto overflow-y-auto")}>
-          <Outlet />
+          <div key={location.pathname} className="page-transition-container">
+            <Outlet />
+          </div>
         </main>
 
         {/* Bottom Navigation (Hidden on landing/auth) */}
