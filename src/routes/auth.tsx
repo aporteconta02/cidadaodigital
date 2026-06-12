@@ -126,8 +126,8 @@ function AuthPage() {
       const qrToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
 
       console.log("Inserindo no perfil usuarios...");
-      const { error: insertError } = await supabase.from('usuarios').insert({
-        id: uid, // Importante: vincular o ID da tabela ao ID do Auth
+      const { error: insertError } = await supabase.from('usuarios').upsert({
+        id: uid, 
         auth_id: uid,
         nome: fullName.trim(),
         email: email.trim().toLowerCase(),
@@ -140,7 +140,7 @@ function AuthPage() {
         qr_code_token: qrToken,
         is_admin: false,
         ativo: true
-      });
+      }, { onConflict: 'id' });
 
       if (insertError) {
         console.error("Erro no insert usuarios:", insertError);
