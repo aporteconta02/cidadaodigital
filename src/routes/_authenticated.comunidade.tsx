@@ -68,7 +68,7 @@ function ComunidadePage() {
           >
             {activeTab === 'denuncias' && <DenunciasTab />}
             {activeTab === 'eventos' && <EventosTab />}
-            {activeTab === 'voz' && <VozDoPovoTab />}
+            {activeTab === 'voz' && <VozDoPovoTab defaultPesquisaId={search?.pesquisaId} />}
             {activeTab === 'mural' && <MuralTab />}
             {activeTab === 'telefones' && <TelefonesTab />}
           </motion.div>
