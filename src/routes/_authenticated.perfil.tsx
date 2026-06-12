@@ -29,7 +29,8 @@ import {
   Megaphone,
   MapPin,
   Smartphone,
-  ScanLine
+  ScanLine,
+  Store
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
