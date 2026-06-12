@@ -9,7 +9,7 @@ import {
   useLocation,
 } from "@tanstack/react-router";
 import React, { useEffect, type ReactNode } from "react";
-import { Home, ShoppingBag, Users, ShieldAlert, User, Plus, Megaphone, Calendar, ClipboardList, AlertCircle } from "lucide-react";
+import { Home, ShoppingBag, Users, ShieldAlert, User, Plus, Megaphone, Calendar, ClipboardList, AlertCircle, MapPin } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
