@@ -29,13 +29,24 @@ const mockRoute = {
   useRouteContext: vi.fn(() => ({ profile: null })),
 };
 
-vi.mock('@tanstack/react-router', () => ({
-  createFileRoute: vi.fn(() => vi.fn(() => mockRoute)),
-  useNavigate: vi.fn(() => vi.fn()),
-  Link: ({ children, ...props }: any) => React.createElement('a', props, children),
-  useRouter: vi.fn(() => ({ invalidate: vi.fn() })),
-  useLocation: vi.fn(() => ({ pathname: '/' })),
-}));
+vi.mock('@tanstack/react-router', () => {
+  const mockRoute = {
+    useSearch: vi.fn(() => ({ redirect: undefined })),
+    useRouteContext: vi.fn(() => ({ profile: null })),
+    options: { component: () => React.createElement('div', null, 'MockComponent') }
+  };
+  const routeFn = vi.fn(() => mockRoute);
+  (routeFn as any).useSearch = mockRoute.useSearch;
+  (routeFn as any).useRouteContext = mockRoute.useRouteContext;
+  
+  return {
+    createFileRoute: vi.fn(() => routeFn),
+    useNavigate: vi.fn(() => vi.fn()),
+    Link: ({ children, ...props }: any) => React.createElement('a', props, children),
+    useRouter: vi.fn(() => ({ invalidate: vi.fn() })),
+    useLocation: vi.fn(() => ({ pathname: '/' })),
+  };
+});
 
 // Mock do Sonner
 vi.mock('sonner', () => ({
