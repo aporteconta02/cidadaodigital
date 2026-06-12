@@ -54,8 +54,8 @@ export default function Map({ center, zoom, markers = [] }: MapProps) {
       className="w-full h-full"
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
+        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
       />
       <Marker position={center}>
         <Popup>Você está aqui</Popup>

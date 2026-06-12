@@ -173,12 +173,15 @@ function RootComponent() {
                   CIDADÃO<span className="">.</span><span className="">PLUS</span>
                 </h1>
                 <div className="flex items-center gap-3">
-                  <div className="relative size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-transform active:scale-95 cursor-pointer">
+                  <Link 
+                    to="/sos"
+                    className="relative size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-transform active:scale-95 cursor-pointer"
+                  >
                     <ShieldAlert size={20} className="text-text-primary" />
                     <div className="absolute -top-1 -right-1 size-5 bg-danger rounded-full flex items-center justify-center text-[10px] font-bold text-white border-2 border-bg-primary">
                       3
                     </div>
-                  </div>
+                  </Link>
                   <div className="size-10 rounded-full bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center transition-transform active:scale-95 cursor-pointer">
                     <User size={20} className="text-text-secondary" />
                   </div>
