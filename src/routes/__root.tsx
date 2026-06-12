@@ -186,24 +186,12 @@ function RootComponent() {
 
         {/* Bottom Navigation (Hidden on landing/auth) */}
         {!isPublicPage && (
-          <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-2xl border-t border-white/5 pb-safe">
+          <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-2xl border-t border-white/5 pb-safe shadow-premium">
             <div className="flex items-center justify-around h-18 max-w-lg mx-auto relative px-4">
-              <NavLink to="/dashboard" icon={<Home size={20} />} label="Início" />
-              <NavLink to="/comercio" icon={<ShoppingBag size={20} />} label="Lojas" />
-              
-              {/* SOS Central Button */}
-              <div className="relative -top-5 flex flex-col items-center">
-                <Link 
-                  to="/sos"
-                  className="size-14 rounded-2xl bg-sos flex items-center justify-center text-white shadow-[0_8px_24px_rgba(255,59,59,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 border border-white/20"
-                >
-                  <ShieldAlert size={28} strokeWidth={2.5} className="animate-pulse" />
-                </Link>
-                <span className="text-[8px] font-black mt-1.5 text-sos uppercase tracking-[0.2em]">EMERGÊNCIA</span>
-              </div>
-
-              <NavLink to="/comunidade" icon={<Users size={20} />} label="Povo" />
-              <NavLink to="/perfil" icon={<User size={20} />} label="Perfil" />
+              <NavLink to="/dashboard" icon={<Home size={22} />} label="Home" />
+              <NavLink to="/comercio" icon={<ShoppingBag size={22} />} label="Delivery" />
+              <NavLink to="/sos" icon={<ShieldAlert size={22} />} label="Utilidades" />
+              <NavLink to="/perfil" icon={<User size={22} />} label="Login" />
             </div>
           </nav>
         )}
