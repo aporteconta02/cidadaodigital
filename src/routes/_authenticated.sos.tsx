@@ -513,11 +513,9 @@ export default function SOSPage() {
                   ))}
                 </div>
               ) : alerts.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="size-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
-                    <ShieldCheck size={32} className="text-text-muted opacity-20" />
-                  </div>
-                  <p className="text-[10px] font-bold uppercase text-text-muted tracking-widest">Tudo tranquilo por aqui</p>
+                <div className="flex flex-col items-center justify-center py-16 text-center opacity-40">
+                  <ShieldCheck size={48} className="mb-4 text-success" />
+                  <p className="text-sm font-bold uppercase tracking-widest">Tudo tranquilo no seu bairro! 🟢</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -539,7 +537,7 @@ export default function SOSPage() {
                             {ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.label || 'Alerta'}
                           </h4>
                           <p className="text-[10px] text-text-muted font-bold uppercase tracking-tight">
-                            Há {formatDistanceToNow(new Date(alert.criado_em), { locale: ptBR })}
+                            {formatDistanceToNow(new Date(alert.criado_em), { locale: ptBR, addSuffix: true })}
                           </p>
                         </div>
                       </div>

@@ -224,7 +224,7 @@ function DenunciasTab() {
         ) : denuncias.length === 0 ? (
           <div className="py-20 text-center opacity-40">
             <Megaphone size={48} className="mx-auto mb-4" />
-            <p className="text-sm font-bold uppercase tracking-widest">Nenhuma denúncia encontrada</p>
+            <p className="text-sm font-bold uppercase tracking-widest">Nenhuma denúncia por aqui. Ótimo sinal! ✅</p>
           </div>
         ) : (
           denuncias.map((item) => (
@@ -491,7 +491,7 @@ function EventosTab() {
         ) : eventos.length === 0 ? (
           <div className="py-20 text-center opacity-40">
             <Calendar size={48} className="mx-auto mb-4" />
-            <p className="text-sm font-bold uppercase tracking-widest">Nenhum evento em breve</p>
+            <p className="text-sm font-bold uppercase tracking-widest">Nenhum evento em breve! 🎉</p>
           </div>
         ) : (
           eventos.map((event) => (
@@ -600,6 +600,11 @@ function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
       {loading ? (
         <div className="space-y-6">
           {[1, 2].map(i => <div key={i} className="h-64 bg-white/5 rounded-[32px] animate-pulse" />)}
+        </div>
+      ) : pesquisas.length === 0 ? (
+        <div className="py-20 text-center opacity-40">
+          <Vote size={48} className="mx-auto mb-4" />
+          <p className="text-sm font-bold uppercase tracking-widest">Nenhuma pesquisa ativa no momento</p>
         </div>
       ) : (
         pesquisas.map((poll) => {
@@ -712,7 +717,7 @@ function MuralTab() {
         ) : avisos.length === 0 ? (
           <div className="py-20 text-center opacity-40">
             <ClipboardList size={48} className="mx-auto mb-4" />
-            <p className="text-sm font-bold uppercase tracking-widest">Mural vazio por enquanto</p>
+            <p className="text-sm font-bold uppercase tracking-widest">Mural vazio por enquanto. Seja o primeiro a publicar um aviso! 📋</p>
           </div>
         ) : (
           avisos.map((post) => (
@@ -725,7 +730,7 @@ function MuralTab() {
                   )}>
                     {post.tipo}
                   </span>
-                  <span className="text-[9px] text-text-muted font-bold uppercase tracking-widest">{formatDistanceToNow(new Date(post.criado_em), { locale: ptBR })}</span>
+                  <span className="text-[9px] text-text-muted font-bold uppercase tracking-widest">{formatDistanceToNow(new Date(post.criado_em), { locale: ptBR, addSuffix: true })}</span>
                 </div>
                 <h5 className="text-base font-bold text-white leading-snug">{post.titulo}</h5>
                 <p className="text-sm text-text-muted line-clamp-3 leading-relaxed">{post.texto}</p>

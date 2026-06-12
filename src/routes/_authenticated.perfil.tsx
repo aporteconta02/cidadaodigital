@@ -36,6 +36,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { toPng } from "html-to-image";
 import { toast } from "sonner";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -327,7 +329,7 @@ function PerfilPage() {
                     <div className="flex justify-between items-end">
                       <div>
                         <p className="text-[8px] uppercase tracking-widest opacity-50">Válido até</p>
-                        <p className="text-xs font-mono">{usuario.validade_assinatura ? new Date(usuario.validade_assinatura as string).toLocaleDateString() : '--/--/----'}</p>
+                        <p className="text-xs font-mono">{usuario.validade_assinatura ? format(new Date(usuario.validade_assinatura as string), 'dd/MM/yyyy', { locale: ptBR }) : '--/--/----'}</p>
                       </div>
                       <div className="size-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10">
                         <span className="text-[10px] font-black">C+</span>
