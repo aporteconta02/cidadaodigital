@@ -331,7 +331,7 @@ function AdminPesquisas() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                        {textResponses.map((r, i) => (
                          <div key={i} className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                            <p className="text-sm text-text-secondary leading-relaxed italic">"{r.resposta.valor}"</p>
+                            <p className="text-sm text-text-secondary leading-relaxed italic">"{(r.resposta as any)?.valor}"</p>
                             <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2">
                                <p className="text-[9px] text-text-muted font-black uppercase tracking-widest">{r.bairro || 'Desconhecido'}</p>
                             </div>
