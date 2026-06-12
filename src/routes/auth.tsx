@@ -1,5 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   Mail, 
@@ -17,6 +17,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useAuthStore } from "@/hooks/use-auth-store";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>) => {
@@ -30,7 +31,8 @@ export const Route = createFileRoute("/auth")({
 type AccountType = 'morador' | 'comerciante' | 'entregador';
 
 function AuthPage() {
-  const { redirect: redirectPath } = Route.useSearch();
+  const { redirect: redirectPath } = useSearch({ from: '/auth' });
+  const { setProfile, setSession } = useAuthStore();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -39,13 +41,13 @@ function AuthPage() {
   const navigate = useNavigate();
 
   // Check if already logged in
-  useState(() => {
+  useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         navigate({ to: '/dashboard' });
       }
     });
-  });
+  }, [navigate]);
 
   // Form states
   const [email, setEmail] = useState("");
@@ -126,7 +128,7 @@ function AuthPage() {
       const qrToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
 
       console.log("Inserindo no perfil usuarios...");
-      const { error: insertError } = await supabase.from('usuarios').upsert({
+      const { data: newUserProfile, error: insertError } = await supabase.from('usuarios').upsert({
         id: uid, 
         auth_id: uid,
         nome: fullName.trim(),
@@ -140,7 +142,7 @@ function AuthPage() {
         qr_code_token: qrToken,
         is_admin: false,
         ativo: true
-      }, { onConflict: 'id' });
+      }, { onConflict: 'id' }).select().single();
 
       if (insertError) {
         console.error("Erro no insert usuarios:", insertError);
@@ -170,10 +172,13 @@ function AuthPage() {
       console.log("Cadastro concluído com sucesso!");
       toast.success("Feito! 🎉");
       
-      // Pequeno delay para garantir que o Auth atualizou a sessão
-      setTimeout(() => {
-        navigate({ to: '/dashboard' });
-      }, 500);
+      // Salvar no estado global
+      if (newUserProfile) {
+        setProfile(newUserProfile as any);
+      }
+      setSession(authData.session);
+      
+      navigate({ to: '/dashboard' });
 
     } catch (err: any) {
       console.error("Erro inesperado no cadastro:", err);
@@ -203,9 +208,19 @@ function AuthPage() {
       }
       
       if (data.session) {
+         // Buscar perfil
+         const { data: profile } = await supabase
+           .from('usuarios')
+           .select('*')
+           .eq('auth_id', data.session.user.id)
+           .maybeSingle();
+
+         setSession(data.session);
+         if (profile) {
+           setProfile(profile as any);
+         }
+
          toast.success("Feito! ✅");
-         // Se houver um redirecionamento pendente, use-o. 
-         // Mas remova o protocolo/domínio se for um URL completo para evitar problemas com o TanStack Router
          let target: string = "/dashboard";
          if (redirectPath) {
            target = redirectPath;
