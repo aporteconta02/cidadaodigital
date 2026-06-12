@@ -14,6 +14,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuthStore } from "@/hooks/use-auth-store";
 
 
 import appCss from "../styles.css?url";
@@ -141,13 +142,19 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   const location = useLocation();
+  const { profile, logout } = useAuthStore();
   const isPublicPage = ['/', '/auth'].includes(location.pathname);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session?.user?.id);
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         router.invalidate();
+      }
+      if (event === 'SIGNED_OUT') {
+        logout();
+        router.invalidate();
+        router.navigate({ to: '/auth' });
       }
     });
 
@@ -183,7 +190,13 @@ function RootComponent() {
                     </div>
                   </Link>
                   <div className="size-10 rounded-full bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center transition-transform active:scale-95 cursor-pointer">
-                    <User size={20} className="text-text-secondary" />
+                    {profile?.avatar_url ? (
+                      <img src={profile.avatar_url} alt={profile.nome} className="size-full object-cover" />
+                    ) : (
+                      <span className="text-text-primary font-bold text-xs">
+                        {profile?.nome?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'CP'}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -235,6 +248,12 @@ function RootComponent() {
 
               <NavLink to="/comunidade" icon={<Users size={22} />} label="Cidade" />
               <NavLink to="/perfil" icon={<User size={22} />} label="Perfil" />
+              <button 
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                }}
+                className="hidden" // Botão invisível para facilitar teste de logout se necessário, ou apenas deixar no perfil
+              />
             </div>
           </nav>
         )}

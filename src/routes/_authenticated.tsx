@@ -1,6 +1,8 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 
+import { useAuthStore } from "@/hooks/use-auth-store";
+
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ location }) => {
     // On the server, we might not have the session in the singleton client
@@ -25,6 +27,11 @@ export const Route = createFileRoute("/_authenticated")({
     
     if (!session) {
       console.log("Authentication failed, redirecting to /auth");
+      // Limpar estado se a sessão caiu
+      if (typeof window !== 'undefined') {
+        const { logout } = useAuthStore.getState();
+        logout();
+      }
       throw redirect({
         to: "/auth",
         search: {
@@ -44,6 +51,13 @@ export const Route = createFileRoute("/_authenticated")({
 
     if (error) {
       console.error('Error fetching profile in guard:', error);
+    }
+
+    // Atualizar store global se no cliente
+    if (typeof window !== 'undefined' && profile) {
+      const { setProfile, setSession } = useAuthStore.getState();
+      setProfile(profile as any);
+      setSession(session);
     }
 
     return { 
