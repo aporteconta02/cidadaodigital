@@ -235,10 +235,10 @@ function RootComponent() {
                 </DrawerTrigger>
                 <DrawerContent className="bg-bg-elevated border-border-custom max-w-lg mx-auto rounded-t-3xl">
                   <div className="p-6 grid grid-cols-2 gap-4">
-                    <ActionButton onClick={() => console.log('denuncia')} icon={<Megaphone className="text-primary" />} label="Denunciar" />
-                    <ActionButton onClick={() => console.log('evento')} icon={<Calendar className="text-secondary" />} label="Novo Evento" />
-                    <ActionButton onClick={() => console.log('mural')} icon={<ClipboardList className="text-success" />} label="Mural" />
-                    <ActionButton onClick={() => console.log('alerta')} icon={<AlertCircle className="text-danger" />} label="Reportar Alerta" />
+                    <ActionButton onClick={() => router.navigate({ to: '/comunidade' })} icon={<Megaphone className="text-primary" />} label="Denunciar" />
+                    <ActionButton onClick={() => router.navigate({ to: '/comunidade' })} icon={<Calendar className="text-secondary" />} label="Novo Evento" />
+                    <ActionButton onClick={() => router.navigate({ to: '/comunidade' })} icon={<ClipboardList className="text-success" />} label="Mural" />
+                    <ActionButton onClick={() => router.navigate({ to: '/sos' })} icon={<AlertCircle className="text-danger" />} label="Reportar Alerta" />
                   </div>
                   <div className="px-6 pb-8">
                     <DrawerClose asChild>
