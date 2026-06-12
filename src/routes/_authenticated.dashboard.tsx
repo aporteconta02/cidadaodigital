@@ -100,10 +100,10 @@ function DashboardPage() {
                 category.highlight ? "bg-primary/10 border border-primary/20" : "hover:bg-white/5"
               )}
             >
-              <div className={cn("size-14 rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110", category.color)}>
+              <div className={cn("size-14 rounded-full flex items-center justify-center transition-transform duration-500 group-hover:scale-110 shadow-lg", category.color)}>
                 {category.icon}
               </div>
-              <span className="text-[10px] font-black text-center leading-tight uppercase tracking-wider opacity-60 group-hover:opacity-100 transition-opacity">
+              <span className="text-[10px] font-black text-center leading-tight uppercase tracking-wider text-white opacity-90 group-hover:opacity-100 transition-opacity">
                 {category.label}
               </span>
             </motion.button>
