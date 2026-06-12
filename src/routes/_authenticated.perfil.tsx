@@ -294,7 +294,7 @@ function PerfilPage() {
         <div className="mb-10">
           <h3 className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-4 ml-2 italic">Sua Carteirinha</h3>
           
-          {usuario.assinante_plus ? (
+          {usuario.assinante_plus && usuario.validade_assinatura && new Date(usuario.validade_assinatura) > new Date() ? (
             <div className="perspective-1000">
               <motion.div
                 ref={cardRef}
