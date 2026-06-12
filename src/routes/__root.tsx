@@ -251,6 +251,7 @@ function RootComponent() {
               </Drawer>
 
               <NavLink to="/comunidade" icon={<Users size={22} />} label="Cidade" />
+              <NavLink to="/sos" icon={<ShieldAlert size={22} />} label="Seguro" />
               <NavLink to="/perfil" icon={<User size={22} />} label="Perfil" />
               <button 
                 onClick={async () => {
