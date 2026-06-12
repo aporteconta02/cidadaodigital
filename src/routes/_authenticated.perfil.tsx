@@ -25,7 +25,8 @@ import {
   ShoppingBag,
   Bell,
   LockKeyhole,
-  LogOutIcon
+  LogOut as LogOutIcon,
+  Megaphone
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
