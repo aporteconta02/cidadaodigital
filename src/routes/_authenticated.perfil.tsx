@@ -229,7 +229,7 @@ function PerfilPage() {
         
         // Log validation
         await supabase.from('validacoes_qr').insert({
-          validador_id: usuario.id,
+          validador_id: usuario?.id as string,
           membro_id: member.id,
           resultado: 'sucesso'
         });
