@@ -206,16 +206,11 @@ function AuthPage() {
          toast.success("Login realizado!");
          // Se houver um redirecionamento pendente, use-o. 
          // Mas remova o protocolo/domínio se for um URL completo para evitar problemas com o TanStack Router
-         let target: any = "/dashboard";
+         let target: string = "/dashboard";
          if (redirectPath) {
-           try {
-             const url = new URL(redirectPath);
-             target = url.pathname + url.search;
-           } catch (e) {
-             target = redirectPath;
-           }
+           target = redirectPath;
          }
-         navigate({ to: target });
+         navigate({ to: target as any });
       }
     } catch (error: any) {
       setErro(error.message || "Erro na autenticação");
