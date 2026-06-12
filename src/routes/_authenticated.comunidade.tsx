@@ -730,7 +730,7 @@ function MuralTab() {
                   )}>
                     {post.tipo}
                   </span>
-                  <span className="text-[9px] text-text-muted font-bold uppercase tracking-widest">{formatDistanceToNow(new Date(post.criado_em), { locale: ptBR })}</span>
+                  <span className="text-[9px] text-text-muted font-bold uppercase tracking-widest">{formatDistanceToNow(new Date(post.criado_em), { locale: ptBR, addSuffix: true })}</span>
                 </div>
                 <h5 className="text-base font-bold text-white leading-snug">{post.titulo}</h5>
                 <p className="text-sm text-text-muted line-clamp-3 leading-relaxed">{post.texto}</p>
