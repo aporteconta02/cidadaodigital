@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Search, Star, ChevronRight, Plus, MapPin, ShoppingBag } from "lucide-react";
+import { Search, Star, ChevronRight, Plus, MapPin, ShoppingBag, Map as MapIcon } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
@@ -29,12 +30,13 @@ function ComercioPage() {
   const [produtos, setProdutos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { adicionarItem } = useCart();
+  const { usuario } = useAuth();
 
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      let lojasQuery = supabase.from('lojas').select('*').eq('aprovada', true).eq('ativo', true);
-      let produtosQuery = supabase.from('produtos').select('*, lojas(*)').eq('ativo', true);
+      let lojasQuery = supabase.from('lojas').select('*, parceiros_clube(id)').eq('aprovada', true).eq('ativo', true);
+      let produtosQuery = supabase.from('produtos').select('*, lojas!inner(*, parceiros_clube(id))').eq('ativo', true);
 
       if (activeCategory) {
         lojasQuery = lojasQuery.eq('categoria', activeCategory.toLowerCase());
@@ -100,13 +102,18 @@ function ComercioPage() {
             </div>
             <div className="flex gap-4 px-4 overflow-x-auto no-scrollbar pb-2">
               {lojas.map((store) => (
-                <Link key={store.id} to={`/comercio/loja/${store.id}`} className="flex-[0_0_200px] group">
+                <Link key={store.id} to={`/comercio/loja/${store.id}`} className="flex-[0_0_200px] group relative">
                   <div className="h-[100px] rounded-t-md overflow-hidden bg-white/5">
                     {store.logo_url && <img src={store.logo_url} className="w-full h-full object-cover" alt={store.nome} />}
                   </div>
                   <div className="bg-bg-card rounded-b-md p-3 border border-white/5">
-                    <h4 className="text-sm font-bold text-text-primary truncate">{store.nome}</h4>
-                    <p className="text-[10px] text-text-muted mt-1 uppercase font-black">{store.categoria}</p>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="text-sm font-bold text-text-primary truncate flex-1">{store.nome}</h4>
+                      {store.parceiros_clube?.length > 0 && (
+                        <span className="text-[8px] font-black text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 whitespace-nowrap">CLUBE+</span>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-text-muted uppercase font-black">{store.categoria}</p>
                   </div>
                 </Link>
               ))}
@@ -116,29 +123,50 @@ function ComercioPage() {
           <section className="px-4">
             <h2 className="section-title uppercase tracking-tighter mb-4">Produtos</h2>
             <div className="grid grid-cols-2 gap-4">
-              {produtos.map((product) => (
-                <div key={product.id} className="bg-bg-card rounded-md overflow-hidden border border-white/5 flex flex-col">
-                  <Link to={`/comercio/produto/${product.id}`} className="aspect-square bg-white/5">
-                    {product.imagem_url && <img src={product.imagem_url} className="w-full h-full object-cover" alt={product.nome} />}
-                  </Link>
-                  <div className="p-3">
-                    <h4 className="text-[13px] font-semibold text-text-primary line-clamp-1">{product.nome}</h4>
-                    <p className="micro-text text-text-muted font-bold uppercase mb-2">{product.lojas?.nome}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-base font-bold text-primary">R$ {product.preco.toFixed(2)}</span>
-                      <button 
-                        onClick={() => {
-                          adicionarItem({ id: product.id, nome: product.nome, preco: product.preco, imagem_url: product.imagem_url, loja_id: product.loja_id });
-                          toast.success("Adicionado!");
-                        }}
-                        className="size-8 rounded-full bg-secondary text-text-primary flex items-center justify-center"
-                      >
-                        <Plus size={18} />
-                      </button>
+              {produtos.map((product) => {
+                const isParceiro = product.lojas?.parceiros_clube?.length > 0;
+                const precoExibido = isParceiro && usuario?.assinante_plus ? product.preco * 0.9 : product.preco;
+                
+                return (
+                  <div key={product.id} className="bg-bg-card rounded-md overflow-hidden border border-white/5 flex flex-col relative">
+                    <Link to={`/comercio/produto/${product.id}`} className="aspect-square bg-white/5 relative">
+                      {product.imagem_url && <img src={product.imagem_url} className="w-full h-full object-cover" alt={product.nome} />}
+                      {isParceiro && usuario?.assinante_plus && (
+                        <div className="absolute top-2 left-2 px-2 py-1 bg-primary text-white text-[8px] font-black uppercase rounded shadow-lg">
+                          -10% CLUBE+
+                        </div>
+                      )}
+                    </Link>
+                    <div className="p-3">
+                      <h4 className="text-[13px] font-semibold text-text-primary line-clamp-1">{product.nome}</h4>
+                      <p className="micro-text text-text-muted font-bold uppercase mb-2">{product.lojas?.nome}</p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-col">
+                          {isParceiro && usuario?.assinante_plus && (
+                            <span className="text-[9px] text-text-muted line-through">R$ {product.preco.toFixed(2)}</span>
+                          )}
+                          <span className="text-base font-bold text-primary">R$ {precoExibido.toFixed(2)}</span>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            adicionarItem({ 
+                              id: product.id, 
+                              nome: product.nome, 
+                              preco: precoExibido, 
+                              imagem_url: product.imagem_url, 
+                              loja_id: product.loja_id 
+                            });
+                            toast.success("Adicionado!");
+                          }}
+                          className="size-8 rounded-full bg-secondary text-text-primary flex items-center justify-center"
+                        >
+                          <Plus size={18} />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         </>

@@ -29,7 +29,8 @@ import {
   Megaphone,
   MapPin,
   Smartphone,
-  ScanLine
+  ScanLine,
+  Store
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
@@ -293,7 +294,7 @@ function PerfilPage() {
         <div className="mb-10">
           <h3 className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-4 ml-2 italic">Sua Carteirinha</h3>
           
-          {usuario.assinante_plus ? (
+          {usuario.assinante_plus && usuario.validade_assinatura && new Date(usuario.validade_assinatura) > new Date() ? (
             <div className="perspective-1000">
               <motion.div
                 ref={cardRef}
@@ -379,7 +380,7 @@ function PerfilPage() {
         </div>
 
         {/* Botão de Validar QR (Só Comerciantes) */}
-        {usuario.tipo === 'comerciante' && (
+        {usuario.tipo === 'comerciante' && usuario.assinante_plus && usuario.validade_assinatura && new Date(usuario.validade_assinatura) > new Date() && (
           <div className="mb-8">
             <button 
               onClick={startScanner}
@@ -400,6 +401,14 @@ function PerfilPage() {
               sub="Histórico de compras" 
               onClick={() => navigate({ to: "/comercio" })}
             />
+            {usuario.tipo === 'comerciante' && (
+              <ProfileItem 
+                icon={<Store className="text-secondary" />} 
+                title="Minha Loja" 
+                sub="Gerenciar produtos e pedidos" 
+                onClick={() => navigate({ to: "/comercio" })}
+              />
+            )}
             <ProfileItem 
               icon={<Megaphone className="text-secondary" />} 
               title="Minhas Denúncias" 

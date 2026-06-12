@@ -178,7 +178,8 @@ export default function SOSPage() {
 
   // Fetch alerts and user location
   useEffect(() => {
-    if (isAssinante) {
+    const isValido = usuario?.validade_assinatura ? new Date(usuario.validade_assinatura) > new Date() : false;
+    if (isAssinante && isValido) {
       fetchAlerts();
       
       // Realtime subscription
@@ -317,7 +318,8 @@ export default function SOSPage() {
     window.open(url, '_blank');
   };
 
-  if (!isAssinante) {
+  const isValido = usuario?.validade_assinatura ? new Date(usuario.validade_assinatura) > new Date() : false;
+  if (!isAssinante || !isValido) {
     return (
       <div className="min-h-[calc(100vh-144px)] bg-bg-primary flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
         <div className="size-24 rounded-3xl bg-gradient-hero flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(108,99,255,0.2)]">

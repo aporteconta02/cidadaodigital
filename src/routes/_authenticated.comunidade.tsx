@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { 
   Plus, MapPin, Clock, Megaphone, Calendar, ClipboardList, Vote, Phone, 
   Search, CheckCircle2, AlertCircle, ChevronRight, Share2, Camera, Image,
@@ -21,7 +21,8 @@ export const Route = createFileRoute("/_authenticated/comunidade")({
 type CityTab = 'denuncias' | 'eventos' | 'voz' | 'mural' | 'telefones';
 
 function ComunidadePage() {
-  const [activeTab, setActiveTab] = useState<CityTab>('denuncias');
+  const { search } = Route.useSearch() as any;
+  const [activeTab, setActiveTab] = useState<CityTab>(search?.tab || 'denuncias');
 
   const tabs: { id: CityTab; label: string }[] = [
     { id: 'denuncias', label: 'Denúncias' },
@@ -67,7 +68,7 @@ function ComunidadePage() {
           >
             {activeTab === 'denuncias' && <DenunciasTab />}
             {activeTab === 'eventos' && <EventosTab />}
-            {activeTab === 'voz' && <VozDoPovoTab />}
+            {activeTab === 'voz' && <VozDoPovoTab defaultPesquisaId={search?.pesquisaId} />}
             {activeTab === 'mural' && <MuralTab />}
             {activeTab === 'telefones' && <TelefonesTab />}
           </motion.div>
@@ -528,7 +529,7 @@ function EventosTab() {
    VOZ DO POVO TAB
    ============================================================================ */
 
-function VozDoPovoTab() {
+function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
   const { usuario } = useAuth();
   const [pesquisas, setPesquisas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -556,14 +557,23 @@ function VozDoPovoTab() {
     setLoading(false);
   }, [usuario?.id]);
 
-  useEffect(() => { fetchPesquisas(); }, [fetchPesquisas]);
+  useEffect(() => { 
+    fetchPesquisas().then(() => {
+      if (defaultPesquisaId) {
+        const el = document.getElementById(`poll-${defaultPesquisaId}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }); 
+  }, [fetchPesquisas, defaultPesquisaId]);
+
+  const navigate = useNavigate();
 
   const handleVote = async (pesquisaId: string, resposta: any) => {
     if (!usuario?.id) return;
     const { error } = await supabase.from('respostas_pesquisa').insert({
       pesquisa_id: pesquisaId,
       usuario_id: usuario.id,
-      resposta,
+      resposta: { valor: resposta },
       bairro: usuario.bairro
     });
 
@@ -597,7 +607,10 @@ function VozDoPovoTab() {
           const hasVoted = !!userVotes[poll.id];
 
           return (
-            <div key={poll.id} className="bg-bg-card border border-white/5 rounded-[40px] p-7 shadow-sm">
+            <div key={poll.id} id={`poll-${poll.id}`} className={cn(
+              "bg-bg-card border border-white/5 rounded-[40px] p-7 shadow-sm transition-all",
+              defaultPesquisaId === poll.id && "ring-2 ring-primary ring-offset-4 ring-offset-bg-primary"
+            )}>
               <div className="flex items-center gap-2 mb-4">
                 <span className="px-3 py-1 bg-secondary/10 text-secondary text-[9px] font-black uppercase tracking-widest rounded-lg">{poll.categoria}</span>
                 {hasVoted && <span className="flex items-center gap-1 text-success text-[9px] font-black uppercase tracking-widest bg-success/10 px-3 py-1 rounded-lg">
