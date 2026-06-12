@@ -168,10 +168,10 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-      <div className={cn(
-        "flex min-h-screen flex-col bg-bg-primary text-text-primary overflow-x-hidden font-jakarta",
-        !isPublicPage && "pb-[72px]"
-      )}>
+        <div className={cn(
+          "flex min-h-screen flex-col bg-bg-primary text-text-primary overflow-x-hidden font-jakarta",
+          !isPublicPage && "pb-[72px]"
+        )}>
         <Toaster position="top-center" expand={true} richColors />
         {/* App Header (Hidden on landing/auth) */}
         {!isPublicPage && (
