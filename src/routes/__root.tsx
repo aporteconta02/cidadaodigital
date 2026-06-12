@@ -12,7 +12,7 @@ import React, { useEffect, type ReactNode } from "react";
 import { Home, ShoppingBag, Users, ShieldAlert, User, Plus, Megaphone, Calendar, ClipboardList, AlertCircle, MapPin, MessageSquare, Phone } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/use-auth";
-import { CartProvider } from "@/hooks/use-cart";
+import { CartProvider, useCart } from "@/hooks/use-cart";
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
