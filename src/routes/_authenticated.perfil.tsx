@@ -320,13 +320,13 @@ function PerfilPage() {
                     
                     <div>
                       <h4 className="text-lg font-bold mb-0.5">{usuario.nome}</h4>
-                      <p className="text-[10px] opacity-70 font-mono tracking-widest">Nº #{usuario.numero_membro}</p>
+                      <p className="text-[10px] opacity-70 font-mono tracking-widest">Nº #{usuario.numero_membro || ''}</p>
                     </div>
                     
                     <div className="flex justify-between items-end">
                       <div>
                         <p className="text-[8px] uppercase tracking-widest opacity-50">Válido até</p>
-                        <p className="text-xs font-mono">{usuario.validade_assinatura ? new Date(usuario.validade_assinatura).toLocaleDateString() : '--/--/----'}</p>
+                        <p className="text-xs font-mono">{usuario.validade_assinatura ? new Date(usuario.validade_assinatura as string).toLocaleDateString() : '--/--/----'}</p>
                       </div>
                       <div className="size-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10">
                         <span className="text-[10px] font-black">C+</span>
@@ -341,7 +341,7 @@ function PerfilPage() {
                   style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                 >
                   <div className="p-2 bg-white rounded-xl shadow-inner border border-gray-100">
-                        <QRCodeSVG value={usuario.qr_code_token || "DEMO"} size={110} />
+                        <QRCodeSVG value={(usuario.qr_code_token as string) || "DEMO"} size={110} />
                   </div>
                   <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight text-center">
                     Apresente para validar desconto
