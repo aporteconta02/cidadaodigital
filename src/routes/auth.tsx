@@ -32,6 +32,15 @@ function AuthPage() {
   const [erro, setErro] = useState("");
   const navigate = useNavigate();
 
+  // Check if already logged in
+  useState(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate({ to: '/dashboard' });
+      }
+    });
+  });
+
   // Form states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
