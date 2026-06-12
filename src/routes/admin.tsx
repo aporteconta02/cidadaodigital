@@ -1,29 +1,5 @@
-import { createFileRoute, Outlet, Link, useLocation } from "@tanstack/react-router";
-import { 
-  LayoutDashboard, 
-  Users, 
-  ShoppingBag, 
-  ShieldAlert, 
-  Megaphone, 
-  Settings, 
-  LogOut,
-  Bell,
-  Search
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-
-export const Route = createFileRoute("/admin")({
-  beforeLoad: ({ context }: any) => {
-    // Nota: O context do TanStack Router deve conter as informações de auth
-    // Se não estiver logado ou não for admin, redireciona
-    // Como o useAuth é um hook, usaremos uma abordagem de proteção dentro do componente 
-    // ou via context se disponível no router.
-  },
-  component: AdminLayout,
-});
-
+import { createFileRoute, Outlet, Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
-import { useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { 
   LayoutDashboard, 
@@ -41,6 +17,11 @@ import {
   Phone,
   DollarSign
 } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export const Route = createFileRoute("/admin")({
+  component: AdminLayout,
+});
 
 function AdminLayout() {
   const { usuario, isAdmin, loading } = useAuth();
@@ -112,7 +93,6 @@ function AdminLayout() {
         <div className="p-4 border-t border-white/5 mt-auto">
           <button 
             onClick={() => {
-              // Sign out logic already in supabase client usually, but we'll use a direct call
               import('@/integrations/supabase/client').then(({ supabase }) => supabase.auth.signOut());
             }}
             className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-bold text-danger hover:bg-danger/10 transition-all"
@@ -124,7 +104,7 @@ function AdminLayout() {
       </aside>
 
       {/* Main Area */}
-      <main className="flex-1 ml-[240px]">
+      <main className="flex-1 ml-[260px]">
         {/* Top Header */}
         <header className="h-20 bg-[#0A0A0F]/50 backdrop-blur-xl border-b border-white/5 px-8 flex items-center justify-between sticky top-0 z-10">
           <div className="relative w-96">
@@ -143,10 +123,18 @@ function AdminLayout() {
             </button>
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <p className="text-sm font-bold leading-none">Admin Master</p>
+                <p className="text-sm font-bold leading-none">{usuario?.nome || 'Admin'}</p>
                 <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest mt-1">Super Usuário</p>
               </div>
-              <div className="size-10 rounded-full bg-gradient-hero border-2 border-white/10" />
+              <div className="size-10 rounded-full bg-gradient-hero border-2 border-white/10 overflow-hidden">
+                {usuario?.avatar_url ? (
+                  <img src={usuario.avatar_url} alt={usuario.nome} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-xs font-black">
+                    {usuario?.nome?.charAt(0)}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </header>
