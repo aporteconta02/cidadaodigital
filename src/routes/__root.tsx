@@ -8,7 +8,7 @@ import {
   Scripts,
   useLocation,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import React, { useEffect, type ReactNode } from "react";
 import { Home, ShoppingBag, Users, ShieldAlert, User, Plus, Megaphone, Calendar, ClipboardList, AlertCircle } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
@@ -251,7 +251,7 @@ function ActionButton({ icon, label }: { icon: React.ReactNode; label: string })
   return (
     <button className="flex flex-col items-center justify-center gap-3 p-4 rounded-xl bg-white/5 border border-white/5 active:scale-95 transition-all hover:bg-white/10">
       <div className="size-12 rounded-full bg-bg-primary flex items-center justify-center shadow-card">
-        {React.cloneElement(icon as React.ReactElement, { size: 24 })}
+        {React.cloneElement(icon as React.ReactElement<{ size?: number }>, { size: 24 })}
       </div>
       <span className="micro-text font-bold text-text-primary uppercase tracking-wider text-center">
         {label}
