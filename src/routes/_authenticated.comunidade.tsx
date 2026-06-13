@@ -83,15 +83,17 @@ function ComunidadePage() {
    DENÚNCIAS TAB
    ============================================================================ */
 
-function DenunciasTab() {
+function DenunciasTab({ autoOpen = false }: { autoOpen?: boolean }) {
   const { usuario } = useAuth();
   const [denuncias, setDenuncias] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'todas' | 'minhas'>('todas');
-  const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+  const [isNewModalOpen, setIsNewModalOpen] = useState(autoOpen);
   const [step, setStep] = useState(1);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [resolveTarget, setResolveTarget] = useState<any>(null);
+  const [resolveText, setResolveText] = useState('');
 
   // Form State
   const [categoria, setCategoria] = useState('');
