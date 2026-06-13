@@ -25,6 +25,8 @@ export type Database = {
           id: string
           latitude: number | null
           longitude: number | null
+          observacao_resolucao: string | null
+          resolvido_em: string | null
           tipo: string
           usuario_id: string | null
         }
@@ -38,6 +40,8 @@ export type Database = {
           id?: string
           latitude?: number | null
           longitude?: number | null
+          observacao_resolucao?: string | null
+          resolvido_em?: string | null
           tipo: string
           usuario_id?: string | null
         }
@@ -51,6 +55,8 @@ export type Database = {
           id?: string
           latitude?: number | null
           longitude?: number | null
+          observacao_resolucao?: string | null
+          resolvido_em?: string | null
           tipo?: string
           usuario_id?: string | null
         }
@@ -154,6 +160,8 @@ export type Database = {
           id: string
           latitude: number | null
           longitude: number | null
+          observacao_resolucao: string | null
+          resolvido_em: string | null
           status: string | null
           usuario_id: string | null
         }
@@ -167,6 +175,8 @@ export type Database = {
           id?: string
           latitude?: number | null
           longitude?: number | null
+          observacao_resolucao?: string | null
+          resolvido_em?: string | null
           status?: string | null
           usuario_id?: string | null
         }
@@ -180,6 +190,8 @@ export type Database = {
           id?: string
           latitude?: number | null
           longitude?: number | null
+          observacao_resolucao?: string | null
+          resolvido_em?: string | null
           status?: string | null
           usuario_id?: string | null
         }
