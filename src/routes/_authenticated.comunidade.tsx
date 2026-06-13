@@ -488,10 +488,14 @@ function DenunciasTab({ autoOpen = false }: { autoOpen?: boolean }) {
    EVENTOS TAB
    ============================================================================ */
 
-function EventosTab() {
+function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
+  const { usuario } = useAuth();
   const [eventos, setEventos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'todos' | 'hoje' | 'semana' | 'mes'>('todos');
+  const [isNewOpen, setIsNewOpen] = useState(autoOpen);
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({ titulo: '', descricao: '', data_evento: '', local_nome: '', endereco: '', categoria: 'Cultura', gratuito: true });
 
   const fetchEventos = useCallback(async () => {
     setLoading(true);
