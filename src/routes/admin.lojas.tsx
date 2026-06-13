@@ -106,14 +106,14 @@ function AdminLojas() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold font-inter uppercase tracking-tight">Gestão de Lojas</h2>
-          <p className="text-admin-text-admin-purple text-sm font-semibold mt-1">Gerencie parceiros comerciais e marketplace</p>
+          <p className="text-admin-text-secondary text-sm font-semibold mt-1">Gerencie parceiros comerciais e marketplace</p>
         </div>
       </div>
 
       {/* Search */}
       <div className="bg-admin-surface border border-admin-border-light p-4 rounded-lg shadow-sm">
         <div className="relative max-w-md">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-admin-text-admin-purple" />
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-admin-text-secondary" />
           <input 
             type="text" 
             placeholder="Buscar por nome da loja..."
@@ -130,21 +130,21 @@ function AdminLojas() {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-admin-hover">
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple">Loja</th>
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple">Proprietário</th>
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple">Plano</th>
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple">Status</th>
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple text-right">Ações</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary">Loja</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary">Proprietário</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary">Plano</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary">Status</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-admin-border-light">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-admin-text-admin-purple animate-pulse">Carregando lojas...</td>
+                  <td colSpan={5} className="px-6 py-12 text-center text-admin-text-secondary animate-pulse">Carregando lojas...</td>
                 </tr>
               ) : lojas.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-admin-text-admin-purple">Nenhuma loja encontrada</td>
+                  <td colSpan={5} className="px-6 py-12 text-center text-admin-text-secondary">Nenhuma loja encontrada</td>
                 </tr>
               ) : (
                 lojas.map((loja) => (
@@ -155,23 +155,23 @@ function AdminLojas() {
                           {loja.logo_url ? (
                             <img src={loja.logo_url} className="w-full h-full object-cover" alt="" />
                           ) : (
-                            <Store size={20} className="text-admin-text-admin-purple" />
+                            <Store size={20} className="text-admin-text-secondary" />
                           )}
                         </div>
                         <div>
                           <p className="text-sm font-bold leading-none">{loja.nome}</p>
-                          <p className="text-[10px] text-admin-text-admin-purple mt-1 ">{loja.categoria}</p>
+                          <p className="text-[10px] text-admin-text-secondary mt-1 ">{loja.categoria}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="text-xs font-bold text-admin-text-admin-purple">{loja.usuario?.nome}</p>
-                      <p className="text-[10px] text-admin-text-admin-purple mt-1">{loja.usuario?.email}</p>
+                      <p className="text-xs font-bold text-admin-text-secondary">{loja.usuario?.nome}</p>
+                      <p className="text-[10px] text-admin-text-secondary mt-1">{loja.usuario?.email}</p>
                     </td>
                     <td className="px-6 py-4">
                       <span className={cn(
                         "px-2 py-0.5 rounded-full text-[9px] font-semibold border",
-                        loja.plano === "prime" ? "bg-admin-primary/10 text-admin-primary border-admin-primary/20" : "bg-admin-border-light text-admin-text-admin-purple border-admin-border-light"
+                        loja.plano === "prime" ? "bg-admin-primary/10 text-admin-primary border-admin-primary/20" : "bg-admin-border-light text-admin-text-secondary border-admin-border-light"
                       )}>
                         {loja.plano || 'FREE'}
                       </span>
@@ -195,7 +195,7 @@ function AdminLojas() {
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
                           onClick={() => openLojaDetails(loja)}
-                          className="p-2 hover:bg-admin-border-light rounded-xl transition-colors text-admin-text-admin-purple hover:text-admin-text"
+                          className="p-2 hover:bg-admin-border-light rounded-xl transition-colors text-admin-text-secondary hover:text-admin-text"
                           title="Ver Detalhes"
                         >
                           <Eye size={16} />
@@ -255,18 +255,18 @@ function AdminLojas() {
                 <X size={20} />
               </button>
               <div className="absolute bottom-4 left-8 flex items-end gap-6">
-                <div className="size-24 rounded-lg bg-admin-border-light border-4 border-[#0A0A0F] shadow-sm overflow-hidden flex items-center justify-center bg-white">
+                <div className="size-24 rounded-lg bg-admin-border-light border-4 border-admin-surface shadow-sm overflow-hidden flex items-center justify-center bg-white">
                   {selectedLoja.logo_url ? (
                     <img src={selectedLoja.logo_url} className="w-full h-full object-cover" alt="" />
                   ) : (
-                    <Store size={40} className="text-gray-300" />
+                    <Store size={40} className="text-admin-text-muted" />
                   )}
                 </div>
                 <div className="mb-2">
                   <h3 className="text-2xl font-semibold  uppercase tracking-tighter">{selectedLoja.nome}</h3>
-                  <div className="flex items-center gap-2 text-admin-text-admin-purple">
+                  <div className="flex items-center gap-2 text-admin-text-secondary">
                     <span className="text-[10px] font-semibold">{selectedLoja.categoria}</span>
-                    <span className="size-1 rounded-full bg-white/20" />
+                    <span className="size-1 rounded-full bg-admin-border" />
                     <span className="text-[10px] font-semibold">{selectedLoja.plano || 'FREE'}</span>
                   </div>
                 </div>
@@ -277,33 +277,33 @@ function AdminLojas() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-6">
                   <div>
-                    <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-admin-purple  mb-4">Informações de Contato</h4>
+                    <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-secondary  mb-4">Informações de Contato</h4>
                     <div className="space-y-4">
                       <div className="flex items-center gap-3">
                         <User size={16} className="text-admin-primary" />
                         <div>
-                          <p className="text-[10px] text-admin-text-admin-purple font-semibold">Dono</p>
+                          <p className="text-[10px] text-admin-text-secondary font-semibold">Dono</p>
                           <p className="text-sm font-bold">{selectedLoja.usuario?.nome}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <Phone size={16} className="text-admin-primary" />
                         <div>
-                          <p className="text-[10px] text-admin-text-admin-purple font-semibold">Telefone</p>
+                          <p className="text-[10px] text-admin-text-secondary font-semibold">Telefone</p>
                           <p className="text-sm font-bold">{selectedLoja.telefone || 'Não informado'}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <MapPin size={16} className="text-admin-primary" />
                         <div>
-                          <p className="text-[10px] text-admin-text-admin-purple font-semibold">Endereço</p>
+                          <p className="text-[10px] text-admin-text-secondary font-semibold">Endereço</p>
                           <p className="text-sm font-bold leading-tight">{selectedLoja.endereco || 'Não informado'}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <Calendar size={16} className="text-admin-primary" />
                         <div>
-                          <p className="text-[10px] text-admin-text-admin-purple font-semibold">Cadastro</p>
+                          <p className="text-[10px] text-admin-text-secondary font-semibold">Cadastro</p>
                           <p className="text-sm font-bold">{format(new Date(selectedLoja.criado_em), 'dd/MM/yyyy')}</p>
                         </div>
                       </div>
@@ -311,8 +311,8 @@ function AdminLojas() {
                   </div>
 
                   <div>
-                    <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-admin-purple  mb-4">Descrição</h4>
-                    <p className="text-sm text-admin-text-admin-purple leading-relaxed bg-admin-border-light p-4 rounded-lg border border-admin-border-light">
+                    <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-secondary  mb-4">Descrição</h4>
+                    <p className="text-sm text-admin-text-secondary leading-relaxed bg-admin-border-light p-4 rounded-lg border border-admin-border-light">
                       {selectedLoja.descricao || 'Sem descrição.'}
                     </p>
                   </div>
@@ -320,14 +320,14 @@ function AdminLojas() {
 
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-admin-purple ">Produtos ({selectedLojaProducts.length})</h4>
-                    <Package size={16} className="text-admin-text-admin-purple" />
+                    <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-secondary ">Produtos ({selectedLojaProducts.length})</h4>
+                    <Package size={16} className="text-admin-text-secondary" />
                   </div>
                   <div className="space-y-3">
                     {loadingProducts ? (
-                      <div className="text-center py-8 text-admin-text-admin-purple animate-pulse">Carregando produtos...</div>
+                      <div className="text-center py-8 text-admin-text-secondary animate-pulse">Carregando produtos...</div>
                     ) : selectedLojaProducts.length === 0 ? (
-                      <div className="text-center py-8 text-admin-text-admin-purple bg-admin-border-light rounded-lg border border-dashed border-admin-border-light text-xs ">Nenhum produto cadastrado</div>
+                      <div className="text-center py-8 text-admin-text-secondary bg-admin-border-light rounded-lg border border-dashed border-admin-border-light text-xs ">Nenhum produto cadastrado</div>
                     ) : (
                       selectedLojaProducts.map(product => (
                         <div key={product.id} className="flex items-center gap-3 bg-admin-border-light p-3 rounded-xl border border-admin-border-light hover:border-admin-border-light transition-colors group">

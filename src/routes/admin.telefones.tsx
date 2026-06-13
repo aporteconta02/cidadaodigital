@@ -110,7 +110,7 @@ function AdminTelefones() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold font-inter uppercase tracking-tight">Telefones Úteis</h2>
-          <p className="text-admin-text-admin-purple text-sm font-semibold mt-1">Gestão de contatos de emergência e serviços</p>
+          <p className="text-admin-text-secondary text-sm font-semibold mt-1">Gestão de contatos de emergência e serviços</p>
         </div>
         <button 
           onClick={() => {
@@ -133,7 +133,7 @@ function AdminTelefones() {
 
       <div className="bg-admin-surface border border-admin-border-light p-4 rounded-lg shadow-sm">
         <div className="relative max-w-md">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-admin-text-admin-purple" />
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-admin-text-secondary" />
           <input 
             type="text" 
             placeholder="Buscar por nome ou serviço..."
@@ -149,31 +149,31 @@ function AdminTelefones() {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-admin-hover">
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple">Contato / Nome</th>
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple">Categoria</th>
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple">Telefone</th>
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple text-right">Ações</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary">Contato / Nome</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary">Categoria</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary">Telefone</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-admin-border-light">
               {loading ? (
-                <tr><td colSpan={4} className="px-6 py-12 text-center text-admin-text-admin-purple animate-pulse">Carregando...</td></tr>
+                <tr><td colSpan={4} className="px-6 py-12 text-center text-admin-text-secondary animate-pulse">Carregando...</td></tr>
               ) : (
                 telefones.map(tel => (
                   <tr key={tel.id} className="hover:bg-admin-hover transition-colors group">
                     <td className="px-6 py-4">
                        <div className="flex items-center gap-3">
-                          <button onClick={() => toggleDestaque(tel)} className={cn("transition-colors", tel.destaque ? "text-admin-warning" : "text-admin-text-admin-purple hover:text-admin-text")}>
+                          <button onClick={() => toggleDestaque(tel)} className={cn("transition-colors", tel.destaque ? "text-admin-warning" : "text-admin-text-secondary hover:text-admin-text")}>
                             <Star size={16} fill={tel.destaque ? "currentColor" : "none"} />
                           </button>
                           <div>
                              <p className="text-sm font-bold leading-none">{tel.nome}</p>
-                             <p className="text-[10px] text-admin-text-admin-purple mt-1 ">{tel.cidade}</p>
+                             <p className="text-[10px] text-admin-text-secondary mt-1 ">{tel.cidade}</p>
                           </div>
                        </div>
                     </td>
                     <td className="px-6 py-4">
-                       <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-admin-border-light text-admin-text-admin-purple border border-admin-border-light">
+                       <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-admin-border-light text-admin-text-secondary border border-admin-border-light">
                           {tel.categoria}
                        </span>
                     </td>
@@ -185,7 +185,7 @@ function AdminTelefones() {
                     </td>
                     <td className="px-6 py-4 text-right">
                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={() => openEdit(tel)} className="p-2 hover:bg-admin-border-light rounded-xl transition-colors text-admin-text-admin-purple hover:text-admin-text">
+                          <button onClick={() => openEdit(tel)} className="p-2 hover:bg-admin-border-light rounded-xl transition-colors text-admin-text-secondary hover:text-admin-text">
                              <Edit2 size={16} />
                           </button>
                           <button onClick={() => deleteTelefone(tel.id)} className="p-2 hover:bg-admin-danger/10 rounded-xl transition-colors text-admin-danger">
@@ -212,7 +212,7 @@ function AdminTelefones() {
               <div className="p-8 space-y-6">
                  <div className="space-y-4">
                     <div>
-                      <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Nome do Serviço / Órgão</label>
+                      <label className="text-[10px] font-semibold text-admin-text-secondary mb-2 block">Nome do Serviço / Órgão</label>
                       <input 
                         type="text" 
                         placeholder="Ex: Polícia Militar, UBS Central..."
@@ -222,7 +222,7 @@ function AdminTelefones() {
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Número de Telefone</label>
+                      <label className="text-[10px] font-semibold text-admin-text-secondary mb-2 block">Número de Telefone</label>
                       <input 
                         type="text" 
                         placeholder="Ex: 190, (11) 99999-9999"
@@ -233,7 +233,7 @@ function AdminTelefones() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                        <div>
-                          <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Categoria</label>
+                          <label className="text-[10px] font-semibold text-admin-text-secondary mb-2 block">Categoria</label>
                           <select 
                             value={formData.categoria}
                             onChange={e => setFormData({...formData, categoria: e.target.value})}
@@ -246,7 +246,7 @@ function AdminTelefones() {
                           </select>
                        </div>
                        <div>
-                          <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Cidade</label>
+                          <label className="text-[10px] font-semibold text-admin-text-secondary mb-2 block">Cidade</label>
                           <input 
                             type="text" 
                             value={formData.cidade}
@@ -263,7 +263,7 @@ function AdminTelefones() {
                         onChange={e => setFormData({...formData, destaque: e.target.checked})}
                         className="size-4 bg-admin-border-light border border-admin-border-light rounded"
                       />
-                      <label htmlFor="destaque" className="text-xs font-bold text-admin-text-admin-purple cursor-pointer">Destacar este contato (topo da lista)</label>
+                      <label htmlFor="destaque" className="text-xs font-bold text-admin-text-secondary cursor-pointer">Destacar este contato (topo da lista)</label>
                     </div>
                  </div>
               </div>
