@@ -98,7 +98,7 @@ function AdminEventos() {
         <select 
           value={filterAprovado}
           onChange={(e) => setFilterAprovado(e.target.value)}
-          className="bg-admin-border-light border border-admin-border-light rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-admin-primary/50"
+          className="bg-admin-border-light border border-admin-border-light rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-admin-primary/50"
         >
           <option value="todos">Todos os Eventos</option>
           <option value="sim">Aprovados</option>
@@ -107,7 +107,7 @@ function AdminEventos() {
       </div>
 
       {/* Table */}
-      <div className="bg-admin-surface border border-admin-border-light rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-admin-surface border border-admin-border-light rounded-lg overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
@@ -133,7 +133,7 @@ function AdminEventos() {
                   <tr key={evento.id} className="hover:bg-admin-hover transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="size-10 rounded-xl bg-admin-border-light border border-admin-border-light overflow-hidden flex items-center justify-center">
+                        <div className="size-10 rounded-lg bg-admin-border-light border border-admin-border-light overflow-hidden flex items-center justify-center">
                           {evento.banner_url ? (
                             <img src={evento.banner_url} className="w-full h-full object-cover" alt="" />
                           ) : (
@@ -174,7 +174,7 @@ function AdminEventos() {
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                          <button 
                           onClick={() => setSelectedEvento(evento)}
-                          className="p-2 hover:bg-admin-border-light rounded-xl transition-colors text-admin-text-secondary hover:text-admin-text"
+                          className="p-2 hover:bg-admin-border-light rounded-lg transition-colors text-admin-text-secondary hover:text-admin-text"
                           title="Ver Detalhes"
                         >
                           <Eye size={16} />
@@ -182,7 +182,7 @@ function AdminEventos() {
                         {!evento.aprovado && (
                           <button 
                             onClick={() => updateEvento(evento.id, { aprovado: true })}
-                            className="p-2 hover:bg-admin-success/10 rounded-xl transition-colors text-admin-success"
+                            className="p-2 hover:bg-admin-success/10 rounded-lg transition-colors text-admin-success"
                             title="Aprovar Evento"
                           >
                             <CheckCircle2 size={16} />
@@ -191,7 +191,7 @@ function AdminEventos() {
                         <button 
                           onClick={() => updateEvento(evento.id, { destaque: !evento.destaque })}
                           className={cn(
-                            "p-2 rounded-xl transition-colors",
+                            "p-2 rounded-lg transition-colors",
                             evento.destaque ? "text-admin-primary bg-admin-primary/10" : "text-admin-text-secondary hover:bg-admin-border-light"
                           )}
                           title={evento.destaque ? "Remover Destaque" : "Marcar como Destaque"}
@@ -211,7 +211,7 @@ function AdminEventos() {
       {/* Evento Details Modal */}
       {selectedEvento && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-admin-text/40 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-admin-surface border border-admin-border-light w-full max-w-2xl rounded-xl overflow-hidden shadow-lg animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
+          <div className="bg-admin-surface border border-admin-border-light w-full max-w-2xl rounded-lg overflow-hidden shadow-lg animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
             <div className="relative h-48">
               {selectedEvento.banner_url ? (
                 <img src={selectedEvento.banner_url} className="w-full h-full object-cover" alt="" />

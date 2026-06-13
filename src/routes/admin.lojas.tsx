@@ -119,13 +119,13 @@ function AdminLojas() {
             placeholder="Buscar por nome da loja..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-admin-primary/50"
+            className="w-full bg-admin-border-light border border-admin-border-light rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-admin-primary/50"
           />
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-admin-surface border border-admin-border-light rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-admin-surface border border-admin-border-light rounded-lg overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
@@ -151,7 +151,7 @@ function AdminLojas() {
                   <tr key={loja.id} className="hover:bg-admin-hover transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="size-10 rounded-xl bg-admin-border-light border border-admin-border-light overflow-hidden flex items-center justify-center">
+                        <div className="size-10 rounded-lg bg-admin-border-light border border-admin-border-light overflow-hidden flex items-center justify-center">
                           {loja.logo_url ? (
                             <img src={loja.logo_url} className="w-full h-full object-cover" alt="" />
                           ) : (
@@ -195,7 +195,7 @@ function AdminLojas() {
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
                           onClick={() => openLojaDetails(loja)}
-                          className="p-2 hover:bg-admin-border-light rounded-xl transition-colors text-admin-text-secondary hover:text-admin-text"
+                          className="p-2 hover:bg-admin-border-light rounded-lg transition-colors text-admin-text-secondary hover:text-admin-text"
                           title="Ver Detalhes"
                         >
                           <Eye size={16} />
@@ -203,7 +203,7 @@ function AdminLojas() {
                         {!loja.aprovada && (
                           <button 
                             onClick={() => approveLoja(loja)}
-                            className="p-2 hover:bg-admin-success/10 rounded-xl transition-colors text-admin-success"
+                            className="p-2 hover:bg-admin-success/10 rounded-lg transition-colors text-admin-success"
                             title="Aprovar Loja"
                           >
                             <CheckCircle2 size={16} />
@@ -212,7 +212,7 @@ function AdminLojas() {
                         {loja.ativo && (
                           <button 
                             onClick={() => suspendLoja(loja)}
-                            className="p-2 hover:bg-admin-danger/10 rounded-xl transition-colors text-admin-danger"
+                            className="p-2 hover:bg-admin-danger/10 rounded-lg transition-colors text-admin-danger"
                             title="Suspender Loja"
                           >
                             <AlertTriangle size={16} />
@@ -221,7 +221,7 @@ function AdminLojas() {
                         {!loja.ativo && (
                           <button 
                             onClick={() => approveLoja(loja)}
-                            className="p-2 hover:bg-admin-success/10 rounded-xl transition-colors text-admin-success"
+                            className="p-2 hover:bg-admin-success/10 rounded-lg transition-colors text-admin-success"
                             title="Ativar Loja"
                           >
                             <CheckCircle2 size={16} />
@@ -240,7 +240,7 @@ function AdminLojas() {
       {/* Loja Details Modal */}
       {selectedLoja && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-admin-text/40 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-admin-surface border border-admin-border-light w-full max-w-2xl rounded-xl overflow-hidden shadow-lg animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
+          <div className="bg-admin-surface border border-admin-border-light w-full max-w-2xl rounded-lg overflow-hidden shadow-lg animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
             <div className="relative h-40">
               {selectedLoja.banner_url ? (
                 <img src={selectedLoja.banner_url} className="w-full h-full object-cover opacity-50" alt="" />
@@ -330,7 +330,7 @@ function AdminLojas() {
                       <div className="text-center py-8 text-admin-text-secondary bg-admin-border-light rounded-lg border border-dashed border-admin-border-light text-xs ">Nenhum produto cadastrado</div>
                     ) : (
                       selectedLojaProducts.map(product => (
-                        <div key={product.id} className="flex items-center gap-3 bg-admin-border-light p-3 rounded-xl border border-admin-border-light hover:border-admin-border-light transition-colors group">
+                        <div key={product.id} className="flex items-center gap-3 bg-admin-border-light p-3 rounded-lg border border-admin-border-light hover:border-admin-border-light transition-colors group">
                           <div className="size-10 rounded-lg bg-admin-text/20 overflow-hidden flex-shrink-0">
                             {product.foto_url && <img src={product.foto_url} className="w-full h-full object-cover" alt="" />}
                           </div>

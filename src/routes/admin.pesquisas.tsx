@@ -165,7 +165,7 @@ function AdminPesquisas() {
         </div>
         <button 
           onClick={() => setShowCreateModal(true)}
-          className="bg-primary hover:bg-admin-primary/90 text-admin-text px-6 py-2.5 rounded-xl text-xs font-semibold shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center gap-2"
+          className="bg-primary hover:bg-admin-primary/90 text-admin-text h-9 px-4 rounded-lg text-xs font-semibold shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center gap-2"
         >
           <Plus size={18} /> Nova Pesquisa
         </button>
@@ -174,12 +174,12 @@ function AdminPesquisas() {
       {/* List */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {loading ? (
-          <div className="col-span-full h-40 bg-admin-border-light rounded-xl animate-pulse" />
+          <div className="col-span-full h-40 bg-admin-border-light rounded-lg animate-pulse" />
         ) : pesquisas.length === 0 ? (
-          <div className="col-span-full py-12 text-center text-admin-text-secondary bg-admin-border-light rounded-xl border border-dashed border-admin-border-light ">Nenhuma pesquisa encontrada</div>
+          <div className="col-span-full py-12 text-center text-admin-text-secondary bg-admin-border-light rounded-lg border border-dashed border-admin-border-light ">Nenhuma pesquisa encontrada</div>
         ) : (
           pesquisas.map(p => (
-            <div key={p.id} className="bg-admin-surface border border-admin-border-light rounded-xl p-6 shadow-sm hover-card-effect group relative overflow-hidden">
+            <div key={p.id} className="bg-admin-surface border border-admin-border-light rounded-lg p-6 shadow-sm hover-card-effect group relative overflow-hidden">
                {p.ativa ? (
                  <div className="absolute top-0 right-0 px-4 py-1.5 bg-admin-success/20 text-admin-success text-[8px] font-semibold rounded-bl-xl border-l border-b border-admin-success/20">Ativa</div>
                ) : (
@@ -202,7 +202,7 @@ function AdminPesquisas() {
                        </div>
                        <button 
                         onClick={() => fetchResults(p)}
-                        className="p-2 bg-admin-border-light hover:bg-admin-border-light rounded-xl transition-all group-hover:translate-x-1"
+                        className="p-2 bg-admin-border-light hover:bg-admin-border-light rounded-lg transition-all group-hover:translate-x-1"
                        >
                          <ChevronRight size={18} className="text-admin-primary" />
                        </button>
@@ -217,7 +217,7 @@ function AdminPesquisas() {
       {/* Create Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-admin-text/40 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-admin-surface border border-admin-border-light w-full max-w-xl rounded-xl overflow-hidden shadow-lg animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+          <div className="bg-admin-surface border border-admin-border-light w-full max-w-xl rounded-lg overflow-hidden shadow-lg animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
             <div className="p-6 border-b border-admin-border-light flex items-center justify-between">
                <h3 className="text-lg font-semibold  uppercase tracking-tighter">Criar Nova Pesquisa</h3>
                <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-admin-border-light rounded-full"><X size={20} /></button>
@@ -231,7 +231,7 @@ function AdminPesquisas() {
                       placeholder="Ex: Qual sua opinião sobre a nova praça?"
                       value={newPesquisa.titulo}
                       onChange={e => setNewPesquisa({...newPesquisa, titulo: e.target.value})}
-                      className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
+                      className="w-full bg-admin-border-light border border-admin-border-light rounded-lg py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
                     />
                   </div>
                   <div>
@@ -240,7 +240,7 @@ function AdminPesquisas() {
                       placeholder="Mais detalhes sobre o objetivo da pesquisa..."
                       value={newPesquisa.descricao}
                       onChange={e => setNewPesquisa({...newPesquisa, descricao: e.target.value})}
-                      className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50 h-24 resize-none"
+                      className="w-full bg-admin-border-light border border-admin-border-light rounded-lg py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50 h-24 resize-none"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
@@ -249,7 +249,7 @@ function AdminPesquisas() {
                         <select 
                           value={newPesquisa.tipo}
                           onChange={e => setNewPesquisa({...newPesquisa, tipo: e.target.value})}
-                          className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
+                          className="w-full bg-admin-border-light border border-admin-border-light rounded-lg py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
                         >
                           <option value="unica">Escolha Única</option>
                           <option value="multipla">Múltipla Escolha</option>
@@ -262,7 +262,7 @@ function AdminPesquisas() {
                           type="date" 
                           value={newPesquisa.encerra_em}
                           onChange={e => setNewPesquisa({...newPesquisa, encerra_em: e.target.value})}
-                          className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
+                          className="w-full bg-admin-border-light border border-admin-border-light rounded-lg py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
                         />
                      </div>
                   </div>
@@ -282,7 +282,7 @@ function AdminPesquisas() {
                             newOpts[i] = e.target.value;
                             setNewPesquisa({...newPesquisa, opcoes: newOpts});
                           }}
-                          className="flex-1 bg-admin-border-light border border-admin-border-light rounded-xl py-2 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
+                          className="flex-1 bg-admin-border-light border border-admin-border-light rounded-lg py-2 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
                         />
                         {newPesquisa.opcoes.length > 2 && (
                           <button onClick={() => {
@@ -312,10 +312,10 @@ function AdminPesquisas() {
       {/* Results Modal */}
       {selectedPesquisa && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-admin-text/40 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-admin-surface border border-admin-border-light w-full max-w-4xl rounded-xl overflow-hidden shadow-lg animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+          <div className="bg-admin-surface border border-admin-border-light w-full max-w-4xl rounded-lg overflow-hidden shadow-lg animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
             <div className="p-6 border-b border-admin-border-light flex items-center justify-between">
                <div className="flex items-center gap-4">
-                  <div className="size-10 rounded-xl bg-admin-primary/10 flex items-center justify-center text-admin-primary"><BarChart3 size={20} /></div>
+                  <div className="size-10 rounded-lg bg-admin-primary/10 flex items-center justify-center text-admin-primary"><BarChart3 size={20} /></div>
                   <div>
                     <h3 className="text-lg font-semibold  uppercase tracking-tighter leading-tight">{selectedPesquisa.titulo}</h3>
                     <p className="text-[10px] text-admin-text-secondary font-semibold">Resultados Consolidados</p>
@@ -345,7 +345,7 @@ function AdminPesquisas() {
                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                       <div className="lg:col-span-2 space-y-6">
                         <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-secondary  flex items-center gap-2"><PieChartIcon size={14} /> Distribuição de Votos</h4>
-                        <div className="h-80 w-full bg-admin-border-light rounded-xl p-6 border border-admin-border-light">
+                        <div className="h-80 w-full bg-admin-border-light rounded-lg p-6 border border-admin-border-light">
                           <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={resultsData} layout="vertical" margin={{ left: 40, right: 40 }}>
                               <XAxis type="number" hide />
@@ -363,7 +363,7 @@ function AdminPesquisas() {
 
                       <div className="space-y-6">
                          <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-secondary  flex items-center gap-2"><MapPin size={14} /> Votos por Bairro</h4>
-                         <div className="bg-admin-border-light rounded-xl border border-admin-border-light overflow-hidden">
+                         <div className="bg-admin-border-light rounded-lg border border-admin-border-light overflow-hidden">
                             <table className="w-full text-left">
                                <thead>
                                   <tr className="bg-admin-border-light">

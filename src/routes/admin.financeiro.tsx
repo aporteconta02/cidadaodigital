@@ -132,9 +132,9 @@ function AdminFinanceiro() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {kpis.map((kpi, i) => (
-          <div key={i} className="bg-admin-surface border border-admin-border-light rounded-xl p-6 shadow-sm group hover-card-effect">
+          <div key={i} className="bg-admin-surface border border-admin-border-light rounded-lg p-6 shadow-sm group hover-card-effect">
              <div className="flex items-center justify-between mb-4">
-                <div className={cn("size-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110", kpi.color)}>
+                <div className={cn("size-10 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110", kpi.color)}>
                    {kpi.icon}
                 </div>
                 <ArrowUpRight size={18} className="text-admin-text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -148,7 +148,7 @@ function AdminFinanceiro() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
          {/* Subscribers List */}
-         <div className="lg:col-span-2 bg-admin-surface border border-admin-border-light rounded-xl overflow-hidden shadow-sm flex flex-col">
+         <div className="lg:col-span-2 bg-admin-surface border border-admin-border-light rounded-lg overflow-hidden shadow-sm flex flex-col">
             <div className="p-6 border-b border-admin-border-light flex items-center justify-between">
                <h3 className="text-sm font-semibold text-admin-text-secondary ">Assinantes Recentes</h3>
                <button className="text-[10px] font-semibold text-admin-primary hover:underline">Gerenciar Todos</button>
@@ -192,7 +192,7 @@ function AdminFinanceiro() {
          </div>
 
          {/* Distribution Chart or Summary */}
-         <div className="bg-admin-surface border border-admin-border-light rounded-xl p-6 shadow-sm space-y-8">
+         <div className="bg-admin-surface border border-admin-border-light rounded-lg p-6 shadow-sm space-y-8">
             <h3 className="text-sm font-semibold text-admin-text-secondary ">Origem da Receita</h3>
             <div className="h-64 w-full">
                <ResponsiveContainer width="100%" height="100%">
@@ -216,14 +216,14 @@ function AdminFinanceiro() {
             <div className="space-y-4">
                <div className="flex items-center justify-between p-4 bg-admin-border-light rounded-lg border border-admin-border-light">
                   <div className="flex items-center gap-3">
-                     <div className="size-8 rounded-xl bg-admin-primary/20 flex items-center justify-center text-admin-primary"><DollarSign size={16} /></div>
+                     <div className="size-8 rounded-lg bg-admin-primary/20 flex items-center justify-center text-admin-primary"><DollarSign size={16} /></div>
                      <p className="text-xs font-bold">Ticket Médio Plus</p>
                   </div>
                   <p className="text-sm font-semibold ">R$ 9,90</p>
                </div>
                <div className="flex items-center justify-between p-4 bg-admin-border-light rounded-lg border border-admin-border-light">
                   <div className="flex items-center gap-3">
-                     <div className="size-8 rounded-xl bg-admin-success/20 flex items-center justify-center text-admin-success"><CheckCircle2 size={16} /></div>
+                     <div className="size-8 rounded-lg bg-admin-success/20 flex items-center justify-center text-admin-success"><CheckCircle2 size={16} /></div>
                      <p className="text-xs font-bold">Taxa de Conversão</p>
                   </div>
                   <p className="text-sm font-semibold ">4.2%</p>

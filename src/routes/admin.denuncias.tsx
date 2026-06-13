@@ -110,7 +110,7 @@ function AdminDenuncias() {
         <select 
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="bg-admin-border-light border border-admin-border-light rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-admin-primary/50"
+          className="bg-admin-border-light border border-admin-border-light rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-admin-primary/50"
         >
           <option value="todos">Todos os Status</option>
           <option value="pendente">Pendente</option>
@@ -121,7 +121,7 @@ function AdminDenuncias() {
         <select 
           value={filterCategoria}
           onChange={(e) => setFilterCategoria(e.target.value)}
-          className="bg-admin-border-light border border-admin-border-light rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-admin-primary/50"
+          className="bg-admin-border-light border border-admin-border-light rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-admin-primary/50"
         >
           <option value="todas">Todas as Categorias</option>
           <option value="iluminação">Iluminação</option>
@@ -133,7 +133,7 @@ function AdminDenuncias() {
       </div>
 
       {/* Table */}
-      <div className="bg-admin-surface border border-admin-border-light rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-admin-surface border border-admin-border-light rounded-lg overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
@@ -159,7 +159,7 @@ function AdminDenuncias() {
                   <tr key={denuncia.id} className="hover:bg-admin-hover transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="size-10 rounded-xl bg-admin-border-light border border-admin-border-light overflow-hidden flex items-center justify-center">
+                        <div className="size-10 rounded-lg bg-admin-border-light border border-admin-border-light overflow-hidden flex items-center justify-center">
                           {denuncia.foto_url ? (
                             <img src={denuncia.foto_url} className="w-full h-full object-cover" alt="" />
                           ) : (
@@ -193,7 +193,7 @@ function AdminDenuncias() {
                     <td className="px-6 py-4 text-right">
                       <button 
                         onClick={() => setSelectedDenuncia(denuncia)}
-                        className="p-2 hover:bg-admin-border-light rounded-xl transition-colors text-admin-text-secondary hover:text-admin-text"
+                        className="p-2 hover:bg-admin-border-light rounded-lg transition-colors text-admin-text-secondary hover:text-admin-text"
                       >
                         <ChevronRight size={18} />
                       </button>
@@ -209,7 +209,7 @@ function AdminDenuncias() {
       {/* Denuncia Details Modal */}
       {selectedDenuncia && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-admin-text/40 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-admin-surface border border-admin-border-light w-full max-w-3xl rounded-xl overflow-hidden shadow-lg animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
+          <div className="bg-admin-surface border border-admin-border-light w-full max-w-3xl rounded-lg overflow-hidden shadow-lg animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
             <div className="p-6 border-b border-admin-border-light flex items-center justify-between">
                <div>
                  <h3 className="text-lg font-semibold  uppercase tracking-tighter">Detalhes da Denúncia</h3>
@@ -230,7 +230,7 @@ function AdminDenuncias() {
                     <div className="aspect-video rounded-lg overflow-hidden border border-admin-border-light group relative">
                       <img src={selectedDenuncia.foto_url} className="w-full h-full object-cover" alt="" />
                       <div className="absolute inset-0 bg-admin-text/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                         <button className="bg-admin-border-light backdrop-blur-md px-4 py-2 rounded-xl text-[10px] font-semibold uppercase" onClick={() => window.open(selectedDenuncia.foto_url, '_blank')}>Ver original</button>
+                         <button className="bg-admin-border-light backdrop-blur-md px-4 py-2 rounded-lg text-[10px] font-semibold uppercase" onClick={() => window.open(selectedDenuncia.foto_url, '_blank')}>Ver original</button>
                       </div>
                     </div>
                   )}
@@ -293,7 +293,7 @@ function AdminDenuncias() {
                            onClick={() => updateStatus(selectedDenuncia.id, value)}
                            disabled={updateLoading || selectedDenuncia.status === value}
                            className={cn(
-                             "py-2.5 rounded-xl text-[10px] font-semibold transition-all",
+                             "py-2.5 rounded-lg text-[10px] font-semibold transition-all",
                              selectedDenuncia.status === value 
                               ? "bg-primary text-admin-text shadow-lg shadow-primary/20" 
                               : "bg-admin-border-light text-admin-text-secondary hover:bg-admin-border-light"
