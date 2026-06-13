@@ -164,16 +164,19 @@ const ALERT_TYPES = {
 };
 
 export default function SOSPage() {
+  const search = Route.useSearch() as any;
   const { usuario, isAssinante } = useAuth();
   const [sosProgress, setSosProgress] = useState(0);
   const [sosActive, setSosActive] = useState(false);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userLocation, setUserLocation] = useState<[number, number]>([-23.5612, -46.6623]); // Default SP
-  const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+  const [userLocation, setUserLocation] = useState<[number, number]>([-23.5612, -46.6623]);
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(!!search?.new);
   const [newAlertType, setNewAlertType] = useState<string>('suspeito');
   const [newAlertDesc, setNewAlertDesc] = useState('');
   const [activeTab, setActiveTab] = useState<'alertas' | 'contatos'>('alertas');
+  const [resolveTarget, setResolveTarget] = useState<any>(null);
+  const [resolveText, setResolveText] = useState('');
   const pressInterval = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch alerts and user location
