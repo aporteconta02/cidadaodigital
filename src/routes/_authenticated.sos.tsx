@@ -163,7 +163,7 @@ const ALERT_TYPES = {
   sos: { color: "border-l-[#FF3B5C]", icon: <ShieldAlert size={18} className="text-[#FF3B5C]" />, label: "SOS", hex: "#FF3B5C" },
 };
 
-export default function SOSPage() {
+function SOSPage() {
   const search = Route.useSearch() as any;
   const { usuario, isAssinante } = useAuth();
   const [sosProgress, setSosProgress] = useState(0);
