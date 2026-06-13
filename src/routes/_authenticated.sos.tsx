@@ -164,16 +164,19 @@ const ALERT_TYPES = {
 };
 
 export default function SOSPage() {
+  const search = Route.useSearch() as any;
   const { usuario, isAssinante } = useAuth();
   const [sosProgress, setSosProgress] = useState(0);
   const [sosActive, setSosActive] = useState(false);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userLocation, setUserLocation] = useState<[number, number]>([-23.5612, -46.6623]); // Default SP
-  const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+  const [userLocation, setUserLocation] = useState<[number, number]>([-23.5612, -46.6623]);
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(!!search?.new);
   const [newAlertType, setNewAlertType] = useState<string>('suspeito');
   const [newAlertDesc, setNewAlertDesc] = useState('');
   const [activeTab, setActiveTab] = useState<'alertas' | 'contatos'>('alertas');
+  const [resolveTarget, setResolveTarget] = useState<any>(null);
+  const [resolveText, setResolveText] = useState('');
   const pressInterval = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch alerts and user location
@@ -197,17 +200,19 @@ export default function SOSPage() {
         .subscribe();
 
       // Geolocation
+      // Realtime geolocation (live tracking)
+      let watchId: number | null = null;
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setUserLocation([position.coords.latitude, position.coords.longitude]);
-          },
-          (error) => console.error("Geolocation error:", error)
+        watchId = navigator.geolocation.watchPosition(
+          (position) => setUserLocation([position.coords.latitude, position.coords.longitude]),
+          (error) => console.error("Geolocation error:", error),
+          { enableHighAccuracy: true, maximumAge: 10000 }
         );
       }
 
       return () => {
         supabase.removeChannel(channel);
+        if (watchId !== null) navigator.geolocation.clearWatch(watchId);
       };
     }
   }, [isAssinante, usuario?.bairro]);
@@ -523,28 +528,44 @@ export default function SOSPage() {
                     <div 
                       key={alert.id} 
                       className={cn(
-                        "bg-bg-card rounded-2xl p-4 flex items-center justify-between border border-white/5 shadow-sm transition-all active:scale-[0.98]",
+                        "bg-bg-card rounded-2xl p-4 border border-white/5 shadow-sm transition-all",
                         ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.color || "border-l-primary",
                         "border-l-4"
                       )}
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center">
-                          {ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.icon}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center">
+                            {ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.icon}
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-sm text-text-primary">
+                              {ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.label || 'Alerta'}
+                            </h4>
+                            <p className="text-[10px] text-text-muted font-bold uppercase tracking-tight">
+                              {formatDistanceToNow(new Date(alert.criado_em), { locale: ptBR, addSuffix: true })}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="font-bold text-sm text-text-primary">
-                            {ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.label || 'Alerta'}
-                          </h4>
-                          <p className="text-[10px] text-text-muted font-bold uppercase tracking-tight">
-                            {formatDistanceToNow(new Date(alert.criado_em), { locale: ptBR, addSuffix: true })}
-                          </p>
+                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 border border-white/5">
+                          <ShieldCheck size={12} className="text-success" />
+                          <span className="text-[10px] font-black text-text-primary">{alert.confirmacoes || 0}</span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 border border-white/5">
-                        <ShieldCheck size={12} className="text-success" />
-                        <span className="text-[10px] font-black text-text-primary">{alert.confirmacoes || 0}</span>
-                      </div>
+                      {alert.observacao_resolucao && (
+                        <div className="mt-3 p-3 bg-success/5 border border-success/20 rounded-xl">
+                          <p className="text-[9px] font-black uppercase tracking-widest text-success mb-1">Resolução</p>
+                          <p className="text-xs text-text-secondary">{alert.observacao_resolucao}</p>
+                        </div>
+                      )}
+                      {usuario?.id === alert.usuario_id && !alert.observacao_resolucao && (
+                        <button
+                          onClick={() => { setResolveTarget(alert); setResolveText(''); }}
+                          className="mt-3 w-full py-2 bg-success/10 text-success font-black rounded-xl uppercase tracking-widest text-[10px] active:scale-95"
+                        >
+                          Marcar como Resolvido
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -555,6 +576,40 @@ export default function SOSPage() {
           )}
         </div>
       </div>
+
+      <Dialog open={!!resolveTarget} onOpenChange={(o) => !o && setResolveTarget(null)}>
+        <DialogContent className="bg-bg-elevated border-border-custom rounded-3xl p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black font-space uppercase italic text-white">Resolver Alerta</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <p className="text-xs text-text-muted">O que foi resolvido? Essa observação fica visível para os vizinhos.</p>
+            <textarea
+              value={resolveText}
+              onChange={(e) => setResolveText(e.target.value)}
+              maxLength={500}
+              placeholder="Ex: Falso alarme, era um vizinho novo / Polícia atendeu..."
+              className="w-full h-32 bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-white focus:outline-none focus:border-success/50 resize-none"
+            />
+            <button
+              onClick={async () => {
+                if (!resolveText.trim() || !resolveTarget) return toast.error("Descreva a resolução");
+                const { error } = await supabase.from('alertas_seguranca').update({
+                  observacao_resolucao: resolveText.trim(),
+                  resolvido_em: new Date().toISOString(),
+                } as any).eq('id', resolveTarget.id);
+                if (error) return toast.error("Erro ao resolver alerta");
+                toast.success("Alerta resolvido!");
+                setResolveTarget(null);
+                fetchAlerts();
+              }}
+              className="w-full py-4 bg-success text-white font-black rounded-2xl uppercase tracking-widest shadow-glow active:scale-95 transition-all"
+            >
+              Confirmar Resolução
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* SOS Active Overlay */}
       <AnimatePresence>

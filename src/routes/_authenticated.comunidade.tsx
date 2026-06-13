@@ -21,8 +21,9 @@ export const Route = createFileRoute("/_authenticated/comunidade")({
 type CityTab = 'denuncias' | 'eventos' | 'voz' | 'mural' | 'telefones';
 
 function ComunidadePage() {
-  const { search } = Route.useSearch() as any;
+  const search = Route.useSearch() as any;
   const [activeTab, setActiveTab] = useState<CityTab>(search?.tab || 'denuncias');
+  const autoOpen = !!search?.new;
 
   const tabs: { id: CityTab; label: string }[] = [
     { id: 'denuncias', label: 'Denúncias' },
@@ -66,10 +67,10 @@ function ComunidadePage() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
           >
-            {activeTab === 'denuncias' && <DenunciasTab />}
-            {activeTab === 'eventos' && <EventosTab />}
+            {activeTab === 'denuncias' && <DenunciasTab autoOpen={autoOpen} />}
+            {activeTab === 'eventos' && <EventosTab autoOpen={autoOpen} />}
             {activeTab === 'voz' && <VozDoPovoTab defaultPesquisaId={search?.pesquisaId} />}
-            {activeTab === 'mural' && <MuralTab />}
+            {activeTab === 'mural' && <MuralTab autoOpen={autoOpen} />}
             {activeTab === 'telefones' && <TelefonesTab />}
           </motion.div>
         </AnimatePresence>
@@ -82,15 +83,17 @@ function ComunidadePage() {
    DENÚNCIAS TAB
    ============================================================================ */
 
-function DenunciasTab() {
+function DenunciasTab({ autoOpen = false }: { autoOpen?: boolean }) {
   const { usuario } = useAuth();
   const [denuncias, setDenuncias] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'todas' | 'minhas'>('todas');
-  const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+  const [isNewModalOpen, setIsNewModalOpen] = useState(autoOpen);
   const [step, setStep] = useState(1);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [resolveTarget, setResolveTarget] = useState<any>(null);
+  const [resolveText, setResolveText] = useState('');
 
   // Form State
   const [categoria, setCategoria] = useState('');
@@ -185,7 +188,7 @@ function DenunciasTab() {
       latitude: localizacao?.lat,
       longitude: localizacao?.lng,
       endereco,
-      status: 'Pendente'
+      status: 'enviada'
     });
 
     if (error) {
@@ -241,7 +244,10 @@ function DenunciasTab() {
                   </span>
                   <span className={cn(
                     "text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg",
-                    item.status === 'Pendente' ? "bg-warning/10 text-warning" : "bg-success/10 text-success"
+                    item.status === 'resolvida' ? "bg-success/10 text-success" :
+                    item.status === 'rejeitada' ? "bg-danger/10 text-danger" :
+                    item.status === 'em_analise' ? "bg-primary/10 text-primary" :
+                    "bg-warning/10 text-warning"
                   )}>
                     {item.status}
                   </span>
@@ -251,6 +257,12 @@ function DenunciasTab() {
                   <MapPin size={14} className="text-primary" />
                   <span className="text-xs font-medium line-clamp-1">{item.endereco}</span>
                 </div>
+                {item.observacao_resolucao && (
+                  <div className="mb-4 p-3 bg-success/5 border border-success/20 rounded-2xl">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-success mb-1">Resolução</p>
+                    <p className="text-xs text-text-secondary leading-relaxed">{item.observacao_resolucao}</p>
+                  </div>
+                )}
                 <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest opacity-60">
                   <div className="flex items-center gap-1.5">
                     <Clock size={12} />
@@ -258,6 +270,14 @@ function DenunciasTab() {
                   </div>
                   <span>{item.confirmacoes || 0} confirmações</span>
                 </div>
+                {usuario?.id === item.usuario_id && item.status !== 'resolvida' && (
+                  <button
+                    onClick={() => { setResolveTarget(item); setResolveText(''); }}
+                    className="mt-4 w-full py-3 bg-success/10 text-success font-black rounded-2xl uppercase tracking-widest text-[10px] active:scale-95 transition-all"
+                  >
+                    Marcar como Resolvida
+                  </button>
+                )}
               </div>
             </div>
           ))
@@ -425,6 +445,41 @@ function DenunciasTab() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={!!resolveTarget} onOpenChange={(o) => !o && setResolveTarget(null)}>
+        <DialogContent className="bg-bg-elevated border-border-custom rounded-3xl p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black font-space uppercase italic text-white">Resolver Denúncia</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <p className="text-xs text-text-muted">Conte o que foi feito para resolver o problema. Essa observação ficará visível para todos.</p>
+            <textarea
+              value={resolveText}
+              onChange={(e) => setResolveText(e.target.value)}
+              maxLength={500}
+              placeholder="Ex: A prefeitura passou e tapou o buraco hoje pela manhã..."
+              className="w-full h-32 bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-white focus:outline-none focus:border-success/50 resize-none"
+            />
+            <button
+              onClick={async () => {
+                if (!resolveText.trim()) return toast.error("Descreva a resolução");
+                const { error } = await supabase.from('denuncias').update({
+                  status: 'resolvida',
+                  observacao_resolucao: resolveText.trim(),
+                  resolvido_em: new Date().toISOString()
+                }).eq('id', resolveTarget.id);
+                if (error) return toast.error("Erro ao resolver denúncia");
+                toast.success("Denúncia marcada como resolvida!");
+                setResolveTarget(null);
+                fetchDenuncias();
+              }}
+              className="w-full py-4 bg-success text-white font-black rounded-2xl uppercase tracking-widest shadow-glow active:scale-95 transition-all"
+            >
+              Confirmar Resolução
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -433,10 +488,14 @@ function DenunciasTab() {
    EVENTOS TAB
    ============================================================================ */
 
-function EventosTab() {
+function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
+  const { usuario } = useAuth();
   const [eventos, setEventos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'todos' | 'hoje' | 'semana' | 'mes'>('todos');
+  const [isNewOpen, setIsNewOpen] = useState(autoOpen);
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({ titulo: '', descricao: '', data_evento: '', local_nome: '', endereco: '', categoria: 'Cultura', gratuito: true });
 
   const fetchEventos = useCallback(async () => {
     setLoading(true);
@@ -521,6 +580,59 @@ function EventosTab() {
           ))
         )}
       </div>
+
+      <Dialog open={isNewOpen} onOpenChange={setIsNewOpen}>
+        <DialogTrigger asChild>
+          <button className="fixed bottom-24 right-6 size-16 rounded-full bg-secondary text-white shadow-glow flex items-center justify-center active:scale-90 transition-transform z-40">
+            <Plus size={32} strokeWidth={3} />
+          </button>
+        </DialogTrigger>
+        <DialogContent className="bg-bg-elevated border-border-custom rounded-3xl p-6 max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black font-space uppercase italic text-white">Propor Evento</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <input type="text" value={form.titulo} onChange={(e) => setForm({...form, titulo: e.target.value})} placeholder="Título do evento" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
+            <input type="datetime-local" value={form.data_evento} onChange={(e) => setForm({...form, data_evento: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
+            <input type="text" value={form.local_nome} onChange={(e) => setForm({...form, local_nome: e.target.value})} placeholder="Local (ex: Praça Central)" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
+            <input type="text" value={form.endereco} onChange={(e) => setForm({...form, endereco: e.target.value})} placeholder="Endereço" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
+            <select value={form.categoria} onChange={(e) => setForm({...form, categoria: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50">
+              {['Cultura','Esporte','Religioso','Educação','Comunitário','Festa','Outros'].map(c => <option key={c} value={c} className="bg-bg-elevated">{c}</option>)}
+            </select>
+            <textarea value={form.descricao} onChange={(e) => setForm({...form, descricao: e.target.value})} maxLength={500} placeholder="Descrição do evento..." className="w-full h-24 bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50 resize-none" />
+            <label className="flex items-center gap-2 text-xs text-text-muted">
+              <input type="checkbox" checked={form.gratuito} onChange={(e) => setForm({...form, gratuito: e.target.checked})} /> Evento gratuito
+            </label>
+            <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">Eventos passam por aprovação da administração.</p>
+            <button
+              disabled={submitting}
+              onClick={async () => {
+                if (!usuario?.id || !form.titulo || !form.data_evento) return toast.error("Preencha título e data");
+                setSubmitting(true);
+                const { error } = await supabase.from('eventos').insert({
+                  usuario_id: usuario.id,
+                  titulo: form.titulo,
+                  descricao: form.descricao,
+                  data_evento: new Date(form.data_evento).toISOString(),
+                  local_nome: form.local_nome,
+                  endereco: form.endereco,
+                  categoria: form.categoria,
+                  gratuito: form.gratuito,
+                });
+                setSubmitting(false);
+                if (error) return toast.error("Erro ao propor evento");
+                toast.success("Evento enviado para aprovação!");
+                setIsNewOpen(false);
+                setForm({ titulo: '', descricao: '', data_evento: '', local_nome: '', endereco: '', categoria: 'Cultura', gratuito: true });
+                fetchEventos();
+              }}
+              className="w-full py-4 bg-secondary text-white font-black rounded-2xl uppercase tracking-widest shadow-glow active:scale-95 transition-all"
+            >
+              {submitting ? 'Enviando...' : 'Propor Evento'}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -665,11 +777,15 @@ function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
    MURAL TAB
    ============================================================================ */
 
-function MuralTab() {
+function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
   const { usuario } = useAuth();
   const [avisos, setAvisos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('Todos');
+  const [isNewOpen, setIsNewOpen] = useState(autoOpen);
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({ titulo: '', texto: '', tipo: 'geral' });
+  const [foto, setFoto] = useState<File | null>(null);
 
   const categories = ['Todos', 'Pets', 'Emprego', 'Venda', 'Alerta', 'Geral'];
 
@@ -748,6 +864,63 @@ function MuralTab() {
           ))
         )}
       </div>
+
+      <Dialog open={isNewOpen} onOpenChange={setIsNewOpen}>
+        <DialogTrigger asChild>
+          <button className="fixed bottom-24 right-6 size-16 rounded-full bg-success text-white shadow-glow flex items-center justify-center active:scale-90 transition-transform z-40">
+            <Plus size={32} strokeWidth={3} />
+          </button>
+        </DialogTrigger>
+        <DialogContent className="bg-bg-elevated border-border-custom rounded-3xl p-6 max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black font-space uppercase italic text-white">Novo Aviso no Mural</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <select value={form.tipo} onChange={(e) => setForm({...form, tipo: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-success/50">
+              {[['pets','Pets'],['emprego','Emprego'],['venda','Venda'],['alerta','Alerta'],['geral','Geral']].map(([v,l]) => <option key={v} value={v} className="bg-bg-elevated">{l}</option>)}
+            </select>
+            <input type="text" value={form.titulo} onChange={(e) => setForm({...form, titulo: e.target.value})} placeholder="Título do aviso" maxLength={120} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-success/50" />
+            <textarea value={form.texto} onChange={(e) => setForm({...form, texto: e.target.value})} maxLength={500} placeholder="Conte os detalhes..." className="w-full h-32 bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-success/50 resize-none" />
+            <label className="flex items-center justify-center gap-2 p-4 bg-white/5 border border-dashed border-white/10 rounded-xl cursor-pointer">
+              <Camera size={16} className="text-success" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-white">{foto ? foto.name : 'Adicionar foto (opcional)'}</span>
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => setFoto(e.target.files?.[0] || null)} />
+            </label>
+            <button
+              disabled={submitting}
+              onClick={async () => {
+                if (!usuario?.id || !form.titulo || !form.texto) return toast.error("Preencha título e texto");
+                setSubmitting(true);
+                let foto_url = '';
+                if (foto) {
+                  const fn = `${usuario.id}-${Date.now()}.${foto.name.split('.').pop()}`;
+                  const up = await supabase.storage.from('fotos-denuncias').upload(fn, foto);
+                  if (!up.error) foto_url = supabase.storage.from('fotos-denuncias').getPublicUrl(up.data.path).data.publicUrl;
+                }
+                const { error } = await supabase.from('mural_avisos').insert({
+                  usuario_id: usuario.id,
+                  tipo: form.tipo,
+                  titulo: form.titulo,
+                  texto: form.texto,
+                  foto_url: foto_url || null,
+                  bairro: usuario.bairro,
+                  cidade: usuario.cidade,
+                });
+                setSubmitting(false);
+                if (error) return toast.error("Erro ao publicar aviso");
+                toast.success("Aviso publicado!");
+                setIsNewOpen(false);
+                setForm({ titulo: '', texto: '', tipo: 'geral' });
+                setFoto(null);
+                fetchAvisos();
+              }}
+              className="w-full py-4 bg-success text-white font-black rounded-2xl uppercase tracking-widest shadow-glow active:scale-95 transition-all"
+            >
+              {submitting ? 'Publicando...' : 'Publicar Aviso'}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
