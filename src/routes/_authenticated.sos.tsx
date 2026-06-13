@@ -528,28 +528,44 @@ export default function SOSPage() {
                     <div 
                       key={alert.id} 
                       className={cn(
-                        "bg-bg-card rounded-2xl p-4 flex items-center justify-between border border-white/5 shadow-sm transition-all active:scale-[0.98]",
+                        "bg-bg-card rounded-2xl p-4 border border-white/5 shadow-sm transition-all",
                         ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.color || "border-l-primary",
                         "border-l-4"
                       )}
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center">
-                          {ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.icon}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center">
+                            {ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.icon}
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-sm text-text-primary">
+                              {ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.label || 'Alerta'}
+                            </h4>
+                            <p className="text-[10px] text-text-muted font-bold uppercase tracking-tight">
+                              {formatDistanceToNow(new Date(alert.criado_em), { locale: ptBR, addSuffix: true })}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="font-bold text-sm text-text-primary">
-                            {ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.label || 'Alerta'}
-                          </h4>
-                          <p className="text-[10px] text-text-muted font-bold uppercase tracking-tight">
-                            {formatDistanceToNow(new Date(alert.criado_em), { locale: ptBR, addSuffix: true })}
-                          </p>
+                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 border border-white/5">
+                          <ShieldCheck size={12} className="text-success" />
+                          <span className="text-[10px] font-black text-text-primary">{alert.confirmacoes || 0}</span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 border border-white/5">
-                        <ShieldCheck size={12} className="text-success" />
-                        <span className="text-[10px] font-black text-text-primary">{alert.confirmacoes || 0}</span>
-                      </div>
+                      {alert.observacao_resolucao && (
+                        <div className="mt-3 p-3 bg-success/5 border border-success/20 rounded-xl">
+                          <p className="text-[9px] font-black uppercase tracking-widest text-success mb-1">Resolução</p>
+                          <p className="text-xs text-text-secondary">{alert.observacao_resolucao}</p>
+                        </div>
+                      )}
+                      {usuario?.id === alert.usuario_id && !alert.observacao_resolucao && (
+                        <button
+                          onClick={() => { setResolveTarget(alert); setResolveText(''); }}
+                          className="mt-3 w-full py-2 bg-success/10 text-success font-black rounded-xl uppercase tracking-widest text-[10px] active:scale-95"
+                        >
+                          Marcar como Resolvido
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
