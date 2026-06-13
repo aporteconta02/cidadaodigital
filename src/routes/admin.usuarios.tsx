@@ -115,13 +115,13 @@ function AdminUsuarios() {
             placeholder="Nome ou Email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-admin-primary/50"
+            className="w-full bg-admin-border-light border border-admin-border-light rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-admin-primary/50"
           />
         </div>
         <select 
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="bg-admin-border-light border border-admin-border-light rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-admin-primary/50"
+          className="bg-admin-border-light border border-admin-border-light rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-admin-primary/50"
         >
           <option value="todos">Todos os Tipos</option>
           <option value="cidadao">Cidadão</option>
@@ -130,7 +130,7 @@ function AdminUsuarios() {
         <select 
           value={filterAssinante}
           onChange={(e) => setFilterAssinante(e.target.value)}
-          className="bg-admin-border-light border border-admin-border-light rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-admin-primary/50"
+          className="bg-admin-border-light border border-admin-border-light rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-admin-primary/50"
         >
           <option value="todos">Assinatura: Todas</option>
           <option value="sim">Assinante Plus</option>
@@ -139,7 +139,7 @@ function AdminUsuarios() {
         <select 
           value={filterAtivo}
           onChange={(e) => setFilterAtivo(e.target.value)}
-          className="bg-admin-border-light border border-admin-border-light rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-admin-primary/50"
+          className="bg-admin-border-light border border-admin-border-light rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-admin-primary/50"
         >
           <option value="todos">Status: Todos</option>
           <option value="sim">Ativos</option>
@@ -148,7 +148,7 @@ function AdminUsuarios() {
       </div>
 
       {/* Table */}
-      <div className="bg-admin-surface border border-admin-border-light rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-admin-surface border border-admin-border-light rounded-lg overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
@@ -218,7 +218,7 @@ function AdminUsuarios() {
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
                           onClick={() => setSelectedUser(user)}
-                          className="p-2 hover:bg-admin-border-light rounded-xl transition-colors text-admin-text-secondary hover:text-admin-text"
+                          className="p-2 hover:bg-admin-border-light rounded-lg transition-colors text-admin-text-secondary hover:text-admin-text"
                           title="Ver Perfil"
                         >
                           <User size={16} />
@@ -226,7 +226,7 @@ function AdminUsuarios() {
                         <button 
                           onClick={() => toggleAssinatura(user)}
                           className={cn(
-                            "p-2 rounded-xl transition-colors",
+                            "p-2 rounded-lg transition-colors",
                             user.assinante_plus ? "text-admin-danger hover:bg-admin-danger/10" : "text-admin-success hover:bg-admin-success/10"
                           )}
                           title={user.assinante_plus ? "Remover Assinatura" : "Ativar Assinatura"}
@@ -236,7 +236,7 @@ function AdminUsuarios() {
                         <button 
                           onClick={() => toggleStatus(user)}
                           className={cn(
-                            "p-2 rounded-xl transition-colors",
+                            "p-2 rounded-lg transition-colors",
                             user.ativo ? "text-admin-danger hover:bg-admin-danger/10" : "text-admin-success hover:bg-admin-success/10"
                           )}
                           title={user.ativo ? "Banir" : "Desbanir"}
@@ -256,7 +256,7 @@ function AdminUsuarios() {
       {/* User Details Modal */}
       {selectedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-admin-text/40 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-admin-surface border border-admin-border-light w-full max-w-lg rounded-xl overflow-hidden shadow-lg animate-in zoom-in-95 duration-300">
+          <div className="bg-admin-surface border border-admin-border-light w-full max-w-lg rounded-lg overflow-hidden shadow-lg animate-in zoom-in-95 duration-300">
             <div className="relative h-32 bg-admin-primary">
               <button 
                 onClick={() => setSelectedUser(null)}
@@ -266,7 +266,7 @@ function AdminUsuarios() {
               </button>
             </div>
             <div className="px-8 pb-8 -mt-12">
-              <div className="size-24 rounded-xl bg-admin-primary border-4 border-admin-surface shadow-sm mb-4 overflow-hidden flex items-center justify-center text-2xl font-semibold">
+              <div className="size-24 rounded-lg bg-admin-primary border-4 border-admin-surface shadow-sm mb-4 overflow-hidden flex items-center justify-center text-2xl font-semibold">
                 {selectedUser.avatar_url ? (
                   <img src={selectedUser.avatar_url} className="w-full h-full object-cover" alt="" />
                 ) : (
@@ -279,7 +279,7 @@ function AdminUsuarios() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="size-8 rounded-xl bg-admin-border-light flex items-center justify-center text-admin-primary">
+                    <div className="size-8 rounded-lg bg-admin-border-light flex items-center justify-center text-admin-primary">
                       <Mail size={16} />
                     </div>
                     <div>
@@ -288,7 +288,7 @@ function AdminUsuarios() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="size-8 rounded-xl bg-admin-border-light flex items-center justify-center text-admin-primary">
+                    <div className="size-8 rounded-lg bg-admin-border-light flex items-center justify-center text-admin-primary">
                       <Phone size={16} />
                     </div>
                     <div>
@@ -299,7 +299,7 @@ function AdminUsuarios() {
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="size-8 rounded-xl bg-admin-border-light flex items-center justify-center text-admin-primary">
+                    <div className="size-8 rounded-lg bg-admin-border-light flex items-center justify-center text-admin-primary">
                       <MapPin size={16} />
                     </div>
                     <div>
@@ -308,7 +308,7 @@ function AdminUsuarios() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="size-8 rounded-xl bg-admin-border-light flex items-center justify-center text-admin-primary">
+                    <div className="size-8 rounded-lg bg-admin-border-light flex items-center justify-center text-admin-primary">
                       <Calendar size={16} />
                     </div>
                     <div>
@@ -325,7 +325,7 @@ function AdminUsuarios() {
                     <p className="text-xs font-semibold text-admin-success ">Assinante Plus Ativo</p>
                     <p className="text-[10px] text-admin-success/60 mt-1 uppercase">Válido até: {selectedUser.validade_assinatura ? format(new Date(selectedUser.validade_assinatura), 'dd/MM/yyyy') : '--'}</p>
                   </div>
-                  <div className="size-10 bg-admin-success/20 rounded-xl flex items-center justify-center text-admin-success">
+                  <div className="size-10 bg-admin-success/20 rounded-lg flex items-center justify-center text-admin-success">
                     <ShieldCheck size={24} />
                   </div>
                 </div>

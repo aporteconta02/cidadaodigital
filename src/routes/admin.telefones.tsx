@@ -125,7 +125,7 @@ function AdminTelefones() {
             });
             setShowModal(true);
           }}
-          className="bg-primary hover:bg-admin-primary/90 text-admin-text px-6 py-2.5 rounded-xl text-xs font-semibold shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center gap-2"
+          className="bg-primary hover:bg-admin-primary/90 text-admin-text h-9 px-4 rounded-lg text-xs font-semibold shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center gap-2"
         >
           <Plus size={18} /> Novo Telefone
         </button>
@@ -139,12 +139,12 @@ function AdminTelefones() {
             placeholder="Buscar por nome ou serviço..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-admin-primary/50"
+            className="w-full bg-admin-border-light border border-admin-border-light rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-admin-primary/50"
           />
         </div>
       </div>
 
-      <div className="bg-admin-surface border border-admin-border-light rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-admin-surface border border-admin-border-light rounded-lg overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
@@ -185,10 +185,10 @@ function AdminTelefones() {
                     </td>
                     <td className="px-6 py-4 text-right">
                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={() => openEdit(tel)} className="p-2 hover:bg-admin-border-light rounded-xl transition-colors text-admin-text-secondary hover:text-admin-text">
+                          <button onClick={() => openEdit(tel)} className="p-2 hover:bg-admin-border-light rounded-lg transition-colors text-admin-text-secondary hover:text-admin-text">
                              <Edit2 size={16} />
                           </button>
-                          <button onClick={() => deleteTelefone(tel.id)} className="p-2 hover:bg-admin-danger/10 rounded-xl transition-colors text-admin-danger">
+                          <button onClick={() => deleteTelefone(tel.id)} className="p-2 hover:bg-admin-danger/10 rounded-lg transition-colors text-admin-danger">
                              <Trash2 size={16} />
                           </button>
                        </div>
@@ -204,7 +204,7 @@ function AdminTelefones() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-admin-text/40 backdrop-blur-sm animate-in fade-in duration-300">
-           <div className="bg-admin-surface border border-admin-border-light w-full max-w-lg rounded-xl overflow-hidden shadow-lg animate-in zoom-in-95 duration-300">
+           <div className="bg-admin-surface border border-admin-border-light w-full max-w-lg rounded-lg overflow-hidden shadow-lg animate-in zoom-in-95 duration-300">
               <div className="p-6 border-b border-admin-border-light flex items-center justify-between">
                  <h3 className="text-lg font-semibold  uppercase tracking-tighter">{editingTelefone ? 'Editar Contato' : 'Novo Contato'}</h3>
                  <button onClick={() => setShowModal(false)} className="p-2 hover:bg-admin-border-light rounded-full"><X size={20} /></button>
@@ -218,7 +218,7 @@ function AdminTelefones() {
                         placeholder="Ex: Polícia Militar, UBS Central..."
                         value={formData.nome}
                         onChange={e => setFormData({...formData, nome: e.target.value})}
-                        className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
+                        className="w-full bg-admin-border-light border border-admin-border-light rounded-lg py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
                       />
                     </div>
                     <div>
@@ -228,7 +228,7 @@ function AdminTelefones() {
                         placeholder="Ex: 190, (11) 99999-9999"
                         value={formData.telefone}
                         onChange={e => setFormData({...formData, telefone: e.target.value})}
-                        className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
+                        className="w-full bg-admin-border-light border border-admin-border-light rounded-lg py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
@@ -237,7 +237,7 @@ function AdminTelefones() {
                           <select 
                             value={formData.categoria}
                             onChange={e => setFormData({...formData, categoria: e.target.value})}
-                            className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
+                            className="w-full bg-admin-border-light border border-admin-border-light rounded-lg py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
                           >
                              <option value="Emergência">Emergência</option>
                              <option value="Serviços Públicos">Serviços Públicos</option>
@@ -251,7 +251,7 @@ function AdminTelefones() {
                             type="text" 
                             value={formData.cidade}
                             onChange={e => setFormData({...formData, cidade: e.target.value})}
-                            className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
+                            className="w-full bg-admin-border-light border border-admin-border-light rounded-lg py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
                           />
                        </div>
                     </div>

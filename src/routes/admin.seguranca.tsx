@@ -82,7 +82,7 @@ function AdminSeguranca() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Map View */}
-        <div className="lg:col-span-2 bg-admin-surface border border-admin-border-light rounded-xl overflow-hidden shadow-sm h-[500px] relative">
+        <div className="lg:col-span-2 bg-admin-surface border border-admin-border-light rounded-lg overflow-hidden shadow-sm h-[500px] relative">
           <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-admin-text-secondary">Carregando mapa...</div>}>
             <Map 
               markers={alertas.filter(a => a.ativo).map(a => ({
@@ -97,14 +97,14 @@ function AdminSeguranca() {
               isAdminView={true} 
             />
           </Suspense>
-          <div className="absolute top-4 right-4 z-[400] bg-black/50 backdrop-blur-md px-4 py-2 rounded-xl border border-admin-border-light flex items-center gap-2">
+          <div className="absolute top-4 right-4 z-[400] bg-black/50 backdrop-blur-md px-4 py-2 rounded-lg border border-admin-border-light flex items-center gap-2">
              <div className="size-2 rounded-full bg-danger animate-pulse" />
              <span className="text-[10px] font-semibold">{alertas.filter(a => a.ativo).length} Alertas Ativos</span>
           </div>
         </div>
 
         {/* Sidebar Alerts List */}
-        <div className="bg-admin-surface border border-admin-border-light rounded-xl p-6 shadow-sm flex flex-col h-[500px]">
+        <div className="bg-admin-surface border border-admin-border-light rounded-lg p-6 shadow-sm flex flex-col h-[500px]">
            <div className="flex items-center justify-between mb-6">
               <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-secondary ">Histórico Recente</h3>
               <div className="relative">
@@ -138,7 +138,7 @@ function AdminSeguranca() {
                      <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2">
                            <div className={cn(
-                             "size-8 rounded-xl flex items-center justify-center",
+                             "size-8 rounded-lg flex items-center justify-center",
                              alerta.ativo ? "bg-admin-danger/20 text-admin-danger" : "bg-admin-border-light text-admin-text-secondary"
                            )}>
                               <ShieldAlert size={16} />
@@ -182,7 +182,7 @@ function AdminSeguranca() {
       {/* Remove Modal */}
       {showRemoveModal && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-admin-text/40 backdrop-blur-sm animate-in fade-in duration-300">
-           <div className="bg-admin-surface border border-admin-border-light w-full max-w-md rounded-xl overflow-hidden shadow-lg animate-in zoom-in-95 duration-300">
+           <div className="bg-admin-surface border border-admin-border-light w-full max-w-md rounded-lg overflow-hidden shadow-lg animate-in zoom-in-95 duration-300">
               <div className="p-6 border-b border-admin-border-light flex items-center justify-between">
                  <h3 className="text-lg font-semibold  uppercase tracking-tighter">Remover Alerta</h3>
                  <button onClick={() => setShowRemoveModal(null)} className="p-2 hover:bg-admin-border-light rounded-full"><X size={20} /></button>

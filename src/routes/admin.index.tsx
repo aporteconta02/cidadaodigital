@@ -162,7 +162,7 @@ function AdminDashboard() {
         <div className="h-10 bg-admin-border-light rounded-lg w-1/3" />
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-32 bg-admin-surface border border-admin-border rounded-xl" />
+            <div key={i} className="h-32 bg-admin-surface border border-admin-border rounded-lg" />
           ))}
         </div>
       </div>
@@ -196,7 +196,7 @@ function AdminDashboard() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 bg-admin-surface border border-admin-border rounded-xl p-5">
+        <div className="lg:col-span-2 bg-admin-surface border border-admin-border rounded-lg p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-semibold text-admin-text">Novos Cadastros — Últimos 7 dias</h3>
             <div className="flex items-center gap-2">
@@ -227,7 +227,7 @@ function AdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-admin-surface border border-admin-border rounded-xl p-5">
+        <div className="bg-admin-surface border border-admin-border rounded-lg p-5">
           <h3 className="text-base font-semibold text-admin-text mb-4">Denúncias por Categoria</h3>
           <div className="h-64 w-full">
             {pieData.length === 0 ? (
@@ -256,7 +256,7 @@ function AdminDashboard() {
       {/* Pendências + Atividade */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Atividade */}
-        <div className="lg:col-span-2 bg-admin-surface border border-admin-border rounded-xl overflow-hidden">
+        <div className="lg:col-span-2 bg-admin-surface border border-admin-border rounded-lg overflow-hidden">
           <div className="px-5 py-4 border-b border-admin-border-light flex items-center justify-between">
             <h3 className="text-base font-semibold text-admin-text">Atividade Recente</h3>
             <button className="text-xs font-semibold text-admin-primary hover:underline">Ver tudo</button>
@@ -315,7 +315,7 @@ function AdminDashboard() {
         </div>
 
         {/* Requer Atenção */}
-        <div className="bg-admin-surface border border-admin-border rounded-xl overflow-hidden">
+        <div className="bg-admin-surface border border-admin-border rounded-lg overflow-hidden">
           <div className="px-5 py-4 border-b border-admin-border-light flex items-center gap-2">
             <AlertTriangle size={18} className="text-admin-warning" />
             <h3 className="text-base font-semibold text-admin-text">Requer Atenção</h3>
@@ -377,7 +377,7 @@ function KPICard({
   color: string;
 }) {
   return (
-    <div className="bg-admin-surface border border-admin-border rounded-xl p-5 transition-shadow hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+    <div className="bg-admin-surface border border-admin-border rounded-lg p-5 transition-shadow hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
       <div className="flex items-center justify-between mb-3">
         <div className={cn("size-10 rounded-full flex items-center justify-center", color)}>
           <Icon size={20} strokeWidth={2} />
