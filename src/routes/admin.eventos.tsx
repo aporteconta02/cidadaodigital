@@ -89,7 +89,7 @@ function AdminEventos() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold font-inter uppercase tracking-tight">Gestão de Eventos</h2>
-          <p className="text-admin-text-admin-purple text-sm font-semibold mt-1">Aprove e destaque eventos da comunidade</p>
+          <p className="text-admin-text-secondary text-sm font-semibold mt-1">Aprove e destaque eventos da comunidade</p>
         </div>
       </div>
 
@@ -112,21 +112,21 @@ function AdminEventos() {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-admin-hover">
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple">Evento</th>
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple">Organizador</th>
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple">Data do Evento</th>
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple">Status</th>
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple text-right">Ações</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary">Evento</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary">Organizador</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary">Data do Evento</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary">Status</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-admin-border-light">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-admin-text-admin-purple animate-pulse">Carregando eventos...</td>
+                  <td colSpan={5} className="px-6 py-12 text-center text-admin-text-secondary animate-pulse">Carregando eventos...</td>
                 </tr>
               ) : eventos.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-admin-text-admin-purple">Nenhum evento encontrado</td>
+                  <td colSpan={5} className="px-6 py-12 text-center text-admin-text-secondary">Nenhum evento encontrado</td>
                 </tr>
               ) : (
                 eventos.map((evento) => (
@@ -137,20 +137,20 @@ function AdminEventos() {
                           {evento.banner_url ? (
                             <img src={evento.banner_url} className="w-full h-full object-cover" alt="" />
                           ) : (
-                            <Calendar size={18} className="text-admin-text-admin-purple" />
+                            <Calendar size={18} className="text-admin-text-secondary" />
                           )}
                         </div>
                         <div>
                           <p className="text-sm font-bold leading-none">{evento.titulo}</p>
-                          <p className="text-[10px] text-admin-text-admin-purple mt-1 ">{evento.categoria}</p>
+                          <p className="text-[10px] text-admin-text-secondary mt-1 ">{evento.categoria}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="text-xs font-bold text-admin-text-admin-purple">{evento.usuario?.nome}</p>
+                      <p className="text-xs font-bold text-admin-text-secondary">{evento.usuario?.nome}</p>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-1.5 text-admin-text-admin-purple">
+                      <div className="flex items-center gap-1.5 text-admin-text-secondary">
                         <Clock size={12} />
                         <span className="text-[10px] font-bold">{format(new Date(evento.data_evento), 'dd/MM/yy HH:mm')}</span>
                       </div>
@@ -174,7 +174,7 @@ function AdminEventos() {
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                          <button 
                           onClick={() => setSelectedEvento(evento)}
-                          className="p-2 hover:bg-admin-border-light rounded-xl transition-colors text-admin-text-admin-purple hover:text-admin-text"
+                          className="p-2 hover:bg-admin-border-light rounded-xl transition-colors text-admin-text-secondary hover:text-admin-text"
                           title="Ver Detalhes"
                         >
                           <Eye size={16} />
@@ -192,7 +192,7 @@ function AdminEventos() {
                           onClick={() => updateEvento(evento.id, { destaque: !evento.destaque })}
                           className={cn(
                             "p-2 rounded-xl transition-colors",
-                            evento.destaque ? "text-admin-primary bg-admin-primary/10" : "text-admin-text-admin-purple hover:bg-admin-border-light"
+                            evento.destaque ? "text-admin-primary bg-admin-primary/10" : "text-admin-text-secondary hover:bg-admin-border-light"
                           )}
                           title={evento.destaque ? "Remover Destaque" : "Marcar como Destaque"}
                         >
@@ -227,9 +227,9 @@ function AdminEventos() {
               </button>
               <div className="absolute bottom-4 left-8">
                   <h3 className="text-2xl font-semibold  uppercase tracking-tighter">{selectedEvento.titulo}</h3>
-                  <div className="flex items-center gap-2 text-admin-text-admin-purple mt-1">
+                  <div className="flex items-center gap-2 text-admin-text-secondary mt-1">
                     <span className="text-[10px] font-semibold">{selectedEvento.categoria}</span>
-                    <span className="size-1 rounded-full bg-white/20" />
+                    <span className="size-1 rounded-full bg-admin-border" />
                     <span className="text-[10px] font-semibold">{selectedEvento.gratuito ? 'Gratuito' : `R$ ${selectedEvento.preco_ingresso}`}</span>
                   </div>
               </div>
@@ -239,8 +239,8 @@ function AdminEventos() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-6">
                   <div>
-                    <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-admin-purple  mb-4">Sobre o Evento</h4>
-                    <p className="text-sm text-admin-text-admin-purple leading-relaxed bg-admin-border-light p-4 rounded-lg border border-admin-border-light">
+                    <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-secondary  mb-4">Sobre o Evento</h4>
+                    <p className="text-sm text-admin-text-secondary leading-relaxed bg-admin-border-light p-4 rounded-lg border border-admin-border-light">
                       {selectedEvento.descricao || 'Sem descrição.'}
                     </p>
                   </div>
@@ -248,26 +248,26 @@ function AdminEventos() {
 
                 <div className="space-y-6">
                    <div>
-                    <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-admin-purple  mb-4">Informações e Local</h4>
+                    <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-secondary  mb-4">Informações e Local</h4>
                     <div className="space-y-4">
                       <div className="flex items-center gap-3">
                         <User size={16} className="text-admin-primary" />
                         <div>
-                          <p className="text-[10px] text-admin-text-admin-purple font-semibold">Organizado por</p>
+                          <p className="text-[10px] text-admin-text-secondary font-semibold">Organizado por</p>
                           <p className="text-sm font-bold">{selectedEvento.usuario?.nome}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <MapPin size={16} className="text-admin-primary" />
                         <div>
-                          <p className="text-[10px] text-admin-text-admin-purple font-semibold">Local / Endereço</p>
-                          <p className="text-sm font-bold leading-tight">{selectedEvento.local_nome}<br/><span className="text-[10px] text-admin-text-admin-purple font-normal">{selectedEvento.endereco}</span></p>
+                          <p className="text-[10px] text-admin-text-secondary font-semibold">Local / Endereço</p>
+                          <p className="text-sm font-bold leading-tight">{selectedEvento.local_nome}<br/><span className="text-[10px] text-admin-text-secondary font-normal">{selectedEvento.endereco}</span></p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <Clock size={16} className="text-admin-primary" />
                         <div>
-                          <p className="text-[10px] text-admin-text-admin-purple font-semibold">Data e Hora</p>
+                          <p className="text-[10px] text-admin-text-secondary font-semibold">Data e Hora</p>
                           <p className="text-sm font-bold">{format(new Date(selectedEvento.data_evento), 'dd/MM/yyyy HH:mm')}</p>
                         </div>
                       </div>
@@ -278,7 +278,7 @@ function AdminEventos() {
 
               {!selectedEvento.aprovado && (
                 <div className="pt-6 border-t border-admin-border-light">
-                   <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-admin-purple  mb-4">Rejeitar Evento</h4>
+                   <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-secondary  mb-4">Rejeitar Evento</h4>
                    <div className="space-y-4">
                       <textarea 
                         placeholder="Motivo da rejeição (será enviado ao organizador)..."
@@ -318,7 +318,7 @@ function AdminEventos() {
                 onClick={() => updateEvento(selectedEvento.id, { destaque: !selectedEvento.destaque })}
                 className={cn(
                   "flex-1 py-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2",
-                  selectedEvento.destaque ? "bg-primary text-admin-text shadow-lg shadow-primary/20" : "bg-admin-border-light text-admin-text-admin-purple hover:bg-admin-border-light"
+                  selectedEvento.destaque ? "bg-primary text-admin-text shadow-lg shadow-primary/20" : "bg-admin-border-light text-admin-text-secondary hover:bg-admin-border-light"
                 )}
               >
                 <Star size={16} fill={selectedEvento.destaque ? "currentColor" : "none"} />

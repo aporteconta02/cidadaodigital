@@ -127,7 +127,7 @@ function AdminFinanceiro() {
     <div className="space-y-8 animate-in fade-in duration-500">
       <div>
         <h2 className="text-2xl font-bold font-inter uppercase tracking-tight">Financeiro</h2>
-        <p className="text-admin-text-admin-purple text-sm font-semibold mt-1">Visão consolidada de receitas e assinaturas</p>
+        <p className="text-admin-text-secondary text-sm font-semibold mt-1">Visão consolidada de receitas e assinaturas</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -137,11 +137,11 @@ function AdminFinanceiro() {
                 <div className={cn("size-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110", kpi.color)}>
                    {kpi.icon}
                 </div>
-                <ArrowUpRight size={18} className="text-admin-text-admin-purple opacity-0 group-hover:opacity-100 transition-opacity" />
+                <ArrowUpRight size={18} className="text-admin-text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
              </div>
-             <p className="text-[10px] font-semibold text-admin-text-admin-purple  mb-1 opacity-60">{kpi.label}</p>
+             <p className="text-[10px] font-semibold text-admin-text-secondary  mb-1 opacity-60">{kpi.label}</p>
              <h4 className="text-2xl font-semibold font-inter tracking-tighter ">{kpi.value}</h4>
-             <p className="text-[10px] text-admin-text-admin-purple font-bold mt-2 ">{kpi.desc}</p>
+             <p className="text-[10px] text-admin-text-secondary font-bold mt-2 ">{kpi.desc}</p>
           </div>
         ))}
       </div>
@@ -150,36 +150,36 @@ function AdminFinanceiro() {
          {/* Subscribers List */}
          <div className="lg:col-span-2 bg-admin-surface border border-admin-border-light rounded-xl overflow-hidden shadow-sm flex flex-col">
             <div className="p-6 border-b border-admin-border-light flex items-center justify-between">
-               <h3 className="text-sm font-semibold text-admin-text-admin-purple ">Assinantes Recentes</h3>
+               <h3 className="text-sm font-semibold text-admin-text-secondary ">Assinantes Recentes</h3>
                <button className="text-[10px] font-semibold text-admin-primary hover:underline">Gerenciar Todos</button>
             </div>
             <div className="overflow-x-auto flex-1">
                <table className="w-full text-left">
                   <thead>
                      <tr className="bg-admin-hover">
-                        <th className="px-6 py-4 text-[9px] font-semibold text-admin-text-admin-purple">Usuário</th>
-                        <th className="px-6 py-4 text-[9px] font-semibold text-admin-text-admin-purple">Status</th>
-                        <th className="px-6 py-4 text-[9px] font-semibold text-admin-text-admin-purple">Início</th>
-                        <th className="px-6 py-4 text-[9px] font-semibold text-admin-text-admin-purple">Validade</th>
+                        <th className="px-6 py-4 text-[9px] font-semibold text-admin-text-secondary">Usuário</th>
+                        <th className="px-6 py-4 text-[9px] font-semibold text-admin-text-secondary">Status</th>
+                        <th className="px-6 py-4 text-[9px] font-semibold text-admin-text-secondary">Início</th>
+                        <th className="px-6 py-4 text-[9px] font-semibold text-admin-text-secondary">Validade</th>
                      </tr>
                   </thead>
                   <tbody className="divide-y divide-admin-border-light">
                      {loading ? (
-                        <tr><td colSpan={4} className="px-6 py-8 text-center animate-pulse text-admin-text-admin-purple">Carregando...</td></tr>
+                        <tr><td colSpan={4} className="px-6 py-8 text-center animate-pulse text-admin-text-secondary">Carregando...</td></tr>
                      ) : financeData.assinantesRecentes.map((sub, i) => (
-                        <tr key={sub.id} className="hover:bg-white/[0.01] transition-colors">
+                        <tr key={sub.id} className="hover:bg-admin-hover transition-colors">
                            <td className="px-6 py-4">
                               <p className="text-sm font-bold">{sub.nome}</p>
-                              <p className="text-[10px] text-admin-text-admin-purple">{sub.email}</p>
+                              <p className="text-[10px] text-admin-text-secondary">{sub.email}</p>
                            </td>
                            <td className="px-6 py-4">
                               <span className="px-2 py-0.5 bg-admin-success/10 text-admin-success border border-admin-success/20 rounded-full text-[9px] font-semibold">Ativo</span>
                            </td>
-                           <td className="px-6 py-4 text-xs text-admin-text-admin-purple">
+                           <td className="px-6 py-4 text-xs text-admin-text-secondary">
                               {format(new Date(sub.criado_em), 'dd/MM/yyyy')}
                            </td>
                            <td className="px-6 py-4">
-                              <div className="flex items-center gap-1.5 text-admin-text-admin-purple">
+                              <div className="flex items-center gap-1.5 text-admin-text-secondary">
                                  <Clock size={12} />
                                  <span className="text-[10px] font-bold">{sub.validade_assinatura ? format(new Date(sub.validade_assinatura), 'dd/MM/yyyy') : '--'}</span>
                               </div>
@@ -193,7 +193,7 @@ function AdminFinanceiro() {
 
          {/* Distribution Chart or Summary */}
          <div className="bg-admin-surface border border-admin-border-light rounded-xl p-6 shadow-sm space-y-8">
-            <h3 className="text-sm font-semibold text-admin-text-admin-purple ">Origem da Receita</h3>
+            <h3 className="text-sm font-semibold text-admin-text-secondary ">Origem da Receita</h3>
             <div className="h-64 w-full">
                <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={[

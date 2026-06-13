@@ -102,14 +102,14 @@ function AdminUsuarios() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold font-inter uppercase tracking-tight">Gestão de Usuários</h2>
-          <p className="text-admin-text-admin-purple text-sm font-semibold mt-1">Gerencie membros, administradores e comerciantes</p>
+          <p className="text-admin-text-secondary text-sm font-semibold mt-1">Gerencie membros, administradores e comerciantes</p>
         </div>
       </div>
 
       {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-admin-surface border border-admin-border-light p-4 rounded-lg shadow-sm">
         <div className="relative">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-admin-text-admin-purple" />
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-admin-text-secondary" />
           <input 
             type="text" 
             placeholder="Nome ou Email..."
@@ -153,21 +153,21 @@ function AdminUsuarios() {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-admin-hover">
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple">Usuário</th>
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple">Localização</th>
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple">Tipo / Plano</th>
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple">Status</th>
-                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-admin-purple text-right">Ações</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary">Usuário</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary">Localização</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary">Tipo / Plano</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary">Status</th>
+                <th className="px-6 py-4 text-[10px] font-semibold text-admin-text-secondary text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-admin-border-light">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-admin-text-admin-purple animate-pulse">Carregando usuários...</td>
+                  <td colSpan={5} className="px-6 py-12 text-center text-admin-text-secondary animate-pulse">Carregando usuários...</td>
                 </tr>
               ) : usuarios.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-admin-text-admin-purple">Nenhum usuário encontrado</td>
+                  <td colSpan={5} className="px-6 py-12 text-center text-admin-text-secondary">Nenhum usuário encontrado</td>
                 </tr>
               ) : (
                 usuarios.map((user) => (
@@ -183,13 +183,13 @@ function AdminUsuarios() {
                         </div>
                         <div>
                           <p className="text-sm font-bold leading-none">{user.nome}</p>
-                          <p className="text-[10px] text-admin-text-admin-purple mt-1">{user.email}</p>
+                          <p className="text-[10px] text-admin-text-secondary mt-1">{user.email}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="text-xs font-bold text-admin-text-admin-purple">{user.cidade}</p>
-                      <p className="text-[10px] text-admin-text-admin-purple mt-1 ">{user.bairro}</p>
+                      <p className="text-xs font-bold text-admin-text-secondary">{user.cidade}</p>
+                      <p className="text-[10px] text-admin-text-secondary mt-1 ">{user.bairro}</p>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-1.5">
@@ -218,7 +218,7 @@ function AdminUsuarios() {
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
                           onClick={() => setSelectedUser(user)}
-                          className="p-2 hover:bg-admin-border-light rounded-xl transition-colors text-admin-text-admin-purple hover:text-admin-text"
+                          className="p-2 hover:bg-admin-border-light rounded-xl transition-colors text-admin-text-secondary hover:text-admin-text"
                           title="Ver Perfil"
                         >
                           <User size={16} />
@@ -266,7 +266,7 @@ function AdminUsuarios() {
               </button>
             </div>
             <div className="px-8 pb-8 -mt-12">
-              <div className="size-24 rounded-xl bg-admin-primary border-4 border-[#0A0A0F] shadow-sm mb-4 overflow-hidden flex items-center justify-center text-2xl font-semibold">
+              <div className="size-24 rounded-xl bg-admin-primary border-4 border-admin-surface shadow-sm mb-4 overflow-hidden flex items-center justify-center text-2xl font-semibold">
                 {selectedUser.avatar_url ? (
                   <img src={selectedUser.avatar_url} className="w-full h-full object-cover" alt="" />
                 ) : (
@@ -274,7 +274,7 @@ function AdminUsuarios() {
                 )}
               </div>
               <h3 className="text-2xl font-semibold  uppercase tracking-tighter">{selectedUser.nome}</h3>
-              <p className="text-admin-text-admin-purple text-xs font-semibold mt-1">ID: {selectedUser.id}</p>
+              <p className="text-admin-text-secondary text-xs font-semibold mt-1">ID: {selectedUser.id}</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                 <div className="space-y-4">
@@ -283,7 +283,7 @@ function AdminUsuarios() {
                       <Mail size={16} />
                     </div>
                     <div>
-                      <p className="text-[10px] text-admin-text-admin-purple font-semibold">Email</p>
+                      <p className="text-[10px] text-admin-text-secondary font-semibold">Email</p>
                       <p className="text-sm font-bold">{selectedUser.email}</p>
                     </div>
                   </div>
@@ -292,7 +292,7 @@ function AdminUsuarios() {
                       <Phone size={16} />
                     </div>
                     <div>
-                      <p className="text-[10px] text-admin-text-admin-purple font-semibold">Telefone</p>
+                      <p className="text-[10px] text-admin-text-secondary font-semibold">Telefone</p>
                       <p className="text-sm font-bold">{selectedUser.telefone || 'Não informado'}</p>
                     </div>
                   </div>
@@ -303,7 +303,7 @@ function AdminUsuarios() {
                       <MapPin size={16} />
                     </div>
                     <div>
-                      <p className="text-[10px] text-admin-text-admin-purple font-semibold">Local</p>
+                      <p className="text-[10px] text-admin-text-secondary font-semibold">Local</p>
                       <p className="text-sm font-bold">{selectedUser.cidade} - {selectedUser.bairro}</p>
                     </div>
                   </div>
@@ -312,7 +312,7 @@ function AdminUsuarios() {
                       <Calendar size={16} />
                     </div>
                     <div>
-                      <p className="text-[10px] text-admin-text-admin-purple font-semibold">Membro desde</p>
+                      <p className="text-[10px] text-admin-text-secondary font-semibold">Membro desde</p>
                       <p className="text-sm font-bold">{format(new Date(selectedUser.criado_em), 'dd/MM/yyyy')}</p>
                     </div>
                   </div>

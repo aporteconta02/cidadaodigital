@@ -76,14 +76,14 @@ function AdminSeguranca() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold font-inter uppercase tracking-tight">Segurança do Bairro</h2>
-          <p className="text-admin-text-admin-purple text-sm font-semibold mt-1">Gestão de alertas SOS e monitoramento geográfico</p>
+          <p className="text-admin-text-secondary text-sm font-semibold mt-1">Gestão de alertas SOS e monitoramento geográfico</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Map View */}
         <div className="lg:col-span-2 bg-admin-surface border border-admin-border-light rounded-xl overflow-hidden shadow-sm h-[500px] relative">
-          <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-admin-text-admin-purple">Carregando mapa...</div>}>
+          <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-admin-text-secondary">Carregando mapa...</div>}>
             <Map 
               markers={alertas.filter(a => a.ativo).map(a => ({
                 id: a.id,
@@ -106,9 +106,9 @@ function AdminSeguranca() {
         {/* Sidebar Alerts List */}
         <div className="bg-admin-surface border border-admin-border-light rounded-xl p-6 shadow-sm flex flex-col h-[500px]">
            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-admin-purple ">Histórico Recente</h3>
+              <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-secondary ">Histórico Recente</h3>
               <div className="relative">
-                 <Filter size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-admin-text-admin-purple" />
+                 <Filter size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-admin-text-secondary" />
                  <select 
                   value={filterBairro}
                   onChange={(e) => setFilterBairro(e.target.value)}
@@ -128,7 +128,7 @@ function AdminSeguranca() {
                    {[1, 2, 3].map(i => <div key={i} className="h-24 bg-admin-border-light rounded-lg animate-pulse" />)}
                 </div>
               ) : alertas.length === 0 ? (
-                <div className="text-center py-12 text-admin-text-admin-purple  text-xs">Nenhum alerta encontrado</div>
+                <div className="text-center py-12 text-admin-text-secondary  text-xs">Nenhum alerta encontrado</div>
               ) : (
                 alertas.map(alerta => (
                   <div key={alerta.id} className={cn(
@@ -139,13 +139,13 @@ function AdminSeguranca() {
                         <div className="flex items-center gap-2">
                            <div className={cn(
                              "size-8 rounded-xl flex items-center justify-center",
-                             alerta.ativo ? "bg-admin-danger/20 text-admin-danger" : "bg-admin-border-light text-admin-text-admin-purple"
+                             alerta.ativo ? "bg-admin-danger/20 text-admin-danger" : "bg-admin-border-light text-admin-text-secondary"
                            )}>
                               <ShieldAlert size={16} />
                            </div>
                            <div>
                               <p className="text-xs font-bold uppercase">{alerta.tipo}</p>
-                              <p className="text-[9px] text-admin-text-admin-purple font-semibold">{alerta.bairro}</p>
+                              <p className="text-[9px] text-admin-text-secondary font-semibold">{alerta.bairro}</p>
                            </div>
                         </div>
                         {alerta.ativo && (
@@ -157,15 +157,15 @@ function AdminSeguranca() {
                           </button>
                         )}
                      </div>
-                     <p className="text-xs text-admin-text-admin-purple mt-3 line-clamp-2">{alerta.descricao}</p>
+                     <p className="text-xs text-admin-text-secondary mt-3 line-clamp-2">{alerta.descricao}</p>
                      <div className="mt-4 flex items-center justify-between border-t border-admin-border-light pt-3">
                         <div className="flex items-center gap-1.5">
-                           <User size={10} className="text-admin-text-admin-purple" />
-                           <span className="text-[9px] font-bold text-admin-text-admin-purple truncate max-w-[80px]">{alerta.usuario?.nome}</span>
+                           <User size={10} className="text-admin-text-secondary" />
+                           <span className="text-[9px] font-bold text-admin-text-secondary truncate max-w-[80px]">{alerta.usuario?.nome}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                           <Clock size={10} className="text-admin-text-admin-purple" />
-                           <span className="text-[9px] font-bold text-admin-text-admin-purple">{format(new Date(alerta.criado_em), 'HH:mm')}</span>
+                           <Clock size={10} className="text-admin-text-secondary" />
+                           <span className="text-[9px] font-bold text-admin-text-secondary">{format(new Date(alerta.criado_em), 'HH:mm')}</span>
                         </div>
                         <div className="flex items-center gap-1">
                            <AlertTriangle size={10} className="text-admin-warning" />
@@ -196,7 +196,7 @@ function AdminSeguranca() {
                     </div>
                  </div>
                  <div>
-                    <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Motivo da Remoção</label>
+                    <label className="text-[10px] font-semibold text-admin-text-secondary mb-2 block">Motivo da Remoção</label>
                     <textarea 
                       placeholder="Ex: Trote, resolvido, duplicado..."
                       value={removeReason}

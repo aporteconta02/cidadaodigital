@@ -148,7 +148,7 @@ function AdminBanners() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold font-inter uppercase tracking-tight">Gestão de Banners</h2>
-          <p className="text-admin-text-admin-purple text-sm font-semibold mt-1">Controle os destaques rotativos da Home</p>
+          <p className="text-admin-text-secondary text-sm font-semibold mt-1">Controle os destaques rotativos da Home</p>
         </div>
         <button 
           onClick={() => setShowAddModal(true)}
@@ -162,7 +162,7 @@ function AdminBanners() {
         {loading ? (
           [1, 2, 3].map(i => <div key={i} className="h-48 bg-admin-border-light rounded-xl animate-pulse" />)
         ) : banners.length === 0 ? (
-          <div className="col-span-full py-12 text-center text-admin-text-admin-purple bg-admin-border-light rounded-xl border border-dashed border-admin-border-light ">Nenhum banner cadastrado</div>
+          <div className="col-span-full py-12 text-center text-admin-text-secondary bg-admin-border-light rounded-xl border border-dashed border-admin-border-light ">Nenhum banner cadastrado</div>
         ) : (
           banners.map((banner, index) => (
             <div key={banner.id} className={cn(
@@ -194,14 +194,14 @@ function AdminBanners() {
                <div className="p-5 space-y-4">
                   <div>
                     <h3 className="text-sm font-bold uppercase tracking-tight truncate">{banner.titulo}</h3>
-                    <div className="flex items-center gap-2 text-admin-text-admin-purple mt-1">
+                    <div className="flex items-center gap-2 text-admin-text-secondary mt-1">
                        <LinkIcon size={12} />
                        <span className="text-[10px] font-medium truncate">{banner.link_destino || 'Sem link'}</span>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between pt-2 border-t border-admin-border-light">
-                     <div className="flex items-center gap-1.5 text-admin-text-admin-purple">
+                     <div className="flex items-center gap-1.5 text-admin-text-secondary">
                         <Calendar size={12} />
                         <span className="text-[10px] font-bold">{format(new Date(banner.data_fim), 'dd/MM/yy')}</span>
                      </div>
@@ -239,7 +239,7 @@ function AdminBanners() {
               </div>
               <div className="p-8 space-y-6">
                  <div>
-                    <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Imagem do Banner (21:9 recomendado)</label>
+                    <label className="text-[10px] font-semibold text-admin-text-secondary mb-2 block">Imagem do Banner (21:9 recomendado)</label>
                     <div className="relative group aspect-[21/9] rounded-lg overflow-hidden border-2 border-dashed border-admin-border-light hover:border-admin-primary/50 transition-all">
                        {newBanner.imagem_url ? (
                          <>
@@ -257,8 +257,8 @@ function AdminBanners() {
                               <Loader2 size={24} className="text-admin-primary animate-spin" />
                             ) : (
                               <>
-                                <Upload size={24} className="text-admin-text-admin-purple mb-2" />
-                                <span className="text-[10px] font-semibold text-admin-text-admin-purple">Clique para enviar</span>
+                                <Upload size={24} className="text-admin-text-secondary mb-2" />
+                                <span className="text-[10px] font-semibold text-admin-text-secondary">Clique para enviar</span>
                               </>
                             )}
                             <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
@@ -269,7 +269,7 @@ function AdminBanners() {
 
                  <div className="space-y-4">
                     <div>
-                      <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Título / Identificação</label>
+                      <label className="text-[10px] font-semibold text-admin-text-secondary mb-2 block">Título / Identificação</label>
                       <input 
                         type="text" 
                         placeholder="Ex: Campanha Black Friday"
@@ -279,7 +279,7 @@ function AdminBanners() {
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Link de Destino</label>
+                      <label className="text-[10px] font-semibold text-admin-text-secondary mb-2 block">Link de Destino</label>
                       <input 
                         type="text" 
                         placeholder="Ex: /market/loja-123 ou link externo"
@@ -290,7 +290,7 @@ function AdminBanners() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                        <div>
-                          <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Data Início</label>
+                          <label className="text-[10px] font-semibold text-admin-text-secondary mb-2 block">Data Início</label>
                           <input 
                             type="date" 
                             value={newBanner.data_inicio}
@@ -299,7 +299,7 @@ function AdminBanners() {
                           />
                        </div>
                        <div>
-                          <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Data Fim</label>
+                          <label className="text-[10px] font-semibold text-admin-text-secondary mb-2 block">Data Fim</label>
                           <input 
                             type="date" 
                             value={newBanner.data_fim}
