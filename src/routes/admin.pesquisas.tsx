@@ -160,12 +160,12 @@ function AdminPesquisas() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold font-space uppercase tracking-tight">Voz do Povo</h2>
-          <p className="text-text-muted text-sm font-bold uppercase tracking-widest mt-1">Gestão de pesquisas e engajamento comunitário</p>
+          <h2 className="text-2xl font-bold font-inter uppercase tracking-tight">Voz do Povo</h2>
+          <p className="text-admin-text-admin-purple text-sm font-semibold mt-1">Gestão de pesquisas e engajamento comunitário</p>
         </div>
         <button 
           onClick={() => setShowCreateModal(true)}
-          className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center gap-2"
+          className="bg-primary hover:bg-admin-primary/90 text-admin-text px-6 py-2.5 rounded-xl text-xs font-semibold shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center gap-2"
         >
           <Plus size={18} /> Nova Pesquisa
         </button>
@@ -174,37 +174,37 @@ function AdminPesquisas() {
       {/* List */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {loading ? (
-          <div className="col-span-full h-40 bg-white/5 rounded-3xl animate-pulse" />
+          <div className="col-span-full h-40 bg-admin-border-light rounded-xl animate-pulse" />
         ) : pesquisas.length === 0 ? (
-          <div className="col-span-full py-12 text-center text-text-muted bg-white/5 rounded-3xl border border-dashed border-white/10 italic">Nenhuma pesquisa encontrada</div>
+          <div className="col-span-full py-12 text-center text-admin-text-admin-purple bg-admin-border-light rounded-xl border border-dashed border-admin-border-light ">Nenhuma pesquisa encontrada</div>
         ) : (
           pesquisas.map(p => (
-            <div key={p.id} className="bg-[#0A0A0F] border border-white/5 rounded-3xl p-6 shadow-xl hover-card-effect group relative overflow-hidden">
+            <div key={p.id} className="bg-admin-surface border border-admin-border-light rounded-xl p-6 shadow-sm hover-card-effect group relative overflow-hidden">
                {p.ativa ? (
-                 <div className="absolute top-0 right-0 px-4 py-1.5 bg-success/20 text-success text-[8px] font-black uppercase tracking-widest rounded-bl-xl border-l border-b border-success/20">Ativa</div>
+                 <div className="absolute top-0 right-0 px-4 py-1.5 bg-admin-success/20 text-admin-success text-[8px] font-semibold rounded-bl-xl border-l border-b border-admin-success/20">Ativa</div>
                ) : (
-                 <div className="absolute top-0 right-0 px-4 py-1.5 bg-white/5 text-text-muted text-[8px] font-black uppercase tracking-widest rounded-bl-xl border-l border-b border-white/10">Encerrada</div>
+                 <div className="absolute top-0 right-0 px-4 py-1.5 bg-admin-border-light text-admin-text-admin-purple text-[8px] font-semibold rounded-bl-xl border-l border-b border-admin-border-light">Encerrada</div>
                )}
                
                <div className="flex items-start gap-4">
-                  <div className="size-12 rounded-2xl bg-white/5 flex items-center justify-center text-primary flex-shrink-0">
+                  <div className="size-12 rounded-lg bg-admin-border-light flex items-center justify-center text-admin-primary flex-shrink-0">
                     <MessageSquare size={24} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-black italic uppercase tracking-tighter leading-tight mb-1">{p.titulo}</h3>
-                    <p className="text-[10px] text-text-muted font-black uppercase tracking-widest">{p.categoria} • Finaliza em: {format(new Date(p.encerra_em), 'dd/MM/yy')}</p>
+                    <h3 className="text-lg font-semibold  uppercase tracking-tighter leading-tight mb-1">{p.titulo}</h3>
+                    <p className="text-[10px] text-admin-text-admin-purple font-semibold">{p.categoria} • Finaliza em: {format(new Date(p.encerra_em), 'dd/MM/yy')}</p>
                     <div className="mt-6 flex items-center justify-between">
                        <div className="flex -space-x-2">
                           {[1, 2, 3].map(i => (
-                            <div key={i} className="size-6 rounded-full border-2 border-[#0A0A0F] bg-white/10 flex items-center justify-center text-[8px] font-black">?</div>
+                            <div key={i} className="size-6 rounded-full border-2 border-[#0A0A0F] bg-admin-border-light flex items-center justify-center text-[8px] font-semibold">?</div>
                           ))}
-                          <div className="text-[10px] text-text-muted font-bold pl-4">Votos totais</div>
+                          <div className="text-[10px] text-admin-text-admin-purple font-bold pl-4">Votos totais</div>
                        </div>
                        <button 
                         onClick={() => fetchResults(p)}
-                        className="p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all group-hover:translate-x-1"
+                        className="p-2 bg-admin-border-light hover:bg-admin-border-light rounded-xl transition-all group-hover:translate-x-1"
                        >
-                         <ChevronRight size={18} className="text-primary" />
+                         <ChevronRight size={18} className="text-admin-primary" />
                        </button>
                     </div>
                   </div>
@@ -216,40 +216,40 @@ function AdminPesquisas() {
 
       {/* Create Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-[#0A0A0F] border border-white/10 w-full max-w-xl rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
-            <div className="p-6 border-b border-white/5 flex items-center justify-between">
-               <h3 className="text-lg font-black italic uppercase tracking-tighter">Criar Nova Pesquisa</h3>
-               <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-white/5 rounded-full"><X size={20} /></button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-admin-text/40 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-admin-surface border border-admin-border-light w-full max-w-xl rounded-xl overflow-hidden shadow-lg animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-admin-border-light flex items-center justify-between">
+               <h3 className="text-lg font-semibold  uppercase tracking-tighter">Criar Nova Pesquisa</h3>
+               <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-admin-border-light rounded-full"><X size={20} /></button>
             </div>
             <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
                <div className="space-y-4">
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block">Título da Pesquisa</label>
+                    <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Título da Pesquisa</label>
                     <input 
                       type="text" 
                       placeholder="Ex: Qual sua opinião sobre a nova praça?"
                       value={newPesquisa.titulo}
                       onChange={e => setNewPesquisa({...newPesquisa, titulo: e.target.value})}
-                      className="w-full bg-white/5 border border-white/5 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-primary/50"
+                      className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block">Descrição (opcional)</label>
+                    <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Descrição (opcional)</label>
                     <textarea 
                       placeholder="Mais detalhes sobre o objetivo da pesquisa..."
                       value={newPesquisa.descricao}
                       onChange={e => setNewPesquisa({...newPesquisa, descricao: e.target.value})}
-                      className="w-full bg-white/5 border border-white/5 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-primary/50 h-24 resize-none"
+                      className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50 h-24 resize-none"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                      <div>
-                        <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block">Tipo de Resposta</label>
+                        <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Tipo de Resposta</label>
                         <select 
                           value={newPesquisa.tipo}
                           onChange={e => setNewPesquisa({...newPesquisa, tipo: e.target.value})}
-                          className="w-full bg-white/5 border border-white/5 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-primary/50"
+                          className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
                         >
                           <option value="unica">Escolha Única</option>
                           <option value="multipla">Múltipla Escolha</option>
@@ -257,12 +257,12 @@ function AdminPesquisas() {
                         </select>
                      </div>
                      <div>
-                        <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block">Data de Encerramento</label>
+                        <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Data de Encerramento</label>
                         <input 
                           type="date" 
                           value={newPesquisa.encerra_em}
                           onChange={e => setNewPesquisa({...newPesquisa, encerra_em: e.target.value})}
-                          className="w-full bg-white/5 border border-white/5 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-primary/50"
+                          className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
                         />
                      </div>
                   </div>
@@ -270,7 +270,7 @@ function AdminPesquisas() {
 
                {newPesquisa.tipo !== 'texto' && (
                  <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block">Opções de Voto</label>
+                    <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Opções de Voto</label>
                     {newPesquisa.opcoes.map((opt, i) => (
                       <div key={i} className="flex gap-2">
                          <input 
@@ -282,28 +282,28 @@ function AdminPesquisas() {
                             newOpts[i] = e.target.value;
                             setNewPesquisa({...newPesquisa, opcoes: newOpts});
                           }}
-                          className="flex-1 bg-white/5 border border-white/5 rounded-xl py-2 px-4 text-sm focus:outline-none focus:border-primary/50"
+                          className="flex-1 bg-admin-border-light border border-admin-border-light rounded-xl py-2 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
                         />
                         {newPesquisa.opcoes.length > 2 && (
                           <button onClick={() => {
                             const newOpts = newPesquisa.opcoes.filter((_, idx) => idx !== i);
                             setNewPesquisa({...newPesquisa, opcoes: newOpts});
-                          }} className="p-2 text-danger"><Trash2 size={16} /></button>
+                          }} className="p-2 text-admin-danger"><Trash2 size={16} /></button>
                         )}
                       </div>
                     ))}
                     <button 
                       onClick={() => setNewPesquisa({...newPesquisa, opcoes: [...newPesquisa.opcoes, ""]})}
-                      className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-1.5 py-2 hover:underline"
+                      className="text-[10px] font-semibold text-admin-primary flex items-center gap-1.5 py-2 hover:underline"
                     >
                       <PlusCircle size={14} /> Adicionar Opção
                     </button>
                  </div>
                )}
             </div>
-            <div className="p-6 bg-white/[0.02] border-t border-white/5 flex gap-3">
-               <button onClick={() => setShowCreateModal(false)} className="flex-1 py-3 bg-white/5 hover:bg-white/10 rounded-2xl text-xs font-black uppercase tracking-widest transition-all">Cancelar</button>
-               <button onClick={createPesquisa} className="flex-1 py-3 bg-primary hover:bg-primary/90 text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-primary/20">Publicar Pesquisa</button>
+            <div className="p-6 bg-admin-hover border-t border-admin-border-light flex gap-3">
+               <button onClick={() => setShowCreateModal(false)} className="flex-1 py-3 bg-admin-border-light hover:bg-admin-border-light rounded-lg text-xs font-semibold transition-all">Cancelar</button>
+               <button onClick={createPesquisa} className="flex-1 py-3 bg-primary hover:bg-admin-primary/90 text-admin-text rounded-lg text-xs font-semibold transition-all shadow-lg shadow-primary/20">Publicar Pesquisa</button>
             </div>
           </div>
         </div>
@@ -311,41 +311,41 @@ function AdminPesquisas() {
 
       {/* Results Modal */}
       {selectedPesquisa && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-[#0A0A0F] border border-white/10 w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
-            <div className="p-6 border-b border-white/5 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-admin-text/40 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-admin-surface border border-admin-border-light w-full max-w-4xl rounded-xl overflow-hidden shadow-lg animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-admin-border-light flex items-center justify-between">
                <div className="flex items-center gap-4">
-                  <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><BarChart3 size={20} /></div>
+                  <div className="size-10 rounded-xl bg-admin-primary/10 flex items-center justify-center text-admin-primary"><BarChart3 size={20} /></div>
                   <div>
-                    <h3 className="text-lg font-black italic uppercase tracking-tighter leading-tight">{selectedPesquisa.titulo}</h3>
-                    <p className="text-[10px] text-text-muted font-black uppercase tracking-widest">Resultados Consolidados</p>
+                    <h3 className="text-lg font-semibold  uppercase tracking-tighter leading-tight">{selectedPesquisa.titulo}</h3>
+                    <p className="text-[10px] text-admin-text-admin-purple font-semibold">Resultados Consolidados</p>
                   </div>
                </div>
-               <button onClick={() => setSelectedPesquisa(null)} className="p-2 hover:bg-white/5 rounded-full"><X size={20} /></button>
+               <button onClick={() => setSelectedPesquisa(null)} className="p-2 hover:bg-admin-border-light rounded-full"><X size={20} /></button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-12">
                {selectedPesquisa.tipo === 'texto' ? (
                  <div className="space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic mb-6 flex items-center gap-2"><List size={14} /> Respostas de Texto Livre</h4>
+                    <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-admin-purple  mb-6 flex items-center gap-2"><List size={14} /> Respostas de Texto Livre</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                        {textResponses.map((r, i) => (
-                         <div key={i} className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                            <p className="text-sm text-text-secondary leading-relaxed italic">"{(r.resposta as any)?.valor}"</p>
-                            <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2">
-                               <p className="text-[9px] text-text-muted font-black uppercase tracking-widest">{r.bairro || 'Desconhecido'}</p>
+                         <div key={i} className="bg-admin-border-light p-4 rounded-lg border border-admin-border-light">
+                            <p className="text-sm text-admin-text-admin-purple leading-relaxed ">"{(r.resposta as any)?.valor}"</p>
+                            <div className="mt-3 flex items-center justify-between border-t border-admin-border-light pt-2">
+                               <p className="text-[9px] text-admin-text-admin-purple font-semibold">{r.bairro || 'Desconhecido'}</p>
                             </div>
                          </div>
                        ))}
-                       {textResponses.length === 0 && <div className="col-span-full py-12 text-center text-text-muted italic">Aguardando as primeiras respostas...</div>}
+                       {textResponses.length === 0 && <div className="col-span-full py-12 text-center text-admin-text-admin-purple ">Aguardando as primeiras respostas...</div>}
                     </div>
                  </div>
                ) : (
                  <>
                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                       <div className="lg:col-span-2 space-y-6">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic flex items-center gap-2"><PieChartIcon size={14} /> Distribuição de Votos</h4>
-                        <div className="h-80 w-full bg-white/5 rounded-3xl p-6 border border-white/5">
+                        <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-admin-purple  flex items-center gap-2"><PieChartIcon size={14} /> Distribuição de Votos</h4>
+                        <div className="h-80 w-full bg-admin-border-light rounded-xl p-6 border border-admin-border-light">
                           <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={resultsData} layout="vertical" margin={{ left: 40, right: 40 }}>
                               <XAxis type="number" hide />
@@ -362,24 +362,24 @@ function AdminPesquisas() {
                       </div>
 
                       <div className="space-y-6">
-                         <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic flex items-center gap-2"><MapPin size={14} /> Votos por Bairro</h4>
-                         <div className="bg-white/5 rounded-3xl border border-white/5 overflow-hidden">
+                         <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-admin-purple  flex items-center gap-2"><MapPin size={14} /> Votos por Bairro</h4>
+                         <div className="bg-admin-border-light rounded-xl border border-admin-border-light overflow-hidden">
                             <table className="w-full text-left">
                                <thead>
-                                  <tr className="bg-white/5">
-                                     <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-text-muted">Bairro</th>
-                                     <th className="px-4 py-3 text-right text-[9px] font-black uppercase tracking-widest text-text-muted">Total</th>
+                                  <tr className="bg-admin-border-light">
+                                     <th className="px-4 py-3 text-[9px] font-semibold text-admin-text-admin-purple">Bairro</th>
+                                     <th className="px-4 py-3 text-right text-[9px] font-semibold text-admin-text-admin-purple">Total</th>
                                   </tr>
                                </thead>
-                               <tbody className="divide-y divide-white/5">
+                               <tbody className="divide-y divide-admin-border-light">
                                   {neighborhoodData.map((n, i) => (
                                     <tr key={i} className="text-xs">
                                        <td className="px-4 py-3 font-bold">{n.bairro}</td>
-                                       <td className="px-4 py-3 text-right font-black text-primary">{n.total}</td>
+                                       <td className="px-4 py-3 text-right font-semibold text-admin-primary">{n.total}</td>
                                     </tr>
                                   ))}
                                   {neighborhoodData.length === 0 && (
-                                    <tr><td colSpan={2} className="px-4 py-8 text-center text-text-muted italic opacity-50">Sem dados de localização</td></tr>
+                                    <tr><td colSpan={2} className="px-4 py-8 text-center text-admin-text-admin-purple  opacity-50">Sem dados de localização</td></tr>
                                   )}
                                </tbody>
                             </table>
@@ -390,10 +390,10 @@ function AdminPesquisas() {
                )}
             </div>
 
-            <div className="p-6 bg-white/[0.02] border-t border-white/5 flex gap-3">
-               <button onClick={() => setSelectedPesquisa(null)} className="px-8 py-3 bg-white/5 hover:bg-white/10 rounded-2xl text-xs font-black uppercase tracking-widest transition-all">Fechar</button>
+            <div className="p-6 bg-admin-hover border-t border-admin-border-light flex gap-3">
+               <button onClick={() => setSelectedPesquisa(null)} className="px-8 py-3 bg-admin-border-light hover:bg-admin-border-light rounded-lg text-xs font-semibold transition-all">Fechar</button>
                {selectedPesquisa.ativa && (
-                 <button onClick={() => endPesquisa(selectedPesquisa.id)} className="px-8 py-3 bg-danger/10 text-danger hover:bg-danger/20 rounded-2xl text-xs font-black uppercase tracking-widest transition-all">Encerrar Pesquisa</button>
+                 <button onClick={() => endPesquisa(selectedPesquisa.id)} className="px-8 py-3 bg-admin-danger/10 text-admin-danger hover:bg-admin-danger/20 rounded-lg text-xs font-semibold transition-all">Encerrar Pesquisa</button>
                )}
             </div>
           </div>
