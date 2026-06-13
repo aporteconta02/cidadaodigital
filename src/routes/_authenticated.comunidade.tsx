@@ -864,6 +864,63 @@ function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
           ))
         )}
       </div>
+
+      <Dialog open={isNewOpen} onOpenChange={setIsNewOpen}>
+        <DialogTrigger asChild>
+          <button className="fixed bottom-24 right-6 size-16 rounded-full bg-success text-white shadow-glow flex items-center justify-center active:scale-90 transition-transform z-40">
+            <Plus size={32} strokeWidth={3} />
+          </button>
+        </DialogTrigger>
+        <DialogContent className="bg-bg-elevated border-border-custom rounded-3xl p-6 max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black font-space uppercase italic text-white">Novo Aviso no Mural</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <select value={form.tipo} onChange={(e) => setForm({...form, tipo: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-success/50">
+              {[['pets','Pets'],['emprego','Emprego'],['venda','Venda'],['alerta','Alerta'],['geral','Geral']].map(([v,l]) => <option key={v} value={v} className="bg-bg-elevated">{l}</option>)}
+            </select>
+            <input type="text" value={form.titulo} onChange={(e) => setForm({...form, titulo: e.target.value})} placeholder="Título do aviso" maxLength={120} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-success/50" />
+            <textarea value={form.texto} onChange={(e) => setForm({...form, texto: e.target.value})} maxLength={500} placeholder="Conte os detalhes..." className="w-full h-32 bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-success/50 resize-none" />
+            <label className="flex items-center justify-center gap-2 p-4 bg-white/5 border border-dashed border-white/10 rounded-xl cursor-pointer">
+              <Camera size={16} className="text-success" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-white">{foto ? foto.name : 'Adicionar foto (opcional)'}</span>
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => setFoto(e.target.files?.[0] || null)} />
+            </label>
+            <button
+              disabled={submitting}
+              onClick={async () => {
+                if (!usuario?.id || !form.titulo || !form.texto) return toast.error("Preencha título e texto");
+                setSubmitting(true);
+                let foto_url = '';
+                if (foto) {
+                  const fn = `${usuario.id}-${Date.now()}.${foto.name.split('.').pop()}`;
+                  const up = await supabase.storage.from('fotos-denuncias').upload(fn, foto);
+                  if (!up.error) foto_url = supabase.storage.from('fotos-denuncias').getPublicUrl(up.data.path).data.publicUrl;
+                }
+                const { error } = await supabase.from('mural_avisos').insert({
+                  usuario_id: usuario.id,
+                  tipo: form.tipo,
+                  titulo: form.titulo,
+                  texto: form.texto,
+                  foto_url: foto_url || null,
+                  bairro: usuario.bairro,
+                  cidade: usuario.cidade,
+                });
+                setSubmitting(false);
+                if (error) return toast.error("Erro ao publicar aviso");
+                toast.success("Aviso publicado!");
+                setIsNewOpen(false);
+                setForm({ titulo: '', texto: '', tipo: 'geral' });
+                setFoto(null);
+                fetchAvisos();
+              }}
+              className="w-full py-4 bg-success text-white font-black rounded-2xl uppercase tracking-widest shadow-glow active:scale-95 transition-all"
+            >
+              {submitting ? 'Publicando...' : 'Publicar Aviso'}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
