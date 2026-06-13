@@ -36,6 +36,24 @@
   /* Shadows */
   --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
   --shadow-glow: 0 0 20px var(--primary-glow);
+
+  /* Admin (Instagram/Meta light theme) */
+  --color-admin-bg: #FAFAFA;
+  --color-admin-surface: #FFFFFF;
+  --color-admin-border: #DBDBDB;
+  --color-admin-border-light: #EFEFEF;
+  --color-admin-primary: #0095F6;
+  --color-admin-primary-dark: #00376B;
+  --color-admin-text: #262626;
+  --color-admin-text-secondary: #8E8E8E;
+  --color-admin-text-muted: #C7C7C7;
+  --color-admin-success: #1DB954;
+  --color-admin-danger: #ED4956;
+  --color-admin-warning: #FDCB58;
+  --color-admin-purple: #833AB4;
+  --color-admin-sidebar-active: #F0F2F5;
+  --color-admin-hover: #F9F9F9;
+  --font-inter: "Inter", sans-serif;
 }
 
 :root {
