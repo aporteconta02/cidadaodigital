@@ -577,6 +577,40 @@ export default function SOSPage() {
         </div>
       </div>
 
+      <Dialog open={!!resolveTarget} onOpenChange={(o) => !o && setResolveTarget(null)}>
+        <DialogContent className="bg-bg-elevated border-border-custom rounded-3xl p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black font-space uppercase italic text-white">Resolver Alerta</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <p className="text-xs text-text-muted">O que foi resolvido? Essa observação fica visível para os vizinhos.</p>
+            <textarea
+              value={resolveText}
+              onChange={(e) => setResolveText(e.target.value)}
+              maxLength={500}
+              placeholder="Ex: Falso alarme, era um vizinho novo / Polícia atendeu..."
+              className="w-full h-32 bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-white focus:outline-none focus:border-success/50 resize-none"
+            />
+            <button
+              onClick={async () => {
+                if (!resolveText.trim() || !resolveTarget) return toast.error("Descreva a resolução");
+                const { error } = await supabase.from('alertas_seguranca').update({
+                  observacao_resolucao: resolveText.trim(),
+                  resolvido_em: new Date().toISOString(),
+                } as any).eq('id', resolveTarget.id);
+                if (error) return toast.error("Erro ao resolver alerta");
+                toast.success("Alerta resolvido!");
+                setResolveTarget(null);
+                fetchAlerts();
+              }}
+              className="w-full py-4 bg-success text-white font-black rounded-2xl uppercase tracking-widest shadow-glow active:scale-95 transition-all"
+            >
+              Confirmar Resolução
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* SOS Active Overlay */}
       <AnimatePresence>
         {sosActive && (
