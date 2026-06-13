@@ -21,8 +21,9 @@ export const Route = createFileRoute("/_authenticated/comunidade")({
 type CityTab = 'denuncias' | 'eventos' | 'voz' | 'mural' | 'telefones';
 
 function ComunidadePage() {
-  const { search } = Route.useSearch() as any;
+  const search = Route.useSearch() as any;
   const [activeTab, setActiveTab] = useState<CityTab>(search?.tab || 'denuncias');
+  const autoOpen = !!search?.new;
 
   const tabs: { id: CityTab; label: string }[] = [
     { id: 'denuncias', label: 'Denúncias' },
