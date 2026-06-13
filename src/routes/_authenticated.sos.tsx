@@ -200,17 +200,19 @@ export default function SOSPage() {
         .subscribe();
 
       // Geolocation
+      // Realtime geolocation (live tracking)
+      let watchId: number | null = null;
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setUserLocation([position.coords.latitude, position.coords.longitude]);
-          },
-          (error) => console.error("Geolocation error:", error)
+        watchId = navigator.geolocation.watchPosition(
+          (position) => setUserLocation([position.coords.latitude, position.coords.longitude]),
+          (error) => console.error("Geolocation error:", error),
+          { enableHighAccuracy: true, maximumAge: 10000 }
         );
       }
 
       return () => {
         supabase.removeChannel(channel);
+        if (watchId !== null) navigator.geolocation.clearWatch(watchId);
       };
     }
   }, [isAssinante, usuario?.bairro]);
