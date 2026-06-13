@@ -244,7 +244,10 @@ function DenunciasTab({ autoOpen = false }: { autoOpen?: boolean }) {
                   </span>
                   <span className={cn(
                     "text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg",
-                    item.status === 'Pendente' ? "bg-warning/10 text-warning" : "bg-success/10 text-success"
+                    item.status === 'resolvida' ? "bg-success/10 text-success" :
+                    item.status === 'rejeitada' ? "bg-danger/10 text-danger" :
+                    item.status === 'em_analise' ? "bg-primary/10 text-primary" :
+                    "bg-warning/10 text-warning"
                   )}>
                     {item.status}
                   </span>
@@ -254,6 +257,12 @@ function DenunciasTab({ autoOpen = false }: { autoOpen?: boolean }) {
                   <MapPin size={14} className="text-primary" />
                   <span className="text-xs font-medium line-clamp-1">{item.endereco}</span>
                 </div>
+                {item.observacao_resolucao && (
+                  <div className="mb-4 p-3 bg-success/5 border border-success/20 rounded-2xl">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-success mb-1">Resolução</p>
+                    <p className="text-xs text-text-secondary leading-relaxed">{item.observacao_resolucao}</p>
+                  </div>
+                )}
                 <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest opacity-60">
                   <div className="flex items-center gap-1.5">
                     <Clock size={12} />
@@ -261,6 +270,14 @@ function DenunciasTab({ autoOpen = false }: { autoOpen?: boolean }) {
                   </div>
                   <span>{item.confirmacoes || 0} confirmações</span>
                 </div>
+                {usuario?.id === item.usuario_id && item.status !== 'resolvida' && (
+                  <button
+                    onClick={() => { setResolveTarget(item); setResolveText(''); }}
+                    className="mt-4 w-full py-3 bg-success/10 text-success font-black rounded-2xl uppercase tracking-widest text-[10px] active:scale-95 transition-all"
+                  >
+                    Marcar como Resolvida
+                  </button>
+                )}
               </div>
             </div>
           ))
