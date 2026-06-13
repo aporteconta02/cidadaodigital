@@ -67,10 +67,10 @@ function ComunidadePage() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
           >
-            {activeTab === 'denuncias' && <DenunciasTab />}
-            {activeTab === 'eventos' && <EventosTab />}
+            {activeTab === 'denuncias' && <DenunciasTab autoOpen={autoOpen} />}
+            {activeTab === 'eventos' && <EventosTab autoOpen={autoOpen} />}
             {activeTab === 'voz' && <VozDoPovoTab defaultPesquisaId={search?.pesquisaId} />}
-            {activeTab === 'mural' && <MuralTab />}
+            {activeTab === 'mural' && <MuralTab autoOpen={autoOpen} />}
             {activeTab === 'telefones' && <TelefonesTab />}
           </motion.div>
         </AnimatePresence>
