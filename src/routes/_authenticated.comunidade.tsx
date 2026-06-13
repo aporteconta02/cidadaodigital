@@ -188,7 +188,7 @@ function DenunciasTab({ autoOpen = false }: { autoOpen?: boolean }) {
       latitude: localizacao?.lat,
       longitude: localizacao?.lng,
       endereco,
-      status: 'Pendente'
+      status: 'enviada'
     });
 
     if (error) {
