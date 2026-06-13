@@ -147,12 +147,12 @@ function AdminBanners() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold font-space uppercase tracking-tight">Gestão de Banners</h2>
-          <p className="text-text-muted text-sm font-bold uppercase tracking-widest mt-1">Controle os destaques rotativos da Home</p>
+          <h2 className="text-2xl font-bold font-inter uppercase tracking-tight">Gestão de Banners</h2>
+          <p className="text-admin-text-admin-purple text-sm font-semibold mt-1">Controle os destaques rotativos da Home</p>
         </div>
         <button 
           onClick={() => setShowAddModal(true)}
-          className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center gap-2"
+          className="bg-primary hover:bg-admin-primary/90 text-admin-text px-6 py-2.5 rounded-xl text-xs font-semibold shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center gap-2"
         >
           <Plus size={18} /> Novo Banner
         </button>
@@ -160,48 +160,48 @@ function AdminBanners() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
-          [1, 2, 3].map(i => <div key={i} className="h-48 bg-white/5 rounded-3xl animate-pulse" />)
+          [1, 2, 3].map(i => <div key={i} className="h-48 bg-admin-border-light rounded-xl animate-pulse" />)
         ) : banners.length === 0 ? (
-          <div className="col-span-full py-12 text-center text-text-muted bg-white/5 rounded-3xl border border-dashed border-white/10 italic">Nenhum banner cadastrado</div>
+          <div className="col-span-full py-12 text-center text-admin-text-admin-purple bg-admin-border-light rounded-xl border border-dashed border-admin-border-light ">Nenhum banner cadastrado</div>
         ) : (
           banners.map((banner, index) => (
             <div key={banner.id} className={cn(
-              "bg-[#0A0A0F] border rounded-3xl overflow-hidden shadow-xl group transition-all",
-              banner.ativo ? "border-white/5" : "border-danger/20 opacity-60 grayscale"
+              "bg-admin-surface border rounded-xl overflow-hidden shadow-sm group transition-all",
+              banner.ativo ? "border-admin-border-light" : "border-admin-danger/20 opacity-60 grayscale"
             )}>
                <div className="aspect-[21/9] relative group">
                   <img src={banner.imagem_url} className="w-full h-full object-cover" alt="" />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                  <div className="absolute inset-0 bg-admin-text/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                      <button 
                         disabled={index === 0}
                         onClick={() => movePosition(banner, 'up')}
-                        className="size-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-white/20 disabled:opacity-30"
+                        className="size-10 bg-admin-border-light backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-admin-hover disabled:opacity-30"
                      >
                        <ArrowUp size={20} />
                      </button>
                      <button 
                         disabled={index === banners.length - 1}
                         onClick={() => movePosition(banner, 'down')}
-                        className="size-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-white/20 disabled:opacity-30"
+                        className="size-10 bg-admin-border-light backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-admin-hover disabled:opacity-30"
                      >
                        <ArrowDown size={20} />
                      </button>
                   </div>
                   {!banner.ativo && (
-                    <div className="absolute top-2 right-2 px-2 py-1 bg-danger text-white text-[8px] font-black uppercase tracking-widest rounded-lg">Inativo</div>
+                    <div className="absolute top-2 right-2 px-2 py-1 bg-danger text-admin-text text-[8px] font-semibold rounded-lg">Inativo</div>
                   )}
                </div>
                <div className="p-5 space-y-4">
                   <div>
                     <h3 className="text-sm font-bold uppercase tracking-tight truncate">{banner.titulo}</h3>
-                    <div className="flex items-center gap-2 text-text-muted mt-1">
+                    <div className="flex items-center gap-2 text-admin-text-admin-purple mt-1">
                        <LinkIcon size={12} />
                        <span className="text-[10px] font-medium truncate">{banner.link_destino || 'Sem link'}</span>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                     <div className="flex items-center gap-1.5 text-text-muted">
+                  <div className="flex items-center justify-between pt-2 border-t border-admin-border-light">
+                     <div className="flex items-center gap-1.5 text-admin-text-admin-purple">
                         <Calendar size={12} />
                         <span className="text-[10px] font-bold">{format(new Date(banner.data_fim), 'dd/MM/yy')}</span>
                      </div>
@@ -210,14 +210,14 @@ function AdminBanners() {
                           onClick={() => toggleStatus(banner)}
                           className={cn(
                             "p-2 rounded-xl transition-all",
-                            banner.ativo ? "text-success hover:bg-success/10" : "text-warning hover:bg-warning/10"
+                            banner.ativo ? "text-admin-success hover:bg-admin-success/10" : "text-admin-warning hover:bg-admin-warning/10"
                           )}
                         >
                            {banner.ativo ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
                         </button>
                         <button 
                           onClick={() => deleteBanner(banner.id)}
-                          className="p-2 text-danger hover:bg-danger/10 rounded-xl transition-all"
+                          className="p-2 text-admin-danger hover:bg-admin-danger/10 rounded-xl transition-all"
                         >
                            <Trash2 size={16} />
                         </button>
@@ -231,34 +231,34 @@ function AdminBanners() {
 
       {/* Add Banner Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
-           <div className="bg-[#0A0A0F] border border-white/10 w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
-              <div className="p-6 border-b border-white/5 flex items-center justify-between">
-                 <h3 className="text-lg font-black italic uppercase tracking-tighter">Adicionar Banner</h3>
-                 <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-white/5 rounded-full"><X size={20} /></button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-admin-text/40 backdrop-blur-sm animate-in fade-in duration-300">
+           <div className="bg-admin-surface border border-admin-border-light w-full max-w-lg rounded-xl overflow-hidden shadow-lg animate-in zoom-in-95 duration-300">
+              <div className="p-6 border-b border-admin-border-light flex items-center justify-between">
+                 <h3 className="text-lg font-semibold  uppercase tracking-tighter">Adicionar Banner</h3>
+                 <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-admin-border-light rounded-full"><X size={20} /></button>
               </div>
               <div className="p-8 space-y-6">
                  <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block">Imagem do Banner (21:9 recomendado)</label>
-                    <div className="relative group aspect-[21/9] rounded-2xl overflow-hidden border-2 border-dashed border-white/10 hover:border-primary/50 transition-all">
+                    <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Imagem do Banner (21:9 recomendado)</label>
+                    <div className="relative group aspect-[21/9] rounded-lg overflow-hidden border-2 border-dashed border-admin-border-light hover:border-admin-primary/50 transition-all">
                        {newBanner.imagem_url ? (
                          <>
                            <img src={newBanner.imagem_url} className="w-full h-full object-cover" alt="" />
                            <button 
                              onClick={() => setNewBanner({...newBanner, imagem_url: ""})}
-                             className="absolute top-2 right-2 size-8 bg-black/50 rounded-full flex items-center justify-center text-white"
+                             className="absolute top-2 right-2 size-8 bg-black/50 rounded-full flex items-center justify-center text-admin-text"
                            >
                               <X size={16} />
                            </button>
                          </>
                        ) : (
-                         <label className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5">
+                         <label className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer hover:bg-admin-border-light">
                             {uploading ? (
-                              <Loader2 size={24} className="text-primary animate-spin" />
+                              <Loader2 size={24} className="text-admin-primary animate-spin" />
                             ) : (
                               <>
-                                <Upload size={24} className="text-text-muted mb-2" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-text-muted">Clique para enviar</span>
+                                <Upload size={24} className="text-admin-text-admin-purple mb-2" />
+                                <span className="text-[10px] font-semibold text-admin-text-admin-purple">Clique para enviar</span>
                               </>
                             )}
                             <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
@@ -269,50 +269,50 @@ function AdminBanners() {
 
                  <div className="space-y-4">
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block">Título / Identificação</label>
+                      <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Título / Identificação</label>
                       <input 
                         type="text" 
                         placeholder="Ex: Campanha Black Friday"
                         value={newBanner.titulo}
                         onChange={e => setNewBanner({...newBanner, titulo: e.target.value})}
-                        className="w-full bg-white/5 border border-white/5 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-primary/50"
+                        className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block">Link de Destino</label>
+                      <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Link de Destino</label>
                       <input 
                         type="text" 
                         placeholder="Ex: /market/loja-123 ou link externo"
                         value={newBanner.link_destino}
                         onChange={e => setNewBanner({...newBanner, link_destino: e.target.value})}
-                        className="w-full bg-white/5 border border-white/5 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-primary/50"
+                        className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                        <div>
-                          <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block">Data Início</label>
+                          <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Data Início</label>
                           <input 
                             type="date" 
                             value={newBanner.data_inicio}
                             onChange={e => setNewBanner({...newBanner, data_inicio: e.target.value})}
-                            className="w-full bg-white/5 border border-white/5 rounded-xl py-2 px-4 text-sm focus:outline-none focus:border-primary/50"
+                            className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-2 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
                           />
                        </div>
                        <div>
-                          <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block">Data Fim</label>
+                          <label className="text-[10px] font-semibold text-admin-text-admin-purple mb-2 block">Data Fim</label>
                           <input 
                             type="date" 
                             value={newBanner.data_fim}
                             onChange={e => setNewBanner({...newBanner, data_fim: e.target.value})}
-                            className="w-full bg-white/5 border border-white/5 rounded-xl py-2 px-4 text-sm focus:outline-none focus:border-primary/50"
+                            className="w-full bg-admin-border-light border border-admin-border-light rounded-xl py-2 px-4 text-sm focus:outline-none focus:border-admin-primary/50"
                           />
                        </div>
                     </div>
                  </div>
               </div>
-              <div className="p-6 bg-white/[0.02] border-t border-white/5 flex gap-3">
-                 <button onClick={() => setShowAddModal(false)} className="flex-1 py-3 bg-white/5 hover:bg-white/10 rounded-2xl text-xs font-black uppercase tracking-widest transition-all">Cancelar</button>
-                 <button onClick={createBanner} className="flex-1 py-3 bg-primary hover:bg-primary/90 text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-primary/20">Salvar Banner</button>
+              <div className="p-6 bg-admin-hover border-t border-admin-border-light flex gap-3">
+                 <button onClick={() => setShowAddModal(false)} className="flex-1 py-3 bg-admin-border-light hover:bg-admin-border-light rounded-lg text-xs font-semibold transition-all">Cancelar</button>
+                 <button onClick={createBanner} className="flex-1 py-3 bg-primary hover:bg-admin-primary/90 text-admin-text rounded-lg text-xs font-semibold transition-all shadow-lg shadow-primary/20">Salvar Banner</button>
               </div>
            </div>
         </div>

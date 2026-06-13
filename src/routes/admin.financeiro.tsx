@@ -97,89 +97,89 @@ function AdminFinanceiro() {
       label: "Receita Recorrente (Plus)", 
       value: `R$ ${financeData.receitaPlus.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, 
       desc: `${financeData.totalAssinantes} Assinantes`,
-      icon: <Users className="text-primary" />, 
-      color: "bg-primary/10" 
+      icon: <Users className="text-admin-primary" />, 
+      color: "bg-admin-primary/10" 
     },
     { 
       label: "Receita Publicidade (Banners)", 
       value: `R$ ${financeData.receitaBanners.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, 
       desc: "Anúncios Ativos",
-      icon: <ImageIcon className="text-secondary" />, 
-      color: "bg-secondary/10" 
+      icon: <ImageIcon className="text-admin-purple" />, 
+      color: "bg-admin-purple/10" 
     },
     { 
       label: "Comissões Marketplace (6%)", 
       value: `R$ ${financeData.receitaComissoes.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, 
       desc: `Sobre R$ ${financeData.totalVendasMarketplace.toLocaleString()}`,
-      icon: <ShoppingBag className="text-success" />, 
-      color: "bg-success/10" 
+      icon: <ShoppingBag className="text-admin-success" />, 
+      color: "bg-admin-success/10" 
     },
     { 
       label: "Receita Total Estimada", 
       value: `R$ ${(financeData.receitaPlus + financeData.receitaBanners + financeData.receitaComissoes).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, 
       desc: "Projeção Mensal",
-      icon: <TrendingUp className="text-primary" />, 
-      color: "bg-primary/10" 
+      icon: <TrendingUp className="text-admin-primary" />, 
+      color: "bg-admin-primary/10" 
     },
   ];
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div>
-        <h2 className="text-2xl font-bold font-space uppercase tracking-tight">Financeiro</h2>
-        <p className="text-text-muted text-sm font-bold uppercase tracking-widest mt-1">Visão consolidada de receitas e assinaturas</p>
+        <h2 className="text-2xl font-bold font-inter uppercase tracking-tight">Financeiro</h2>
+        <p className="text-admin-text-admin-purple text-sm font-semibold mt-1">Visão consolidada de receitas e assinaturas</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {kpis.map((kpi, i) => (
-          <div key={i} className="bg-[#0A0A0F] border border-white/5 rounded-3xl p-6 shadow-xl group hover-card-effect">
+          <div key={i} className="bg-admin-surface border border-admin-border-light rounded-xl p-6 shadow-sm group hover-card-effect">
              <div className="flex items-center justify-between mb-4">
                 <div className={cn("size-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110", kpi.color)}>
                    {kpi.icon}
                 </div>
-                <ArrowUpRight size={18} className="text-text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
+                <ArrowUpRight size={18} className="text-admin-text-admin-purple opacity-0 group-hover:opacity-100 transition-opacity" />
              </div>
-             <p className="text-[10px] font-black uppercase tracking-widest text-text-muted italic mb-1 opacity-60">{kpi.label}</p>
-             <h4 className="text-2xl font-black font-space tracking-tighter italic">{kpi.value}</h4>
-             <p className="text-[10px] text-text-muted font-bold mt-2 uppercase tracking-widest">{kpi.desc}</p>
+             <p className="text-[10px] font-semibold text-admin-text-admin-purple  mb-1 opacity-60">{kpi.label}</p>
+             <h4 className="text-2xl font-semibold font-inter tracking-tighter ">{kpi.value}</h4>
+             <p className="text-[10px] text-admin-text-admin-purple font-bold mt-2 ">{kpi.desc}</p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
          {/* Subscribers List */}
-         <div className="lg:col-span-2 bg-[#0A0A0F] border border-white/5 rounded-3xl overflow-hidden shadow-xl flex flex-col">
-            <div className="p-6 border-b border-white/5 flex items-center justify-between">
-               <h3 className="text-sm font-black uppercase tracking-widest text-text-muted italic">Assinantes Recentes</h3>
-               <button className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline">Gerenciar Todos</button>
+         <div className="lg:col-span-2 bg-admin-surface border border-admin-border-light rounded-xl overflow-hidden shadow-sm flex flex-col">
+            <div className="p-6 border-b border-admin-border-light flex items-center justify-between">
+               <h3 className="text-sm font-semibold text-admin-text-admin-purple ">Assinantes Recentes</h3>
+               <button className="text-[10px] font-semibold text-admin-primary hover:underline">Gerenciar Todos</button>
             </div>
             <div className="overflow-x-auto flex-1">
                <table className="w-full text-left">
                   <thead>
-                     <tr className="bg-white/[0.02]">
-                        <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-text-muted">Usuário</th>
-                        <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-text-muted">Status</th>
-                        <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-text-muted">Início</th>
-                        <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-text-muted">Validade</th>
+                     <tr className="bg-admin-hover">
+                        <th className="px-6 py-4 text-[9px] font-semibold text-admin-text-admin-purple">Usuário</th>
+                        <th className="px-6 py-4 text-[9px] font-semibold text-admin-text-admin-purple">Status</th>
+                        <th className="px-6 py-4 text-[9px] font-semibold text-admin-text-admin-purple">Início</th>
+                        <th className="px-6 py-4 text-[9px] font-semibold text-admin-text-admin-purple">Validade</th>
                      </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-admin-border-light">
                      {loading ? (
-                        <tr><td colSpan={4} className="px-6 py-8 text-center animate-pulse text-text-muted">Carregando...</td></tr>
+                        <tr><td colSpan={4} className="px-6 py-8 text-center animate-pulse text-admin-text-admin-purple">Carregando...</td></tr>
                      ) : financeData.assinantesRecentes.map((sub, i) => (
                         <tr key={sub.id} className="hover:bg-white/[0.01] transition-colors">
                            <td className="px-6 py-4">
                               <p className="text-sm font-bold">{sub.nome}</p>
-                              <p className="text-[10px] text-text-muted">{sub.email}</p>
+                              <p className="text-[10px] text-admin-text-admin-purple">{sub.email}</p>
                            </td>
                            <td className="px-6 py-4">
-                              <span className="px-2 py-0.5 bg-success/10 text-success border border-success/20 rounded-full text-[9px] font-black uppercase tracking-widest">Ativo</span>
+                              <span className="px-2 py-0.5 bg-admin-success/10 text-admin-success border border-admin-success/20 rounded-full text-[9px] font-semibold">Ativo</span>
                            </td>
-                           <td className="px-6 py-4 text-xs text-text-secondary">
+                           <td className="px-6 py-4 text-xs text-admin-text-admin-purple">
                               {format(new Date(sub.criado_em), 'dd/MM/yyyy')}
                            </td>
                            <td className="px-6 py-4">
-                              <div className="flex items-center gap-1.5 text-text-muted">
+                              <div className="flex items-center gap-1.5 text-admin-text-admin-purple">
                                  <Clock size={12} />
                                  <span className="text-[10px] font-bold">{sub.validade_assinatura ? format(new Date(sub.validade_assinatura), 'dd/MM/yyyy') : '--'}</span>
                               </div>
@@ -192,8 +192,8 @@ function AdminFinanceiro() {
          </div>
 
          {/* Distribution Chart or Summary */}
-         <div className="bg-[#0A0A0F] border border-white/5 rounded-3xl p-6 shadow-xl space-y-8">
-            <h3 className="text-sm font-black uppercase tracking-widest text-text-muted italic">Origem da Receita</h3>
+         <div className="bg-admin-surface border border-admin-border-light rounded-xl p-6 shadow-sm space-y-8">
+            <h3 className="text-sm font-semibold text-admin-text-admin-purple ">Origem da Receita</h3>
             <div className="h-64 w-full">
                <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={[
@@ -214,19 +214,19 @@ function AdminFinanceiro() {
                </ResponsiveContainer>
             </div>
             <div className="space-y-4">
-               <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+               <div className="flex items-center justify-between p-4 bg-admin-border-light rounded-lg border border-admin-border-light">
                   <div className="flex items-center gap-3">
-                     <div className="size-8 rounded-xl bg-primary/20 flex items-center justify-center text-primary"><DollarSign size={16} /></div>
+                     <div className="size-8 rounded-xl bg-admin-primary/20 flex items-center justify-center text-admin-primary"><DollarSign size={16} /></div>
                      <p className="text-xs font-bold">Ticket Médio Plus</p>
                   </div>
-                  <p className="text-sm font-black italic">R$ 9,90</p>
+                  <p className="text-sm font-semibold ">R$ 9,90</p>
                </div>
-               <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+               <div className="flex items-center justify-between p-4 bg-admin-border-light rounded-lg border border-admin-border-light">
                   <div className="flex items-center gap-3">
-                     <div className="size-8 rounded-xl bg-success/20 flex items-center justify-center text-success"><CheckCircle2 size={16} /></div>
+                     <div className="size-8 rounded-xl bg-admin-success/20 flex items-center justify-center text-admin-success"><CheckCircle2 size={16} /></div>
                      <p className="text-xs font-bold">Taxa de Conversão</p>
                   </div>
-                  <p className="text-sm font-black italic">4.2%</p>
+                  <p className="text-sm font-semibold ">4.2%</p>
                </div>
             </div>
          </div>
