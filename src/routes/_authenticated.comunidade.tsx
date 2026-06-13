@@ -777,11 +777,15 @@ function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
    MURAL TAB
    ============================================================================ */
 
-function MuralTab() {
+function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
   const { usuario } = useAuth();
   const [avisos, setAvisos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('Todos');
+  const [isNewOpen, setIsNewOpen] = useState(autoOpen);
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({ titulo: '', texto: '', tipo: 'geral' });
+  const [foto, setFoto] = useState<File | null>(null);
 
   const categories = ['Todos', 'Pets', 'Emprego', 'Venda', 'Alerta', 'Geral'];
 
