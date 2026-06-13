@@ -42,9 +42,14 @@ function AuthPage() {
 
   // Check if already logged in
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
-        navigate({ to: '/dashboard' });
+        const { data: profile } = await supabase
+          .from('usuarios')
+          .select('is_admin')
+          .eq('auth_id', session.user.id)
+          .maybeSingle();
+        navigate({ to: profile?.is_admin ? '/admin' : '/dashboard' });
       }
     });
   }, [navigate]);
@@ -222,7 +227,9 @@ function AuthPage() {
 
          toast.success("Feito! ✅");
          let target: string = "/dashboard";
-         if (redirectPath) {
+         if (profile?.is_admin) {
+           target = "/admin";
+         } else if (redirectPath) {
            target = redirectPath;
          }
          navigate({ to: target as any });
