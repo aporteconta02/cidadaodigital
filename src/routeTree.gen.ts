@@ -31,6 +31,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedComunidadeRouteImport } from './routes/_authenticated.comunidade'
 import { Route as AuthenticatedComercioRouteImport } from './routes/_authenticated.comercio'
 import { Route as AuthenticatedCarrinhoRouteImport } from './routes/_authenticated.carrinho'
+import { Route as AuthenticatedPedidosPedidoIdRouteImport } from './routes/_authenticated.pedidos.$pedidoId'
 import { Route as AuthenticatedPedidoConfirmadoPedidoIdRouteImport } from './routes/_authenticated.pedido-confirmado.$pedidoId'
 import { Route as AuthenticatedComercioProdutoProdutoIdRouteImport } from './routes/_authenticated.comercio.produto.$produtoId'
 import { Route as AuthenticatedComercioLojaLojaIdRouteImport } from './routes/_authenticated.comercio.loja.$lojaId'
@@ -144,6 +145,12 @@ const AuthenticatedCarrinhoRoute = AuthenticatedCarrinhoRouteImport.update({
   path: '/carrinho',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedPedidosPedidoIdRoute =
+  AuthenticatedPedidosPedidoIdRouteImport.update({
+    id: '/$pedidoId',
+    path: '/$pedidoId',
+    getParentRoute: () => AuthenticatedPedidosRoute,
+  } as any)
 const AuthenticatedPedidoConfirmadoPedidoIdRoute =
   AuthenticatedPedidoConfirmadoPedidoIdRouteImport.update({
     id: '/pedido-confirmado/$pedidoId',
@@ -172,7 +179,7 @@ export interface FileRoutesByFullPath {
   '/comercio': typeof AuthenticatedComercioRouteWithChildren
   '/comunidade': typeof AuthenticatedComunidadeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/pedidos': typeof AuthenticatedPedidosRoute
+  '/pedidos': typeof AuthenticatedPedidosRouteWithChildren
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
   '/admin/banners': typeof AdminBannersRoute
@@ -186,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/': typeof AdminIndexRoute
   '/pedido-confirmado/$pedidoId': typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
+  '/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
   '/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
   '/comercio/produto/$produtoId': typeof AuthenticatedComercioProdutoProdutoIdRoute
 }
@@ -197,7 +205,7 @@ export interface FileRoutesByTo {
   '/comercio': typeof AuthenticatedComercioRouteWithChildren
   '/comunidade': typeof AuthenticatedComunidadeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/pedidos': typeof AuthenticatedPedidosRoute
+  '/pedidos': typeof AuthenticatedPedidosRouteWithChildren
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
   '/admin/banners': typeof AdminBannersRoute
@@ -211,6 +219,7 @@ export interface FileRoutesByTo {
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin': typeof AdminIndexRoute
   '/pedido-confirmado/$pedidoId': typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
+  '/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
   '/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
   '/comercio/produto/$produtoId': typeof AuthenticatedComercioProdutoProdutoIdRoute
 }
@@ -225,7 +234,7 @@ export interface FileRoutesById {
   '/_authenticated/comercio': typeof AuthenticatedComercioRouteWithChildren
   '/_authenticated/comunidade': typeof AuthenticatedComunidadeRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/pedidos': typeof AuthenticatedPedidosRoute
+  '/_authenticated/pedidos': typeof AuthenticatedPedidosRouteWithChildren
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/sos': typeof AuthenticatedSosRoute
   '/admin/banners': typeof AdminBannersRoute
@@ -239,6 +248,7 @@ export interface FileRoutesById {
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/': typeof AdminIndexRoute
   '/_authenticated/pedido-confirmado/$pedidoId': typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
+  '/_authenticated/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
   '/_authenticated/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
   '/_authenticated/comercio/produto/$produtoId': typeof AuthenticatedComercioProdutoProdutoIdRoute
 }
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/admin/usuarios'
     | '/admin/'
     | '/pedido-confirmado/$pedidoId'
+    | '/pedidos/$pedidoId'
     | '/comercio/loja/$lojaId'
     | '/comercio/produto/$produtoId'
   fileRoutesByTo: FileRoutesByTo
@@ -292,6 +303,7 @@ export interface FileRouteTypes {
     | '/admin/usuarios'
     | '/admin'
     | '/pedido-confirmado/$pedidoId'
+    | '/pedidos/$pedidoId'
     | '/comercio/loja/$lojaId'
     | '/comercio/produto/$produtoId'
   id:
@@ -319,6 +331,7 @@ export interface FileRouteTypes {
     | '/admin/usuarios'
     | '/admin/'
     | '/_authenticated/pedido-confirmado/$pedidoId'
+    | '/_authenticated/pedidos/$pedidoId'
     | '/_authenticated/comercio/loja/$lojaId'
     | '/_authenticated/comercio/produto/$produtoId'
   fileRoutesById: FileRoutesById
@@ -487,6 +500,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCarrinhoRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/pedidos/$pedidoId': {
+      id: '/_authenticated/pedidos/$pedidoId'
+      path: '/$pedidoId'
+      fullPath: '/pedidos/$pedidoId'
+      preLoaderRoute: typeof AuthenticatedPedidosPedidoIdRouteImport
+      parentRoute: typeof AuthenticatedPedidosRoute
+    }
     '/_authenticated/pedido-confirmado/$pedidoId': {
       id: '/_authenticated/pedido-confirmado/$pedidoId'
       path: '/pedido-confirmado/$pedidoId'
@@ -527,12 +547,23 @@ const AuthenticatedComercioRouteWithChildren =
     AuthenticatedComercioRouteChildren,
   )
 
+interface AuthenticatedPedidosRouteChildren {
+  AuthenticatedPedidosPedidoIdRoute: typeof AuthenticatedPedidosPedidoIdRoute
+}
+
+const AuthenticatedPedidosRouteChildren: AuthenticatedPedidosRouteChildren = {
+  AuthenticatedPedidosPedidoIdRoute: AuthenticatedPedidosPedidoIdRoute,
+}
+
+const AuthenticatedPedidosRouteWithChildren =
+  AuthenticatedPedidosRoute._addFileChildren(AuthenticatedPedidosRouteChildren)
+
 interface AuthenticatedRouteChildren {
   AuthenticatedCarrinhoRoute: typeof AuthenticatedCarrinhoRoute
   AuthenticatedComercioRoute: typeof AuthenticatedComercioRouteWithChildren
   AuthenticatedComunidadeRoute: typeof AuthenticatedComunidadeRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedPedidosRoute: typeof AuthenticatedPedidosRoute
+  AuthenticatedPedidosRoute: typeof AuthenticatedPedidosRouteWithChildren
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
   AuthenticatedSosRoute: typeof AuthenticatedSosRoute
   AuthenticatedPedidoConfirmadoPedidoIdRoute: typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
@@ -543,7 +574,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedComercioRoute: AuthenticatedComercioRouteWithChildren,
   AuthenticatedComunidadeRoute: AuthenticatedComunidadeRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedPedidosRoute: AuthenticatedPedidosRoute,
+  AuthenticatedPedidosRoute: AuthenticatedPedidosRouteWithChildren,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
   AuthenticatedSosRoute: AuthenticatedSosRoute,
   AuthenticatedPedidoConfirmadoPedidoIdRoute:
