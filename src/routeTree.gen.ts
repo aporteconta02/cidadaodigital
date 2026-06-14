@@ -26,6 +26,7 @@ import { Route as AdminDenunciasRouteImport } from './routes/admin.denuncias'
 import { Route as AdminBannersRouteImport } from './routes/admin.banners'
 import { Route as AuthenticatedSosRouteImport } from './routes/_authenticated.sos'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated.perfil'
+import { Route as AuthenticatedPedidosRouteImport } from './routes/_authenticated.pedidos'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedComunidadeRouteImport } from './routes/_authenticated.comunidade'
 import { Route as AuthenticatedComercioRouteImport } from './routes/_authenticated.comercio'
@@ -118,6 +119,11 @@ const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedPedidosRoute = AuthenticatedPedidosRouteImport.update({
+  id: '/pedidos',
+  path: '/pedidos',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -166,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/comercio': typeof AuthenticatedComercioRouteWithChildren
   '/comunidade': typeof AuthenticatedComunidadeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/pedidos': typeof AuthenticatedPedidosRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
   '/admin/banners': typeof AdminBannersRoute
@@ -190,6 +197,7 @@ export interface FileRoutesByTo {
   '/comercio': typeof AuthenticatedComercioRouteWithChildren
   '/comunidade': typeof AuthenticatedComunidadeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/pedidos': typeof AuthenticatedPedidosRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
   '/admin/banners': typeof AdminBannersRoute
@@ -217,6 +225,7 @@ export interface FileRoutesById {
   '/_authenticated/comercio': typeof AuthenticatedComercioRouteWithChildren
   '/_authenticated/comunidade': typeof AuthenticatedComunidadeRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/pedidos': typeof AuthenticatedPedidosRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/sos': typeof AuthenticatedSosRoute
   '/admin/banners': typeof AdminBannersRoute
@@ -244,6 +253,7 @@ export interface FileRouteTypes {
     | '/comercio'
     | '/comunidade'
     | '/dashboard'
+    | '/pedidos'
     | '/perfil'
     | '/sos'
     | '/admin/banners'
@@ -268,6 +278,7 @@ export interface FileRouteTypes {
     | '/comercio'
     | '/comunidade'
     | '/dashboard'
+    | '/pedidos'
     | '/perfil'
     | '/sos'
     | '/admin/banners'
@@ -294,6 +305,7 @@ export interface FileRouteTypes {
     | '/_authenticated/comercio'
     | '/_authenticated/comunidade'
     | '/_authenticated/dashboard'
+    | '/_authenticated/pedidos'
     | '/_authenticated/perfil'
     | '/_authenticated/sos'
     | '/admin/banners'
@@ -440,6 +452,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPerfilRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/pedidos': {
+      id: '/_authenticated/pedidos'
+      path: '/pedidos'
+      fullPath: '/pedidos'
+      preLoaderRoute: typeof AuthenticatedPedidosRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -513,6 +532,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedComercioRoute: typeof AuthenticatedComercioRouteWithChildren
   AuthenticatedComunidadeRoute: typeof AuthenticatedComunidadeRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedPedidosRoute: typeof AuthenticatedPedidosRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
   AuthenticatedSosRoute: typeof AuthenticatedSosRoute
   AuthenticatedPedidoConfirmadoPedidoIdRoute: typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
@@ -523,6 +543,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedComercioRoute: AuthenticatedComercioRouteWithChildren,
   AuthenticatedComunidadeRoute: AuthenticatedComunidadeRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedPedidosRoute: AuthenticatedPedidosRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
   AuthenticatedSosRoute: AuthenticatedSosRoute,
   AuthenticatedPedidoConfirmadoPedidoIdRoute:
