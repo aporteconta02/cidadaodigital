@@ -401,16 +401,17 @@ function PerfilPage() {
               icon={<ShoppingBag className="text-primary" />} 
               title="Meus Pedidos" 
               sub="Histórico de compras" 
-              onClick={() => navigate({ to: "/comercio" })}
+              onClick={() => navigate({ to: "/pedidos" })}
             />
             {usuario.tipo === 'comerciante' && (
               <ProfileItem 
                 icon={<Store className="text-secondary" />} 
                 title="Minha Loja" 
                 sub="Gerenciar produtos e pedidos" 
-                onClick={() => navigate({ to: "/comercio" })}
+                onClick={() => navigate({ to: "/minha-loja" })}
               />
             )}
+
             <ProfileItem 
               icon={<Megaphone className="text-secondary" />} 
               title="Minhas Denúncias" 
