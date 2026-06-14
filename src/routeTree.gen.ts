@@ -29,6 +29,8 @@ import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedComunidadeRouteImport } from './routes/_authenticated.comunidade'
 import { Route as AuthenticatedComercioRouteImport } from './routes/_authenticated.comercio'
+import { Route as AuthenticatedCarrinhoRouteImport } from './routes/_authenticated.carrinho'
+import { Route as AuthenticatedPedidoConfirmadoPedidoIdRouteImport } from './routes/_authenticated.pedido-confirmado.$pedidoId'
 import { Route as AuthenticatedComercioProdutoProdutoIdRouteImport } from './routes/_authenticated.comercio.produto.$produtoId'
 import { Route as AuthenticatedComercioLojaLojaIdRouteImport } from './routes/_authenticated.comercio.loja.$lojaId'
 
@@ -131,6 +133,17 @@ const AuthenticatedComercioRoute = AuthenticatedComercioRouteImport.update({
   path: '/comercio',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedCarrinhoRoute = AuthenticatedCarrinhoRouteImport.update({
+  id: '/carrinho',
+  path: '/carrinho',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedPedidoConfirmadoPedidoIdRoute =
+  AuthenticatedPedidoConfirmadoPedidoIdRouteImport.update({
+    id: '/pedido-confirmado/$pedidoId',
+    path: '/pedido-confirmado/$pedidoId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedComercioProdutoProdutoIdRoute =
   AuthenticatedComercioProdutoProdutoIdRouteImport.update({
     id: '/produto/$produtoId',
@@ -149,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/carrinho': typeof AuthenticatedCarrinhoRoute
   '/comercio': typeof AuthenticatedComercioRouteWithChildren
   '/comunidade': typeof AuthenticatedComunidadeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -164,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/admin/telefones': typeof AdminTelefonesRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/': typeof AdminIndexRoute
+  '/pedido-confirmado/$pedidoId': typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
   '/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
   '/comercio/produto/$produtoId': typeof AuthenticatedComercioProdutoProdutoIdRoute
 }
@@ -171,6 +186,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/carrinho': typeof AuthenticatedCarrinhoRoute
   '/comercio': typeof AuthenticatedComercioRouteWithChildren
   '/comunidade': typeof AuthenticatedComunidadeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -186,6 +202,7 @@ export interface FileRoutesByTo {
   '/admin/telefones': typeof AdminTelefonesRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin': typeof AdminIndexRoute
+  '/pedido-confirmado/$pedidoId': typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
   '/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
   '/comercio/produto/$produtoId': typeof AuthenticatedComercioProdutoProdutoIdRoute
 }
@@ -196,6 +213,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/carrinho': typeof AuthenticatedCarrinhoRoute
   '/_authenticated/comercio': typeof AuthenticatedComercioRouteWithChildren
   '/_authenticated/comunidade': typeof AuthenticatedComunidadeRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -211,6 +229,7 @@ export interface FileRoutesById {
   '/admin/telefones': typeof AdminTelefonesRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/': typeof AdminIndexRoute
+  '/_authenticated/pedido-confirmado/$pedidoId': typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
   '/_authenticated/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
   '/_authenticated/comercio/produto/$produtoId': typeof AuthenticatedComercioProdutoProdutoIdRoute
 }
@@ -221,6 +240,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/reset-password'
+    | '/carrinho'
     | '/comercio'
     | '/comunidade'
     | '/dashboard'
@@ -236,6 +256,7 @@ export interface FileRouteTypes {
     | '/admin/telefones'
     | '/admin/usuarios'
     | '/admin/'
+    | '/pedido-confirmado/$pedidoId'
     | '/comercio/loja/$lojaId'
     | '/comercio/produto/$produtoId'
   fileRoutesByTo: FileRoutesByTo
@@ -243,6 +264,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/carrinho'
     | '/comercio'
     | '/comunidade'
     | '/dashboard'
@@ -258,6 +280,7 @@ export interface FileRouteTypes {
     | '/admin/telefones'
     | '/admin/usuarios'
     | '/admin'
+    | '/pedido-confirmado/$pedidoId'
     | '/comercio/loja/$lojaId'
     | '/comercio/produto/$produtoId'
   id:
@@ -267,6 +290,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/carrinho'
     | '/_authenticated/comercio'
     | '/_authenticated/comunidade'
     | '/_authenticated/dashboard'
@@ -282,6 +306,7 @@ export interface FileRouteTypes {
     | '/admin/telefones'
     | '/admin/usuarios'
     | '/admin/'
+    | '/_authenticated/pedido-confirmado/$pedidoId'
     | '/_authenticated/comercio/loja/$lojaId'
     | '/_authenticated/comercio/produto/$produtoId'
   fileRoutesById: FileRoutesById
@@ -436,6 +461,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedComercioRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/carrinho': {
+      id: '/_authenticated/carrinho'
+      path: '/carrinho'
+      fullPath: '/carrinho'
+      preLoaderRoute: typeof AuthenticatedCarrinhoRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/pedido-confirmado/$pedidoId': {
+      id: '/_authenticated/pedido-confirmado/$pedidoId'
+      path: '/pedido-confirmado/$pedidoId'
+      fullPath: '/pedido-confirmado/$pedidoId'
+      preLoaderRoute: typeof AuthenticatedPedidoConfirmadoPedidoIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/comercio/produto/$produtoId': {
       id: '/_authenticated/comercio/produto/$produtoId'
       path: '/produto/$produtoId'
@@ -470,19 +509,24 @@ const AuthenticatedComercioRouteWithChildren =
   )
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedCarrinhoRoute: typeof AuthenticatedCarrinhoRoute
   AuthenticatedComercioRoute: typeof AuthenticatedComercioRouteWithChildren
   AuthenticatedComunidadeRoute: typeof AuthenticatedComunidadeRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
   AuthenticatedSosRoute: typeof AuthenticatedSosRoute
+  AuthenticatedPedidoConfirmadoPedidoIdRoute: typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedCarrinhoRoute: AuthenticatedCarrinhoRoute,
   AuthenticatedComercioRoute: AuthenticatedComercioRouteWithChildren,
   AuthenticatedComunidadeRoute: AuthenticatedComunidadeRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
   AuthenticatedSosRoute: AuthenticatedSosRoute,
+  AuthenticatedPedidoConfirmadoPedidoIdRoute:
+    AuthenticatedPedidoConfirmadoPedidoIdRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -527,3 +571,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
