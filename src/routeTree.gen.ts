@@ -27,6 +27,7 @@ import { Route as AdminBannersRouteImport } from './routes/admin.banners'
 import { Route as AuthenticatedSosRouteImport } from './routes/_authenticated.sos'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated.perfil'
 import { Route as AuthenticatedPedidosRouteImport } from './routes/_authenticated.pedidos'
+import { Route as AuthenticatedMinhaLojaRouteImport } from './routes/_authenticated.minha-loja'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedComunidadeRouteImport } from './routes/_authenticated.comunidade'
 import { Route as AuthenticatedComercioRouteImport } from './routes/_authenticated.comercio'
@@ -125,6 +126,11 @@ const AuthenticatedPedidosRoute = AuthenticatedPedidosRouteImport.update({
   path: '/pedidos',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedMinhaLojaRoute = AuthenticatedMinhaLojaRouteImport.update({
+  id: '/minha-loja',
+  path: '/minha-loja',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -179,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/comercio': typeof AuthenticatedComercioRouteWithChildren
   '/comunidade': typeof AuthenticatedComunidadeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/minha-loja': typeof AuthenticatedMinhaLojaRoute
   '/pedidos': typeof AuthenticatedPedidosRouteWithChildren
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/comercio': typeof AuthenticatedComercioRouteWithChildren
   '/comunidade': typeof AuthenticatedComunidadeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/minha-loja': typeof AuthenticatedMinhaLojaRoute
   '/pedidos': typeof AuthenticatedPedidosRouteWithChildren
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
@@ -234,6 +242,7 @@ export interface FileRoutesById {
   '/_authenticated/comercio': typeof AuthenticatedComercioRouteWithChildren
   '/_authenticated/comunidade': typeof AuthenticatedComunidadeRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/minha-loja': typeof AuthenticatedMinhaLojaRoute
   '/_authenticated/pedidos': typeof AuthenticatedPedidosRouteWithChildren
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/sos': typeof AuthenticatedSosRoute
@@ -263,6 +272,7 @@ export interface FileRouteTypes {
     | '/comercio'
     | '/comunidade'
     | '/dashboard'
+    | '/minha-loja'
     | '/pedidos'
     | '/perfil'
     | '/sos'
@@ -289,6 +299,7 @@ export interface FileRouteTypes {
     | '/comercio'
     | '/comunidade'
     | '/dashboard'
+    | '/minha-loja'
     | '/pedidos'
     | '/perfil'
     | '/sos'
@@ -317,6 +328,7 @@ export interface FileRouteTypes {
     | '/_authenticated/comercio'
     | '/_authenticated/comunidade'
     | '/_authenticated/dashboard'
+    | '/_authenticated/minha-loja'
     | '/_authenticated/pedidos'
     | '/_authenticated/perfil'
     | '/_authenticated/sos'
@@ -472,6 +484,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPedidosRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/minha-loja': {
+      id: '/_authenticated/minha-loja'
+      path: '/minha-loja'
+      fullPath: '/minha-loja'
+      preLoaderRoute: typeof AuthenticatedMinhaLojaRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -563,6 +582,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedComercioRoute: typeof AuthenticatedComercioRouteWithChildren
   AuthenticatedComunidadeRoute: typeof AuthenticatedComunidadeRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedMinhaLojaRoute: typeof AuthenticatedMinhaLojaRoute
   AuthenticatedPedidosRoute: typeof AuthenticatedPedidosRouteWithChildren
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
   AuthenticatedSosRoute: typeof AuthenticatedSosRoute
@@ -574,6 +594,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedComercioRoute: AuthenticatedComercioRouteWithChildren,
   AuthenticatedComunidadeRoute: AuthenticatedComunidadeRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedMinhaLojaRoute: AuthenticatedMinhaLojaRoute,
   AuthenticatedPedidosRoute: AuthenticatedPedidosRouteWithChildren,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
   AuthenticatedSosRoute: AuthenticatedSosRoute,
