@@ -432,6 +432,34 @@ function AuthPage() {
             {loading ? (isLogin ? "Entrando..." : "Criando conta...") : (isLogin ? "Entrar" : "CRIAR MINHA CONTA")}
           </button>
 
+          {isLogin && (
+            <div className="text-center pt-2">
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!email.trim()) {
+                    setErro('Digite seu e-mail acima para recuperar a senha.');
+                    return;
+                  }
+                  setErro('');
+                  setLoading(true);
+                  const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+                    redirectTo: `${window.location.origin}/reset-password`,
+                  });
+                  setLoading(false);
+                  if (error) {
+                    setErro('Não foi possível enviar o e-mail: ' + error.message);
+                  } else {
+                    toast.success('E-mail de recuperação enviado! Confira sua caixa.');
+                  }
+                }}
+                className="text-sm text-primary font-bold hover:underline min-h-[44px] px-4"
+              >
+                Esqueci minha senha
+              </button>
+            </div>
+          )}
+
           <div className="pt-6 text-center">
             <button 
               type="button"
@@ -444,6 +472,7 @@ function AuthPage() {
               {isLogin ? "Ainda não tem conta? Cadastre-se" : "Já possui conta? Faça login"}
             </button>
           </div>
+
         </form>
       </div>
     </div>
