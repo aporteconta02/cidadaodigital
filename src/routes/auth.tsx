@@ -105,23 +105,34 @@ function AuthPage() {
         email: email.trim(),
         password: password,
         options: {
-          data: { nome: fullName }
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: {
+            full_name: fullName.trim(),
+            phone: phone.trim(),
+            city: city.trim(),
+            neighborhood: neighborhood.trim(),
+            account_type: accountType,
+            shop_name: accountType === 'comerciante' ? shopName.trim() : undefined,
+            shop_category: accountType === 'comerciante' ? (shopCategory || 'Geral') : undefined,
+          }
         }
       });
 
       if (authError) {
         console.error("Erro no signUp:", authError);
-        if (authError.message.includes('already registered')) {
+        if (authError.message.includes('already registered') || authError.message.includes('already been registered')) {
           setErro('Este e-mail já está cadastrado. Faça login.');
+        } else if (authError.message.includes('Password')) {
+          setErro('Senha inválida. Use ao menos 6 caracteres.');
         } else {
-          setErro(authError.message);
+          setErro('Erro ao criar conta: ' + authError.message);
         }
         setLoading(false);
         return;
       }
 
       if (!authData || !authData.user) {
-        setErro('Erro ao criar conta: Usuário não retornado. Verifique se a confirmação de e-mail está desativada no Supabase.');
+        setErro('Erro ao criar conta. Tente novamente.');
         setLoading(false);
         return;
       }
@@ -129,50 +140,25 @@ function AuthPage() {
       const uid = authData.user.id;
       console.log("Usuário criado no Auth:", uid);
 
-      const numeroMembro = '#' + Math.floor(10000 + Math.random() * 90000).toString();
-      const qrToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      // O trigger handle_new_user já cria o perfil em `usuarios` (e a loja, se comerciante)
+      // de forma atômica e bypassa RLS. Buscamos o perfil com pequeno retry.
+      let newUserProfile: any = null;
+      for (let i = 0; i < 5; i++) {
+        const { data } = await supabase
+          .from('usuarios')
+          .select('*')
+          .eq('auth_id', uid)
+          .maybeSingle();
+        if (data) { newUserProfile = data; break; }
+        await new Promise(r => setTimeout(r, 200));
+      }
 
-      console.log("Inserindo no perfil usuarios...");
-      const { data: newUserProfile, error: insertError } = await supabase.from('usuarios').upsert({
-        id: uid, 
-        auth_id: uid,
-        nome: fullName.trim(),
-        email: email.trim().toLowerCase(),
-        telefone: phone.trim(),
-        cidade: city.trim(),
-        bairro: neighborhood.trim(),
-        tipo: accountType,
-        assinante_plus: false,
-        numero_membro: numeroMembro,
-        qr_code_token: qrToken,
-        is_admin: false,
-        ativo: true
-      }, { onConflict: 'id' }).select().single();
-
-      if (insertError) {
-        console.error("Erro no insert usuarios:", insertError);
-        setErro('Erro ao salvar perfil: ' + insertError.message);
+      if (!newUserProfile) {
+        setErro('Conta criada, mas o perfil não foi carregado. Faça login.');
         setLoading(false);
         return;
       }
 
-      if (accountType === 'comerciante' && shopName) {
-        console.log("Inserindo loja...");
-        const { error: shopError } = await supabase.from('lojas').upsert({
-          usuario_id: uid,
-          nome: shopName.trim(),
-          categoria: shopCategory || 'geral',
-          aprovada: false,
-          plano: 'gratuito',
-          ativo: true
-        }, { onConflict: 'usuario_id' });
-        
-        if (shopError) {
-          console.error("Erro no insert lojas:", shopError);
-          // Não bloqueia o cadastro principal, mas avisa
-          toast.error("Erro ao criar loja: " + shopError.message);
-        }
-      }
 
       console.log("Cadastro concluído com sucesso!");
       toast.success("Feito! 🎉");
