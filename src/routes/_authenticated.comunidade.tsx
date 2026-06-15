@@ -646,6 +646,7 @@ function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
   const [pesquisas, setPesquisas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [userVotes, setUserVotes] = useState<Record<string, any>>({});
+  const [tallies, setTallies] = useState<Record<string, { counts: Record<string, number>, total: number }>>({});
 
   const fetchPesquisas = useCallback(async () => {
     setLoading(true);
@@ -655,30 +656,41 @@ function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
       .eq('ativa', true)
       .order('criado_em', { ascending: false });
 
-    if (!pError && pData && usuario?.id) {
-      setPesquisas(pData);
-      const { data: vData } = await supabase
+    if (pError || !pData) { setLoading(false); return; }
+    setPesquisas(pData);
+
+    const ids = pData.map(p => p.id);
+    if (ids.length) {
+      const { data: rData } = await supabase
         .from('respostas_pesquisa')
-        .select('pesquisa_id, resposta')
-        .eq('usuario_id', usuario.id);
-      
+        .select('pesquisa_id, resposta, usuario_id')
+        .in('pesquisa_id', ids);
+
+      const t: Record<string, { counts: Record<string, number>, total: number }> = {};
       const votes: Record<string, any> = {};
-      vData?.forEach(v => { votes[v.pesquisa_id] = v.resposta; });
+      pData.forEach(p => { t[p.id] = { counts: {}, total: 0 }; });
+      rData?.forEach(r => {
+        const valor = (r.resposta as any)?.valor;
+        const key = String(valor);
+        if (!t[r.pesquisa_id]) t[r.pesquisa_id] = { counts: {}, total: 0 };
+        t[r.pesquisa_id].counts[key] = (t[r.pesquisa_id].counts[key] || 0) + 1;
+        t[r.pesquisa_id].total += 1;
+        if (usuario?.id && r.usuario_id === usuario.id) votes[r.pesquisa_id] = valor;
+      });
+      setTallies(t);
       setUserVotes(votes);
     }
     setLoading(false);
   }, [usuario?.id]);
 
-  useEffect(() => { 
+  useEffect(() => {
     fetchPesquisas().then(() => {
       if (defaultPesquisaId) {
         const el = document.getElementById(`poll-${defaultPesquisaId}`);
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       }
-    }); 
+    });
   }, [fetchPesquisas, defaultPesquisaId]);
-
-  const navigate = useNavigate();
 
   const handleVote = async (pesquisaId: string, resposta: any) => {
     if (!usuario?.id) return;
@@ -697,12 +709,18 @@ function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
     }
   };
 
+  const prazoLabel = (encerra_em: string | null) => {
+    if (!encerra_em) return 'Sem prazo';
+    const diff = new Date(encerra_em).getTime() - Date.now();
+    if (diff <= 0) return 'Encerrada';
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    return `${days} dia${days > 1 ? 's' : ''} restantes`;
+  };
+
   return (
     <div className="space-y-8">
       <div className="bg-gradient-hero p-8 rounded-[40px] border border-white/10 shadow-glow relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-4 opacity-10">
-          <TrendingUp size={120} />
-        </div>
+        <div className="absolute top-0 right-0 p-4 opacity-10"><TrendingUp size={120} /></div>
         <div className="relative z-10">
           <h3 className="text-2xl font-black font-space uppercase tracking-tight text-white italic">Voz do Povo</h3>
           <p className="text-xs text-white/70 font-bold uppercase tracking-widest mt-1">Sua opinião constrói o bairro</p>
@@ -720,8 +738,10 @@ function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
         </div>
       ) : (
         pesquisas.map((poll) => {
-          const options = poll.opcoes as any[];
-          const hasVoted = !!userVotes[poll.id];
+          const options = (poll.opcoes as any[]) || [];
+          const hasVoted = userVotes[poll.id] !== undefined;
+          const tally = tallies[poll.id] || { counts: {}, total: 0 };
+          const total = tally.total;
 
           return (
             <div key={poll.id} id={`poll-${poll.id}`} className={cn(
@@ -735,34 +755,49 @@ function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
                 </span>}
               </div>
               <h4 className="font-bold text-xl mb-6 leading-tight text-white">{poll.titulo}</h4>
-              
+
               <div className="space-y-4 mb-8">
-                {options.map((opt, i) => (
-                  <button 
-                    key={i}
-                    disabled={hasVoted}
-                    onClick={() => handleVote(poll.id, opt.label)}
-                    className={cn(
-                      "relative w-full p-4 rounded-2xl bg-white/5 overflow-hidden group active:scale-[0.98] transition-all border border-white/5",
-                      hasVoted && userVotes[poll.id] === opt.label && "border-primary/50 bg-primary/5"
-                    )}
-                  >
-                    <div className="flex items-center justify-between relative z-10">
-                      <span className="text-sm font-bold text-white">{opt.label}</span>
-                      {hasVoted && <span className="text-xs font-black text-primary">25%</span>}
-                    </div>
-                  </button>
-                ))}
+                {options.map((opt, i) => {
+                  const count = tally.counts[opt.label] || 0;
+                  const pct = total > 0 ? (count / total) * 100 : 0;
+                  const isMine = userVotes[poll.id] === opt.label;
+                  return (
+                    <button
+                      key={i}
+                      disabled={hasVoted}
+                      onClick={() => handleVote(poll.id, opt.label)}
+                      className={cn(
+                        "relative w-full p-4 rounded-2xl bg-white/5 overflow-hidden group active:scale-[0.98] transition-all border border-white/5 text-left",
+                        isMine && "border-primary/50 bg-primary/5"
+                      )}
+                    >
+                      {hasVoted && (
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ duration: 0.8, ease: 'easeOut' }}
+                          className={cn("absolute inset-y-0 left-0 rounded-2xl", isMine ? "bg-primary/20" : "bg-white/10")}
+                        />
+                      )}
+                      <div className="flex items-center justify-between relative z-10">
+                        <span className="text-sm font-bold text-white">{opt.label}</span>
+                        {hasVoted && (
+                          <span className="text-xs font-black text-primary">{pct.toFixed(1)}% · {count}</span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
 
               <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-text-muted opacity-60">
                 <div className="flex items-center gap-1.5">
                   <Users size={12} />
-                  <span>1.2k participantes</span>
+                  <span>{total} participante{total === 1 ? '' : 's'}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-warning">
                   <Clock size={12} />
-                  <span>3 dias restantes</span>
+                  <span>{prazoLabel(poll.encerra_em)}</span>
                 </div>
               </div>
             </div>
