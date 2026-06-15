@@ -816,13 +816,20 @@ function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
   const { usuario } = useAuth();
   const [avisos, setAvisos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('Todos');
+  const [filter, setFilter] = useState('todos');
   const [isNewOpen, setIsNewOpen] = useState(autoOpen);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ titulo: '', texto: '', tipo: 'geral' });
   const [foto, setFoto] = useState<File | null>(null);
 
-  const categories = ['Todos', 'Pets', 'Emprego', 'Venda', 'Alerta', 'Geral'];
+  const categories: Array<{ label: string, value: string }> = [
+    { label: 'Todos', value: 'todos' },
+    { label: 'Pets', value: 'pets' },
+    { label: 'Emprego', value: 'emprego' },
+    { label: 'Venda', value: 'venda' },
+    { label: 'Alerta', value: 'alerta' },
+    { label: 'Geral', value: 'geral' },
+  ];
 
   const fetchAvisos = useCallback(async () => {
     setLoading(true);
@@ -832,7 +839,7 @@ function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
       .eq('ativo', true)
       .order('criado_em', { ascending: false });
 
-    if (filter !== 'Todos') {
+    if (filter !== 'todos') {
       query = query.eq('tipo', filter);
     }
 
@@ -847,18 +854,19 @@ function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
     <div className="space-y-6">
       <div className="flex overflow-x-auto no-scrollbar gap-2 pb-2">
         {categories.map((cat) => (
-          <button 
-            key={cat}
-            onClick={() => setFilter(cat)}
+          <button
+            key={cat.value}
+            onClick={() => setFilter(cat.value)}
             className={cn(
               "px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap border transition-all",
-              filter === cat ? "bg-success border-success text-white shadow-glow-sm" : "bg-white/5 border-white/5 text-text-muted hover:border-white/20"
+              filter === cat.value ? "bg-success border-success text-white shadow-glow-sm" : "bg-white/5 border-white/5 text-text-muted hover:border-white/20"
             )}
           >
-            {cat}
+            {cat.label}
           </button>
         ))}
       </div>
+
 
       <div className="space-y-3">
         {loading ? (
