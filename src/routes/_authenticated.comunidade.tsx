@@ -495,7 +495,8 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
   const [filter, setFilter] = useState<'todos' | 'hoje' | 'semana' | 'mes'>('todos');
   const [isNewOpen, setIsNewOpen] = useState(autoOpen);
   const [submitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState({ titulo: '', descricao: '', data_evento: '', local_nome: '', endereco: '', categoria: 'Cultura', gratuito: true });
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [form, setForm] = useState({ titulo: '', descricao: '', data_evento: '', local_nome: '', endereco: '', categoria: 'Cultura', gratuito: true, preco_ingresso: '' });
 
   const fetchEventos = useCallback(async () => {
     setLoading(true);
