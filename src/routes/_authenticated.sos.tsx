@@ -165,7 +165,7 @@ const ALERT_TYPES = {
 
 function SOSPage() {
   const search = Route.useSearch() as any;
-  const { usuario, isAssinante } = useAuth();
+  const { usuario, isAssinante, refreshUsuario } = useAuth();
   const [sosProgress, setSosProgress] = useState(0);
   const [sosActive, setSosActive] = useState(false);
   const [alerts, setAlerts] = useState<any[]>([]);
@@ -177,7 +177,26 @@ function SOSPage() {
   const [activeTab, setActiveTab] = useState<'alertas' | 'contatos'>('alertas');
   const [resolveTarget, setResolveTarget] = useState<any>(null);
   const [resolveText, setResolveText] = useState('');
+  const [activating, setActivating] = useState(false);
   const pressInterval = useRef<NodeJS.Timeout | null>(null);
+
+  const ativarAssinatura = async () => {
+    if (!usuario?.id) return;
+    setActivating(true);
+    const validade = new Date();
+    validade.setDate(validade.getDate() + 30);
+    const { error } = await supabase
+      .from('usuarios')
+      .update({ assinante_plus: true, validade_assinatura: validade.toISOString() })
+      .eq('id', usuario.id);
+    setActivating(false);
+    if (error) {
+      toast.error("Erro ao ativar assinatura.");
+    } else {
+      toast.success("✅ Vizinho Seguro ativado!");
+      await refreshUsuario();
+    }
+  };
 
   // Fetch alerts and user location
   useEffect(() => {
@@ -317,10 +336,27 @@ function SOSPage() {
     fetchAlerts();
   };
 
-  const shareSOSWhatsApp = () => {
-    const message = `🚨 EMERGÊNCIA SOS!\n${usuario?.nome} precisou de ajuda.\n📍 https://maps.google.com/?q=${userLocation[0]},${userLocation[1]}\n⏰ ${new Date().toLocaleTimeString('pt-BR')}`;
-    const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
+  const shareSOSWhatsApp = async () => {
+    if (!usuario?.id) return;
+    const { data: contatos } = await supabase
+      .from('contatos_confianca')
+      .select('telefone, nome')
+      .eq('usuario_id', usuario.id);
+
+    const message = `🚨 SOS! ${usuario?.nome} precisou de ajuda.\n📍 https://maps.google.com/?q=${userLocation[0]},${userLocation[1]}\n⏰ ${new Date().toLocaleTimeString('pt-BR')}`;
+
+    if (!contatos || contatos.length === 0) {
+      toast.warning("Nenhum contato de confiança cadastrado. Abrindo WhatsApp...");
+      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+      return;
+    }
+
+    contatos.forEach((c, i) => {
+      const tel = String(c.telefone).replace(/\D/g, '');
+      const url = `https://wa.me/${tel}?text=${encodeURIComponent(message)}`;
+      setTimeout(() => window.open(url, '_blank'), i * 400);
+    });
+    toast.success(`Avisando ${contatos.length} contato(s)...`);
   };
 
   const isValido = usuario?.validade_assinatura ? new Date(usuario.validade_assinatura) > new Date() : false;
@@ -350,9 +386,11 @@ function SOSPage() {
         </div>
 
         <button 
-          className="w-full bg-gradient-hero text-white font-black py-5 rounded-2xl shadow-lg text-lg uppercase tracking-wider active:scale-95 transition-all"
+          onClick={ativarAssinatura}
+          disabled={activating}
+          className="w-full bg-gradient-hero text-white font-black py-5 rounded-2xl shadow-lg text-lg uppercase tracking-wider active:scale-95 transition-all disabled:opacity-50"
         >
-          Ativar por R$ 9,90/mês
+          {activating ? "Ativando..." : "Ativar por R$ 9,90/mês"}
         </button>
       </div>
     );
