@@ -495,7 +495,8 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
   const [filter, setFilter] = useState<'todos' | 'hoje' | 'semana' | 'mes'>('todos');
   const [isNewOpen, setIsNewOpen] = useState(autoOpen);
   const [submitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState({ titulo: '', descricao: '', data_evento: '', local_nome: '', endereco: '', categoria: 'Cultura', gratuito: true });
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [form, setForm] = useState({ titulo: '', descricao: '', data_evento: '', local_nome: '', endereco: '', categoria: 'Cultura', gratuito: true, preco_ingresso: '' });
 
   const fetchEventos = useCallback(async () => {
     setLoading(true);
@@ -570,11 +571,27 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
                   </div>
                 </div>
               </div>
-              <div className="p-4 flex items-center justify-between">
+              <div className="p-4 flex items-center justify-between gap-2">
                 <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-4 py-2 rounded-full">{event.categoria}</span>
-                <button className="bg-white text-black px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-transform active:scale-95 shadow-lg">
-                  Ver Detalhes
-                </button>
+                <div className="flex items-center gap-2">
+                  {!event.gratuito && event.preco_ingresso != null && (
+                    <span className="text-[10px] font-black uppercase tracking-widest text-warning bg-warning/10 px-3 py-2 rounded-full">R$ {Number(event.preco_ingresso).toFixed(2).replace('.', ',')}</span>
+                  )}
+                  <button
+                    onClick={async () => {
+                      const url = `${window.location.origin}/comunidade?tab=eventos`;
+                      const text = `${event.titulo} — ${format(new Date(event.data_evento), "dd/MM 'às' HH:mm", { locale: ptBR })} · ${event.local_nome || ''}`;
+                      try {
+                        if (navigator.share) await navigator.share({ title: event.titulo, text, url });
+                        else { await navigator.clipboard.writeText(`${text}\n${url}`); toast.success('Link copiado!'); }
+                      } catch {}
+                    }}
+                    className="size-10 rounded-xl bg-white/5 border border-white/5 text-white flex items-center justify-center active:scale-95"
+                    aria-label="Compartilhar"
+                  >
+                    <Share2 size={16} />
+                  </button>
+                </div>
               </div>
             </div>
           ))
@@ -600,15 +617,31 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
               {['Cultura','Esporte','Religioso','Educação','Comunitário','Festa','Outros'].map(c => <option key={c} value={c} className="bg-bg-elevated">{c}</option>)}
             </select>
             <textarea value={form.descricao} onChange={(e) => setForm({...form, descricao: e.target.value})} maxLength={500} placeholder="Descrição do evento..." className="w-full h-24 bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50 resize-none" />
-            <label className="flex items-center gap-2 text-xs text-text-muted">
-              <input type="checkbox" checked={form.gratuito} onChange={(e) => setForm({...form, gratuito: e.target.checked})} /> Evento gratuito
+            <label className="flex items-center justify-center gap-2 p-4 bg-white/5 border border-dashed border-white/10 rounded-xl cursor-pointer">
+              <Image size={16} className="text-secondary" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-white">{bannerFile ? bannerFile.name : 'Banner do evento (opcional)'}</span>
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => setBannerFile(e.target.files?.[0] || null)} />
             </label>
+            <label className="flex items-center gap-2 text-xs text-text-muted">
+              <input type="checkbox" checked={form.gratuito} onChange={(e) => setForm({...form, gratuito: e.target.checked, preco_ingresso: e.target.checked ? '' : form.preco_ingresso})} /> Evento gratuito
+            </label>
+            {!form.gratuito && (
+              <input type="number" min="0" step="0.01" value={form.preco_ingresso} onChange={(e) => setForm({...form, preco_ingresso: e.target.value})} placeholder="Valor do ingresso (R$)" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
+            )}
             <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">Eventos passam por aprovação da administração.</p>
             <button
               disabled={submitting}
               onClick={async () => {
                 if (!usuario?.id || !form.titulo || !form.data_evento) return toast.error("Preencha título e data");
                 setSubmitting(true);
+                let banner_url: string | null = null;
+                if (bannerFile) {
+                  const fn = `${usuario.id}-${Date.now()}.${bannerFile.name.split('.').pop()}`;
+                  const up = await supabase.storage.from('banners').upload(fn, bannerFile);
+                  if (!up.error && up.data) {
+                    banner_url = supabase.storage.from('banners').getPublicUrl(up.data.path).data.publicUrl;
+                  }
+                }
                 const { error } = await supabase.from('eventos').insert({
                   usuario_id: usuario.id,
                   titulo: form.titulo,
@@ -618,12 +651,15 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
                   endereco: form.endereco,
                   categoria: form.categoria,
                   gratuito: form.gratuito,
+                  preco_ingresso: form.gratuito ? null : (form.preco_ingresso ? Number(form.preco_ingresso) : null),
+                  banner_url,
                 });
                 setSubmitting(false);
                 if (error) return toast.error("Erro ao propor evento");
-                toast.success("Evento enviado para aprovação!");
+                toast.success("Evento enviado para aprovação! ✅");
                 setIsNewOpen(false);
-                setForm({ titulo: '', descricao: '', data_evento: '', local_nome: '', endereco: '', categoria: 'Cultura', gratuito: true });
+                setForm({ titulo: '', descricao: '', data_evento: '', local_nome: '', endereco: '', categoria: 'Cultura', gratuito: true, preco_ingresso: '' });
+                setBannerFile(null);
                 fetchEventos();
               }}
               className="w-full py-4 bg-secondary text-white font-black rounded-2xl uppercase tracking-widest shadow-glow active:scale-95 transition-all"
@@ -646,6 +682,7 @@ function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
   const [pesquisas, setPesquisas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [userVotes, setUserVotes] = useState<Record<string, any>>({});
+  const [tallies, setTallies] = useState<Record<string, { counts: Record<string, number>, total: number }>>({});
 
   const fetchPesquisas = useCallback(async () => {
     setLoading(true);
@@ -655,30 +692,41 @@ function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
       .eq('ativa', true)
       .order('criado_em', { ascending: false });
 
-    if (!pError && pData && usuario?.id) {
-      setPesquisas(pData);
-      const { data: vData } = await supabase
+    if (pError || !pData) { setLoading(false); return; }
+    setPesquisas(pData);
+
+    const ids = pData.map(p => p.id);
+    if (ids.length) {
+      const { data: rData } = await supabase
         .from('respostas_pesquisa')
-        .select('pesquisa_id, resposta')
-        .eq('usuario_id', usuario.id);
-      
+        .select('pesquisa_id, resposta, usuario_id')
+        .in('pesquisa_id', ids);
+
+      const t: Record<string, { counts: Record<string, number>, total: number }> = {};
       const votes: Record<string, any> = {};
-      vData?.forEach(v => { votes[v.pesquisa_id] = v.resposta; });
+      pData.forEach(p => { t[p.id] = { counts: {}, total: 0 }; });
+      rData?.forEach(r => {
+        const valor = (r.resposta as any)?.valor;
+        const key = String(valor);
+        if (!t[r.pesquisa_id]) t[r.pesquisa_id] = { counts: {}, total: 0 };
+        t[r.pesquisa_id].counts[key] = (t[r.pesquisa_id].counts[key] || 0) + 1;
+        t[r.pesquisa_id].total += 1;
+        if (usuario?.id && r.usuario_id === usuario.id) votes[r.pesquisa_id] = valor;
+      });
+      setTallies(t);
       setUserVotes(votes);
     }
     setLoading(false);
   }, [usuario?.id]);
 
-  useEffect(() => { 
+  useEffect(() => {
     fetchPesquisas().then(() => {
       if (defaultPesquisaId) {
         const el = document.getElementById(`poll-${defaultPesquisaId}`);
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       }
-    }); 
+    });
   }, [fetchPesquisas, defaultPesquisaId]);
-
-  const navigate = useNavigate();
 
   const handleVote = async (pesquisaId: string, resposta: any) => {
     if (!usuario?.id) return;
@@ -697,12 +745,18 @@ function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
     }
   };
 
+  const prazoLabel = (encerra_em: string | null) => {
+    if (!encerra_em) return 'Sem prazo';
+    const diff = new Date(encerra_em).getTime() - Date.now();
+    if (diff <= 0) return 'Encerrada';
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    return `${days} dia${days > 1 ? 's' : ''} restantes`;
+  };
+
   return (
     <div className="space-y-8">
       <div className="bg-gradient-hero p-8 rounded-[40px] border border-white/10 shadow-glow relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-4 opacity-10">
-          <TrendingUp size={120} />
-        </div>
+        <div className="absolute top-0 right-0 p-4 opacity-10"><TrendingUp size={120} /></div>
         <div className="relative z-10">
           <h3 className="text-2xl font-black font-space uppercase tracking-tight text-white italic">Voz do Povo</h3>
           <p className="text-xs text-white/70 font-bold uppercase tracking-widest mt-1">Sua opinião constrói o bairro</p>
@@ -720,8 +774,10 @@ function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
         </div>
       ) : (
         pesquisas.map((poll) => {
-          const options = poll.opcoes as any[];
-          const hasVoted = !!userVotes[poll.id];
+          const options = (poll.opcoes as any[]) || [];
+          const hasVoted = userVotes[poll.id] !== undefined;
+          const tally = tallies[poll.id] || { counts: {}, total: 0 };
+          const total = tally.total;
 
           return (
             <div key={poll.id} id={`poll-${poll.id}`} className={cn(
@@ -735,34 +791,49 @@ function VozDoPovoTab({ defaultPesquisaId }: { defaultPesquisaId?: string }) {
                 </span>}
               </div>
               <h4 className="font-bold text-xl mb-6 leading-tight text-white">{poll.titulo}</h4>
-              
+
               <div className="space-y-4 mb-8">
-                {options.map((opt, i) => (
-                  <button 
-                    key={i}
-                    disabled={hasVoted}
-                    onClick={() => handleVote(poll.id, opt.label)}
-                    className={cn(
-                      "relative w-full p-4 rounded-2xl bg-white/5 overflow-hidden group active:scale-[0.98] transition-all border border-white/5",
-                      hasVoted && userVotes[poll.id] === opt.label && "border-primary/50 bg-primary/5"
-                    )}
-                  >
-                    <div className="flex items-center justify-between relative z-10">
-                      <span className="text-sm font-bold text-white">{opt.label}</span>
-                      {hasVoted && <span className="text-xs font-black text-primary">25%</span>}
-                    </div>
-                  </button>
-                ))}
+                {options.map((opt, i) => {
+                  const count = tally.counts[opt.label] || 0;
+                  const pct = total > 0 ? (count / total) * 100 : 0;
+                  const isMine = userVotes[poll.id] === opt.label;
+                  return (
+                    <button
+                      key={i}
+                      disabled={hasVoted}
+                      onClick={() => handleVote(poll.id, opt.label)}
+                      className={cn(
+                        "relative w-full p-4 rounded-2xl bg-white/5 overflow-hidden group active:scale-[0.98] transition-all border border-white/5 text-left",
+                        isMine && "border-primary/50 bg-primary/5"
+                      )}
+                    >
+                      {hasVoted && (
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ duration: 0.8, ease: 'easeOut' }}
+                          className={cn("absolute inset-y-0 left-0 rounded-2xl", isMine ? "bg-primary/20" : "bg-white/10")}
+                        />
+                      )}
+                      <div className="flex items-center justify-between relative z-10">
+                        <span className="text-sm font-bold text-white">{opt.label}</span>
+                        {hasVoted && (
+                          <span className="text-xs font-black text-primary">{pct.toFixed(1)}% · {count}</span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
 
               <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-text-muted opacity-60">
                 <div className="flex items-center gap-1.5">
                   <Users size={12} />
-                  <span>1.2k participantes</span>
+                  <span>{total} participante{total === 1 ? '' : 's'}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-warning">
                   <Clock size={12} />
-                  <span>3 dias restantes</span>
+                  <span>{prazoLabel(poll.encerra_em)}</span>
                 </div>
               </div>
             </div>
@@ -781,13 +852,20 @@ function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
   const { usuario } = useAuth();
   const [avisos, setAvisos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('Todos');
+  const [filter, setFilter] = useState('todos');
   const [isNewOpen, setIsNewOpen] = useState(autoOpen);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ titulo: '', texto: '', tipo: 'geral' });
   const [foto, setFoto] = useState<File | null>(null);
 
-  const categories = ['Todos', 'Pets', 'Emprego', 'Venda', 'Alerta', 'Geral'];
+  const categories: Array<{ label: string, value: string }> = [
+    { label: 'Todos', value: 'todos' },
+    { label: 'Pets', value: 'pets' },
+    { label: 'Emprego', value: 'emprego' },
+    { label: 'Venda', value: 'venda' },
+    { label: 'Alerta', value: 'alerta' },
+    { label: 'Geral', value: 'geral' },
+  ];
 
   const fetchAvisos = useCallback(async () => {
     setLoading(true);
@@ -797,7 +875,7 @@ function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
       .eq('ativo', true)
       .order('criado_em', { ascending: false });
 
-    if (filter !== 'Todos') {
+    if (filter !== 'todos') {
       query = query.eq('tipo', filter);
     }
 
@@ -812,18 +890,19 @@ function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
     <div className="space-y-6">
       <div className="flex overflow-x-auto no-scrollbar gap-2 pb-2">
         {categories.map((cat) => (
-          <button 
-            key={cat}
-            onClick={() => setFilter(cat)}
+          <button
+            key={cat.value}
+            onClick={() => setFilter(cat.value)}
             className={cn(
               "px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap border transition-all",
-              filter === cat ? "bg-success border-success text-white shadow-glow-sm" : "bg-white/5 border-white/5 text-text-muted hover:border-white/20"
+              filter === cat.value ? "bg-success border-success text-white shadow-glow-sm" : "bg-white/5 border-white/5 text-text-muted hover:border-white/20"
             )}
           >
-            {cat}
+            {cat.label}
           </button>
         ))}
       </div>
+
 
       <div className="space-y-3">
         {loading ? (
@@ -842,7 +921,7 @@ function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
                 <div className="flex items-center justify-between">
                   <span className={cn(
                     "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest",
-                    post.tipo === 'Alerta' ? "bg-danger/10 text-danger" : "bg-primary/10 text-primary"
+                    post.tipo === 'alerta' ? "bg-danger/10 text-danger" : "bg-primary/10 text-primary"
                   )}>
                     {post.tipo}
                   </span>
