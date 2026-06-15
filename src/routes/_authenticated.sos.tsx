@@ -386,9 +386,11 @@ function SOSPage() {
         </div>
 
         <button 
-          className="w-full bg-gradient-hero text-white font-black py-5 rounded-2xl shadow-lg text-lg uppercase tracking-wider active:scale-95 transition-all"
+          onClick={ativarAssinatura}
+          disabled={activating}
+          className="w-full bg-gradient-hero text-white font-black py-5 rounded-2xl shadow-lg text-lg uppercase tracking-wider active:scale-95 transition-all disabled:opacity-50"
         >
-          Ativar por R$ 9,90/mês
+          {activating ? "Ativando..." : "Ativar por R$ 9,90/mês"}
         </button>
       </div>
     );
