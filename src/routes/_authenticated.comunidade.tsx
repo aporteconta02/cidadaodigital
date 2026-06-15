@@ -571,11 +571,27 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
                   </div>
                 </div>
               </div>
-              <div className="p-4 flex items-center justify-between">
+              <div className="p-4 flex items-center justify-between gap-2">
                 <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-4 py-2 rounded-full">{event.categoria}</span>
-                <button className="bg-white text-black px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-transform active:scale-95 shadow-lg">
-                  Ver Detalhes
-                </button>
+                <div className="flex items-center gap-2">
+                  {!event.gratuito && event.preco_ingresso != null && (
+                    <span className="text-[10px] font-black uppercase tracking-widest text-warning bg-warning/10 px-3 py-2 rounded-full">R$ {Number(event.preco_ingresso).toFixed(2).replace('.', ',')}</span>
+                  )}
+                  <button
+                    onClick={async () => {
+                      const url = `${window.location.origin}/comunidade?tab=eventos`;
+                      const text = `${event.titulo} — ${format(new Date(event.data_evento), "dd/MM 'às' HH:mm", { locale: ptBR })} · ${event.local_nome || ''}`;
+                      try {
+                        if (navigator.share) await navigator.share({ title: event.titulo, text, url });
+                        else { await navigator.clipboard.writeText(`${text}\n${url}`); toast.success('Link copiado!'); }
+                      } catch {}
+                    }}
+                    className="size-10 rounded-xl bg-white/5 border border-white/5 text-white flex items-center justify-center active:scale-95"
+                    aria-label="Compartilhar"
+                  >
+                    <Share2 size={16} />
+                  </button>
+                </div>
               </div>
             </div>
           ))
