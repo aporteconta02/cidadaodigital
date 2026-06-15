@@ -601,15 +601,31 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
               {['Cultura','Esporte','Religioso','Educação','Comunitário','Festa','Outros'].map(c => <option key={c} value={c} className="bg-bg-elevated">{c}</option>)}
             </select>
             <textarea value={form.descricao} onChange={(e) => setForm({...form, descricao: e.target.value})} maxLength={500} placeholder="Descrição do evento..." className="w-full h-24 bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50 resize-none" />
-            <label className="flex items-center gap-2 text-xs text-text-muted">
-              <input type="checkbox" checked={form.gratuito} onChange={(e) => setForm({...form, gratuito: e.target.checked})} /> Evento gratuito
+            <label className="flex items-center justify-center gap-2 p-4 bg-white/5 border border-dashed border-white/10 rounded-xl cursor-pointer">
+              <Image size={16} className="text-secondary" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-white">{bannerFile ? bannerFile.name : 'Banner do evento (opcional)'}</span>
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => setBannerFile(e.target.files?.[0] || null)} />
             </label>
+            <label className="flex items-center gap-2 text-xs text-text-muted">
+              <input type="checkbox" checked={form.gratuito} onChange={(e) => setForm({...form, gratuito: e.target.checked, preco_ingresso: e.target.checked ? '' : form.preco_ingresso})} /> Evento gratuito
+            </label>
+            {!form.gratuito && (
+              <input type="number" min="0" step="0.01" value={form.preco_ingresso} onChange={(e) => setForm({...form, preco_ingresso: e.target.value})} placeholder="Valor do ingresso (R$)" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
+            )}
             <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">Eventos passam por aprovação da administração.</p>
             <button
               disabled={submitting}
               onClick={async () => {
                 if (!usuario?.id || !form.titulo || !form.data_evento) return toast.error("Preencha título e data");
                 setSubmitting(true);
+                let banner_url: string | null = null;
+                if (bannerFile) {
+                  const fn = `${usuario.id}-${Date.now()}.${bannerFile.name.split('.').pop()}`;
+                  const up = await supabase.storage.from('banners').upload(fn, bannerFile);
+                  if (!up.error && up.data) {
+                    banner_url = supabase.storage.from('banners').getPublicUrl(up.data.path).data.publicUrl;
+                  }
+                }
                 const { error } = await supabase.from('eventos').insert({
                   usuario_id: usuario.id,
                   titulo: form.titulo,
@@ -619,12 +635,15 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
                   endereco: form.endereco,
                   categoria: form.categoria,
                   gratuito: form.gratuito,
+                  preco_ingresso: form.gratuito ? null : (form.preco_ingresso ? Number(form.preco_ingresso) : null),
+                  banner_url,
                 });
                 setSubmitting(false);
                 if (error) return toast.error("Erro ao propor evento");
-                toast.success("Evento enviado para aprovação!");
+                toast.success("Evento enviado para aprovação! ✅");
                 setIsNewOpen(false);
-                setForm({ titulo: '', descricao: '', data_evento: '', local_nome: '', endereco: '', categoria: 'Cultura', gratuito: true });
+                setForm({ titulo: '', descricao: '', data_evento: '', local_nome: '', endereco: '', categoria: 'Cultura', gratuito: true, preco_ingresso: '' });
+                setBannerFile(null);
                 fetchEventos();
               }}
               className="w-full py-4 bg-secondary text-white font-black rounded-2xl uppercase tracking-widest shadow-glow active:scale-95 transition-all"
