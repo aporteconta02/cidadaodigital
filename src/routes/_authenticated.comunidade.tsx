@@ -885,7 +885,7 @@ function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
                 <div className="flex items-center justify-between">
                   <span className={cn(
                     "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest",
-                    post.tipo === 'Alerta' ? "bg-danger/10 text-danger" : "bg-primary/10 text-primary"
+                    post.tipo === 'alerta' ? "bg-danger/10 text-danger" : "bg-primary/10 text-primary"
                   )}>
                     {post.tipo}
                   </span>
