@@ -604,6 +604,61 @@ function PerfilPage() {
           </button>
         </DialogContent>
       </Dialog>
+
+      {/* Modal Confirmar Upgrade */}
+      <Dialog open={isUpgradeModalOpen} onOpenChange={setIsUpgradeModalOpen}>
+        <DialogContent className="bg-bg-elevated border-border-custom rounded-t-[32px] sm:rounded-3xl p-6">
+          <DialogHeader>
+            <DialogTitle className="text-white uppercase font-black italic">Ativar Clube Cidadão+</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-text-muted">
+              Ative sua assinatura por <span className="text-gold font-bold">R$ 9,90/mês</span> e receba sua carteirinha digital com QR Code, descontos em parceiros e acesso ao Vizinho Seguro.
+            </p>
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setIsUpgradeModalOpen(false)}
+                className="flex-1 py-3 bg-white/5 text-white font-bold rounded-2xl uppercase tracking-widest text-xs"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleUpgrade}
+                disabled={loading}
+                className="flex-1 py-3 bg-gradient-gold text-black font-black rounded-2xl uppercase tracking-widest text-xs disabled:opacity-50"
+              >
+                {loading ? 'Ativando...' : 'Confirmar'}
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Confirmar Logout */}
+      <Dialog open={isLogoutModalOpen} onOpenChange={setIsLogoutModalOpen}>
+        <DialogContent className="bg-bg-elevated border-border-custom rounded-t-[32px] sm:rounded-3xl p-6">
+          <DialogHeader>
+            <DialogTitle className="text-white uppercase font-black italic">Sair da conta</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-text-muted">Deseja realmente encerrar sua sessão?</p>
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setIsLogoutModalOpen(false)}
+                className="flex-1 py-3 bg-white/5 text-white font-bold rounded-2xl uppercase tracking-widest text-xs"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex-1 py-3 bg-danger text-white font-black rounded-2xl uppercase tracking-widest text-xs"
+              >
+                Sair
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
