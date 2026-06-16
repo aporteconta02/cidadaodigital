@@ -563,17 +563,28 @@ function PerfilPage() {
             <DialogTitle className="text-white uppercase font-black italic">Parceiros do Clube</DialogTitle>
           </DialogHeader>
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            {partners.length === 0 && (
+              <p className="text-center text-text-muted text-xs py-8">Nenhum parceiro cadastrado ainda.</p>
+            )}
             {partners.map(p => (
               <div key={p.id} className="bg-white/5 rounded-3xl p-4 border border-white/5 flex gap-4 items-center">
                 <div className="size-16 rounded-2xl bg-white overflow-hidden flex-shrink-0">
-                  <img src={p.lojas?.logo_url} className="size-full object-cover" alt={p.lojas?.nome} />
+                  {p.lojas?.logo_url && <img src={p.lojas.logo_url} className="size-full object-cover" alt={p.lojas?.nome} />}
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <h4 className="font-bold text-white">{p.lojas?.nome}</h4>
-                    <span className="bg-gold text-black text-[10px] font-black px-2 py-0.5 rounded-full">{p.desconto_percentual}% OFF</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1 gap-2">
+                    <h4 className="font-bold text-white truncate">{p.lojas?.nome}</h4>
+                    <span className="bg-gold text-black text-[10px] font-black px-2 py-0.5 rounded-full whitespace-nowrap">{p.desconto_percentual}% OFF</span>
                   </div>
-                  <p className="text-[10px] text-text-muted leading-relaxed line-clamp-2">{p.descricao_beneficio}</p>
+                  <p className="text-[10px] text-text-muted leading-relaxed line-clamp-2 mb-2">{p.descricao_beneficio}</p>
+                  {p.loja_id && (
+                    <button
+                      onClick={() => { setIsPartnersModalOpen(false); navigate({ to: '/comercio/loja/$lojaId', params: { lojaId: p.loja_id } }); }}
+                      className="text-[10px] font-black uppercase tracking-widest text-primary"
+                    >
+                      Ver loja →
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
