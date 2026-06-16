@@ -56,6 +56,8 @@ function PerfilPage() {
   const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
   const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
   const [isPartnersModalOpen, setIsPartnersModalOpen] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Edit Profile State
@@ -88,8 +90,7 @@ function PerfilPage() {
   }, [usuario]);
 
   const handleLogout = async () => {
-    const confirm = window.confirm("Deseja sair da sua conta?");
-    if (!confirm) return;
+    setIsLogoutModalOpen(false);
     await supabase.auth.signOut();
     navigate({ to: "/auth" });
   };
@@ -145,9 +146,31 @@ function PerfilPage() {
 
       if (error) throw error;
       await refreshUsuario();
+      setIsUpgradeModalOpen(false);
       toast.success("Bem-vindo ao Clube Cidadão+! 🎉");
     } catch (error) {
       toast.error("Erro ao ativar assinatura");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (passwords.nova.length < 6) {
+      return toast.error("A senha deve ter pelo menos 6 caracteres");
+    }
+    if (passwords.nova !== passwords.confirmar) {
+      return toast.error("As senhas não coincidem");
+    }
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.updateUser({ password: passwords.nova });
+      if (error) throw error;
+      setIsSecurityModalOpen(false);
+      setPasswords({ atual: "", nova: "", confirmar: "" });
+      toast.success("Senha alterada com sucesso!");
+    } catch (error: any) {
+      toast.error(error?.message || "Erro ao alterar senha");
     } finally {
       setLoading(false);
     }
@@ -173,23 +196,6 @@ function PerfilPage() {
     }
   };
 
-  const handleChangePassword = async () => {
-    if (passwords.nova !== passwords.confirmar) {
-      return toast.error("As senhas não coincidem");
-    }
-    try {
-      setLoading(true);
-      const { error } = await supabase.auth.updateUser({ password: passwords.nova });
-      if (error) throw error;
-      setIsSecurityModalOpen(false);
-      setPasswords({ atual: "", nova: "", confirmar: "" });
-      toast.success("Senha alterada com sucesso!");
-    } catch (error) {
-      toast.error("Erro ao alterar senha");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const fetchPartners = async () => {
     const { data } = await supabase
@@ -361,7 +367,7 @@ function PerfilPage() {
             </div>
           ) : (
             <div 
-              onClick={handleUpgrade}
+              onClick={() => setIsUpgradeModalOpen(true)}
               className="relative w-full h-[200px] rounded-[24px] border-2 border-dashed border-white/10 bg-bg-card flex flex-col items-center justify-center p-8 text-center gap-4 group cursor-pointer hover:border-primary/40 transition-all overflow-hidden"
             >
               <div className="absolute inset-0 backdrop-blur-sm bg-black/40" />
@@ -382,11 +388,11 @@ function PerfilPage() {
         </div>
 
         {/* Botão de Validar QR (Só Comerciantes) */}
-        {usuario.tipo === 'comerciante' && usuario.assinante_plus && usuario.validade_assinatura && new Date(usuario.validade_assinatura) > new Date() && (
+        {usuario.tipo === 'comerciante' && (
           <div className="mb-8">
             <button 
               onClick={startScanner}
-              className="w-full py-4 bg-secondary text-white rounded-3xl flex items-center justify-center gap-3 shadow-glow-secondary animate-pulse-slow"
+              className="w-full py-4 bg-secondary text-white rounded-3xl flex items-center justify-center gap-3 shadow-glow-secondary"
             >
               <ScanLine size={24} />
               <span className="font-black uppercase tracking-widest text-sm italic">Validar Clube</span>
@@ -418,6 +424,18 @@ function PerfilPage() {
               sub="Acompanhe seus relatos" 
               onClick={() => navigate({ to: "/comunidade" })}
             />
+            <ProfileItem 
+              icon={<Calendar className="text-primary" />} 
+              title="Meus Eventos" 
+              sub="Eventos que você criou" 
+              onClick={() => navigate({ to: "/comunidade" })}
+            />
+            <ProfileItem 
+              icon={<ShieldAlert className="text-danger" />} 
+              title="Meus Alertas" 
+              sub="Alertas de segurança enviados" 
+              onClick={() => navigate({ to: "/sos" })}
+            />
           </ProfileSection>
 
           <ProfileSection title="Meu Clube">
@@ -441,7 +459,7 @@ function PerfilPage() {
               sub="Alterar senha" 
               onClick={() => setIsSecurityModalOpen(true)}
             />
-            <button onClick={handleLogout} className="w-full flex items-center gap-4 p-4 hover:bg-white/5 transition-colors group">
+            <button onClick={() => setIsLogoutModalOpen(true)} className="w-full flex items-center gap-4 p-4 hover:bg-white/5 transition-colors group">
               <div className="size-10 rounded-xl bg-danger/10 flex items-center justify-center text-danger group-active:scale-90 transition-transform">
                 <LogOutIcon size={20} />
               </div>
@@ -545,17 +563,28 @@ function PerfilPage() {
             <DialogTitle className="text-white uppercase font-black italic">Parceiros do Clube</DialogTitle>
           </DialogHeader>
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            {partners.length === 0 && (
+              <p className="text-center text-text-muted text-xs py-8">Nenhum parceiro cadastrado ainda.</p>
+            )}
             {partners.map(p => (
               <div key={p.id} className="bg-white/5 rounded-3xl p-4 border border-white/5 flex gap-4 items-center">
                 <div className="size-16 rounded-2xl bg-white overflow-hidden flex-shrink-0">
-                  <img src={p.lojas?.logo_url} className="size-full object-cover" alt={p.lojas?.nome} />
+                  {p.lojas?.logo_url && <img src={p.lojas.logo_url} className="size-full object-cover" alt={p.lojas?.nome} />}
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <h4 className="font-bold text-white">{p.lojas?.nome}</h4>
-                    <span className="bg-gold text-black text-[10px] font-black px-2 py-0.5 rounded-full">{p.desconto_percentual}% OFF</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1 gap-2">
+                    <h4 className="font-bold text-white truncate">{p.lojas?.nome}</h4>
+                    <span className="bg-gold text-black text-[10px] font-black px-2 py-0.5 rounded-full whitespace-nowrap">{p.desconto_percentual}% OFF</span>
                   </div>
-                  <p className="text-[10px] text-text-muted leading-relaxed line-clamp-2">{p.descricao_beneficio}</p>
+                  <p className="text-[10px] text-text-muted leading-relaxed line-clamp-2 mb-2">{p.descricao_beneficio}</p>
+                  {p.loja_id && (
+                    <button
+                      onClick={() => { setIsPartnersModalOpen(false); navigate({ to: '/comercio/loja/$lojaId', params: { lojaId: p.loja_id } }); }}
+                      className="text-[10px] font-black uppercase tracking-widest text-primary"
+                    >
+                      Ver loja →
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -573,6 +602,61 @@ function PerfilPage() {
           >
             <X size={24} />
           </button>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Confirmar Upgrade */}
+      <Dialog open={isUpgradeModalOpen} onOpenChange={setIsUpgradeModalOpen}>
+        <DialogContent className="bg-bg-elevated border-border-custom rounded-t-[32px] sm:rounded-3xl p-6">
+          <DialogHeader>
+            <DialogTitle className="text-white uppercase font-black italic">Ativar Clube Cidadão+</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-text-muted">
+              Ative sua assinatura por <span className="text-gold font-bold">R$ 9,90/mês</span> e receba sua carteirinha digital com QR Code, descontos em parceiros e acesso ao Vizinho Seguro.
+            </p>
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setIsUpgradeModalOpen(false)}
+                className="flex-1 py-3 bg-white/5 text-white font-bold rounded-2xl uppercase tracking-widest text-xs"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleUpgrade}
+                disabled={loading}
+                className="flex-1 py-3 bg-gradient-gold text-black font-black rounded-2xl uppercase tracking-widest text-xs disabled:opacity-50"
+              >
+                {loading ? 'Ativando...' : 'Confirmar'}
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Confirmar Logout */}
+      <Dialog open={isLogoutModalOpen} onOpenChange={setIsLogoutModalOpen}>
+        <DialogContent className="bg-bg-elevated border-border-custom rounded-t-[32px] sm:rounded-3xl p-6">
+          <DialogHeader>
+            <DialogTitle className="text-white uppercase font-black italic">Sair da conta</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-text-muted">Deseja realmente encerrar sua sessão?</p>
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setIsLogoutModalOpen(false)}
+                className="flex-1 py-3 bg-white/5 text-white font-bold rounded-2xl uppercase tracking-widest text-xs"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex-1 py-3 bg-danger text-white font-black rounded-2xl uppercase tracking-widest text-xs"
+              >
+                Sair
+              </button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
