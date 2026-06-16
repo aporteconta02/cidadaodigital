@@ -196,23 +196,6 @@ function PerfilPage() {
     }
   };
 
-  const handleChangePassword = async () => {
-    if (passwords.nova !== passwords.confirmar) {
-      return toast.error("As senhas não coincidem");
-    }
-    try {
-      setLoading(true);
-      const { error } = await supabase.auth.updateUser({ password: passwords.nova });
-      if (error) throw error;
-      setIsSecurityModalOpen(false);
-      setPasswords({ atual: "", nova: "", confirmar: "" });
-      toast.success("Senha alterada com sucesso!");
-    } catch (error) {
-      toast.error("Erro ao alterar senha");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const fetchPartners = async () => {
     const { data } = await supabase
