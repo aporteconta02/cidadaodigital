@@ -367,7 +367,7 @@ function PerfilPage() {
             </div>
           ) : (
             <div 
-              onClick={handleUpgrade}
+              onClick={() => setIsUpgradeModalOpen(true)}
               className="relative w-full h-[200px] rounded-[24px] border-2 border-dashed border-white/10 bg-bg-card flex flex-col items-center justify-center p-8 text-center gap-4 group cursor-pointer hover:border-primary/40 transition-all overflow-hidden"
             >
               <div className="absolute inset-0 backdrop-blur-sm bg-black/40" />
@@ -388,11 +388,11 @@ function PerfilPage() {
         </div>
 
         {/* Botão de Validar QR (Só Comerciantes) */}
-        {usuario.tipo === 'comerciante' && usuario.assinante_plus && usuario.validade_assinatura && new Date(usuario.validade_assinatura) > new Date() && (
+        {usuario.tipo === 'comerciante' && (
           <div className="mb-8">
             <button 
               onClick={startScanner}
-              className="w-full py-4 bg-secondary text-white rounded-3xl flex items-center justify-center gap-3 shadow-glow-secondary animate-pulse-slow"
+              className="w-full py-4 bg-secondary text-white rounded-3xl flex items-center justify-center gap-3 shadow-glow-secondary"
             >
               <ScanLine size={24} />
               <span className="font-black uppercase tracking-widest text-sm italic">Validar Clube</span>
