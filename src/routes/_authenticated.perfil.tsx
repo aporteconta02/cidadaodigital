@@ -424,6 +424,18 @@ function PerfilPage() {
               sub="Acompanhe seus relatos" 
               onClick={() => navigate({ to: "/comunidade" })}
             />
+            <ProfileItem 
+              icon={<Calendar className="text-primary" />} 
+              title="Meus Eventos" 
+              sub="Eventos que você criou" 
+              onClick={() => navigate({ to: "/comunidade" })}
+            />
+            <ProfileItem 
+              icon={<ShieldAlert className="text-danger" />} 
+              title="Meus Alertas" 
+              sub="Alertas de segurança enviados" 
+              onClick={() => navigate({ to: "/sos" })}
+            />
           </ProfileSection>
 
           <ProfileSection title="Meu Clube">
