@@ -146,9 +146,31 @@ function PerfilPage() {
 
       if (error) throw error;
       await refreshUsuario();
+      setIsUpgradeModalOpen(false);
       toast.success("Bem-vindo ao Clube Cidadão+! 🎉");
     } catch (error) {
       toast.error("Erro ao ativar assinatura");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (passwords.nova.length < 6) {
+      return toast.error("A senha deve ter pelo menos 6 caracteres");
+    }
+    if (passwords.nova !== passwords.confirmar) {
+      return toast.error("As senhas não coincidem");
+    }
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.updateUser({ password: passwords.nova });
+      if (error) throw error;
+      setIsSecurityModalOpen(false);
+      setPasswords({ atual: "", nova: "", confirmar: "" });
+      toast.success("Senha alterada com sucesso!");
+    } catch (error: any) {
+      toast.error(error?.message || "Erro ao alterar senha");
     } finally {
       setLoading(false);
     }
