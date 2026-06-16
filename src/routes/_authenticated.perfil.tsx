@@ -459,7 +459,7 @@ function PerfilPage() {
               sub="Alterar senha" 
               onClick={() => setIsSecurityModalOpen(true)}
             />
-            <button onClick={handleLogout} className="w-full flex items-center gap-4 p-4 hover:bg-white/5 transition-colors group">
+            <button onClick={() => setIsLogoutModalOpen(true)} className="w-full flex items-center gap-4 p-4 hover:bg-white/5 transition-colors group">
               <div className="size-10 rounded-xl bg-danger/10 flex items-center justify-center text-danger group-active:scale-90 transition-transform">
                 <LogOutIcon size={20} />
               </div>
