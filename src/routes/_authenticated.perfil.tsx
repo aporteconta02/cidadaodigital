@@ -90,8 +90,7 @@ function PerfilPage() {
   }, [usuario]);
 
   const handleLogout = async () => {
-    const confirm = window.confirm("Deseja sair da sua conta?");
-    if (!confirm) return;
+    setIsLogoutModalOpen(false);
     await supabase.auth.signOut();
     navigate({ to: "/auth" });
   };
