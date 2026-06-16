@@ -56,6 +56,8 @@ function PerfilPage() {
   const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
   const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
   const [isPartnersModalOpen, setIsPartnersModalOpen] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Edit Profile State
