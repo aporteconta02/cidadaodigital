@@ -154,6 +154,7 @@ function RootComponent() {
         router.invalidate();
       }
       if (event === 'SIGNED_OUT') {
+        try { localStorage.removeItem('cp-cart'); } catch {}
         logout();
         router.invalidate();
         router.navigate({ to: '/auth' });
@@ -206,7 +207,9 @@ function RootComponent() {
               </div>
               <button className="flex items-center gap-1.5 w-fit px-3 py-1.5 rounded-full bg-white/5 border border-white/10 active:scale-95 transition-transform">
                 <MapPin size={14} className="text-primary" />
-                <span className="micro-text font-bold text-text-primary uppercase tracking-wider">Santa Luzia, MG</span>
+                <span className="micro-text font-bold text-text-primary uppercase tracking-wider">
+                  {profile?.cidade && profile?.bairro ? `${profile.cidade}, ${profile.bairro}` : (profile?.cidade || profile?.bairro || 'Localização')}
+                </span>
               </button>
             </div>
           </header>

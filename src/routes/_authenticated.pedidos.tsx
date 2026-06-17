@@ -27,8 +27,13 @@ function PedidosPage() {
 
   useEffect(() => {
     if (!usuario) return;
+    setLoading(true);
     supabase.from('pedidos').select('*, lojas(nome)').eq('comprador_id', usuario.id).order('criado_em', { ascending: false })
-      .then(({ data }) => { setPedidos(data || []); setLoading(false); });
+      .then(({ data, error }) => {
+        if (error) console.error(error);
+        else setPedidos(data || []);
+      })
+      .then(() => setLoading(false), () => setLoading(false));
   }, [usuario]);
 
   return (

@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { activatePlusSubscription } from "@/lib/subscription.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   LogOut, 
@@ -102,10 +104,11 @@ function PerfilPage() {
     try {
       setLoading(true);
       const fileExt = file.name.split('.').pop();
-      const fileName = `${usuario.id}-${Date.now()}.${fileExt}`;
+      // Bucket RLS comum exige path prefixado pelo user id
+      const fileName = `${usuario.id}/${Date.now()}.${fileExt}`;
       const { data, error } = await supabase.storage
         .from('avatares')
-        .upload(fileName, file);
+        .upload(fileName, file, { upsert: true });
 
       if (error) throw error;
 
@@ -122,34 +125,25 @@ function PerfilPage() {
       
       await refreshUsuario();
       toast.success("Avatar atualizado!");
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast.error("Erro ao fazer upload do avatar");
+      toast.error(error?.message || "Erro ao fazer upload do avatar");
     } finally {
       setLoading(false);
     }
   };
 
+  const activatePlusFn = useServerFn(activatePlusSubscription);
   const handleUpgrade = async () => {
     if (!usuario) return;
     try {
       setLoading(true);
-      const { error } = await supabase
-        .from('usuarios')
-        .update({ 
-          assinante_plus: true,
-          validade_assinatura: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-          numero_membro: usuario.numero_membro || `MBR${Math.floor(Math.random() * 90000) + 10000}`,
-          qr_code_token: usuario.qr_code_token || crypto.randomUUID()
-        })
-        .eq('id', usuario.id);
-
-      if (error) throw error;
+      await activatePlusFn();
       await refreshUsuario();
       setIsUpgradeModalOpen(false);
       toast.success("Bem-vindo ao Clube Cidadão+! 🎉");
-    } catch (error) {
-      toast.error("Erro ao ativar assinatura");
+    } catch (error: any) {
+      toast.error(error?.message || "Erro ao ativar assinatura");
     } finally {
       setLoading(false);
     }
@@ -198,23 +192,37 @@ function PerfilPage() {
 
 
   const fetchPartners = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('parceiros_clube')
       .select('*, lojas(*)')
       .eq('ativo', true);
+    if (error) { toast.error("Erro ao carregar parceiros"); return; }
     setPartners(data || []);
   };
+
+  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+
+  const stopScanner = () => {
+    if (scannerRef.current) {
+      scannerRef.current.clear().catch(() => {});
+      scannerRef.current = null;
+    }
+  };
+
+  useEffect(() => () => stopScanner(), []);
 
   const startScanner = () => {
     setIsQRScannerOpen(true);
     setTimeout(() => {
+      stopScanner();
       const scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 }, false);
+      scannerRef.current = scanner;
       scanner.render(onScanSuccess, onScanError);
-      
+
       async function onScanSuccess(decodedText: string) {
-        scanner.clear();
+        stopScanner();
         setIsQRScannerOpen(false);
-        
+
         const { data: member, error } = await supabase
           .from('usuarios')
           .select('*')
@@ -224,19 +232,14 @@ function PerfilPage() {
         if (error || !member) {
           return toast.error("❌ QR Code inválido");
         }
-
         if (!member.assinante_plus) {
           return toast.error("⚠️ Assinatura inativa");
         }
-
         const validade = new Date(member.validade_assinatura as string);
         if (validade < new Date()) {
           return toast.warning("⚠️ Assinatura vencida");
         }
-
         toast.success(`✅ ${member.nome} — Membro #${member.numero_membro} — Válido até ${validade.toLocaleDateString()}`);
-        
-        // Log validation
         await supabase.from('validacoes_qr').insert({
           validador_id: usuario?.id as string,
           membro_id: member.id,
@@ -244,9 +247,7 @@ function PerfilPage() {
         });
       }
 
-      function onScanError(err: any) {
-        // console.warn(err);
-      }
+      function onScanError(_err: any) { /* silencioso */ }
     }, 100);
   };
 

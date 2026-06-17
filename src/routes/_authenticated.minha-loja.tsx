@@ -146,15 +146,25 @@ function MinhaLojaPage() {
     if (!window.confirm(`Mudar status para "${novo}"?`)) return;
     const { error } = await supabase.from('pedidos').update({ status: novo }).eq('id', pedido.id);
     if (error) return toast.error(error.message);
+    setPedidos(curr => curr.map(p => p.id === pedido.id ? { ...p, status: novo } : p));
     toast.success("Status atualizado");
   };
 
   if (loading) return <div className="p-10 text-center text-text-muted">Carregando...</div>;
-  if (usuario?.tipo !== 'comerciante' || !loja) {
+  if (usuario?.tipo !== 'comerciante') {
     return (
       <div className="p-10 text-center text-text-muted">
         <StoreIcon size={48} className="mx-auto mb-4 opacity-30" />
         <p className="text-sm">Apenas comerciantes têm acesso a esta área.</p>
+        <Link to="/perfil" className="inline-block mt-4 px-4 h-9 leading-9 rounded-lg bg-primary text-white text-sm font-bold">Voltar ao perfil</Link>
+      </div>
+    );
+  }
+  if (!loja) {
+    return (
+      <div className="p-10 text-center text-text-muted">
+        <StoreIcon size={48} className="mx-auto mb-4 opacity-30" />
+        <p className="text-sm">Você ainda não possui uma loja cadastrada.</p>
         <Link to="/perfil" className="inline-block mt-4 px-4 h-9 leading-9 rounded-lg bg-primary text-white text-sm font-bold">Voltar ao perfil</Link>
       </div>
     );

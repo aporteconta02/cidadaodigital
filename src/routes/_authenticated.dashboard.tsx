@@ -114,7 +114,11 @@ function DashboardPage() {
               {data.banners.map((b: any) => (
                 <CarouselItem key={b.id}>
                   <div 
-                    onClick={() => b.link_destino && navigate({ to: b.link_destino })}
+                    onClick={() => {
+                      if (!b.link_destino) return;
+                      if (/^https?:\/\//i.test(b.link_destino)) window.open(b.link_destino, '_blank', 'noopener,noreferrer');
+                      else navigate({ to: b.link_destino });
+                    }}
                     className="h-[180px] w-full rounded-2xl overflow-hidden relative cursor-pointer"
                   >
                     <img src={b.imagem_url} className="w-full h-full object-cover" alt="" />
