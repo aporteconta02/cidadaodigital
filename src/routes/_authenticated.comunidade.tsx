@@ -172,12 +172,15 @@ function DenunciasTab({ autoOpen = false }: { autoOpen?: boolean }) {
     let uploadedUrl = '';
 
     if (foto) {
-      const fileName = `${usuario.id}-${Date.now()}.${foto.name.split('.').pop()}`;
+      const fileName = `${usuario.id}/${Date.now()}.${foto.name.split('.').pop()}`;
       const { data, error } = await supabase.storage.from('fotos-denuncias').upload(fileName, foto);
-      if (!error && data) {
-        const { data: { publicUrl } } = supabase.storage.from('fotos-denuncias').getPublicUrl(data.path);
-        uploadedUrl = publicUrl;
+      if (error) {
+        toast.error("Falha ao enviar a foto. Tente novamente.");
+        setSubmitting(false);
+        return;
       }
+      const { data: { publicUrl } } = supabase.storage.from('fotos-denuncias').getPublicUrl(data.path);
+      uploadedUrl = publicUrl;
     }
 
     const { error } = await supabase.from('denuncias').insert({
@@ -508,15 +511,15 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
 
     const now = new Date();
     if (filter === 'hoje') {
-      const startOfDay = new Date(now.setHours(0, 0, 0, 0)).toISOString();
-      const endOfDay = new Date(now.setHours(23, 59, 59, 999)).toISOString();
-      query = query.gte('data_evento', startOfDay).lte('data_evento', endOfDay);
+      const startOfDay = new Date(now); startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(now); endOfDay.setHours(23, 59, 59, 999);
+      query = query.gte('data_evento', startOfDay.toISOString()).lte('data_evento', endOfDay.toISOString());
     } else if (filter === 'semana') {
-      const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
-      query = query.gte('data_evento', now.toISOString()).lte('data_evento', nextWeek);
+      const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      query = query.gte('data_evento', now.toISOString()).lte('data_evento', nextWeek.toISOString());
     } else if (filter === 'mes') {
-      const nextMonth = new Date(now.setMonth(now.getMonth() + 1)).toISOString();
-      query = query.gte('data_evento', now.toISOString()).lte('data_evento', nextMonth);
+      const nextMonth = new Date(now); nextMonth.setMonth(nextMonth.getMonth() + 1);
+      query = query.gte('data_evento', now.toISOString()).lte('data_evento', nextMonth.toISOString());
     }
 
     const { data, error } = await query;
@@ -526,16 +529,20 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
 
   useEffect(() => { fetchEventos(); }, [fetchEventos]);
 
+  const FILTER_MAP: Record<string, 'todos' | 'hoje' | 'semana' | 'mes'> = {
+    'Todos': 'todos', 'Hoje': 'hoje', 'Semana': 'semana', 'Mês': 'mes'
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex overflow-x-auto no-scrollbar gap-2 pb-2">
         {['Todos', 'Hoje', 'Semana', 'Mês'].map((f) => (
           <button 
             key={f}
-            onClick={() => setFilter(f.toLowerCase() as any)}
+            onClick={() => setFilter(FILTER_MAP[f])}
             className={cn(
               "px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap border transition-all",
-              filter === f.toLowerCase() ? "bg-primary border-primary text-white" : "bg-white/5 border-white/5 text-text-muted"
+              filter === FILTER_MAP[f] ? "bg-primary border-primary text-white" : "bg-white/5 border-white/5 text-text-muted"
             )}
           >
             {f}
@@ -636,11 +643,13 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
                 setSubmitting(true);
                 let banner_url: string | null = null;
                 if (bannerFile) {
-                  const fn = `${usuario.id}-${Date.now()}.${bannerFile.name.split('.').pop()}`;
+                  const fn = `${usuario.id}/${Date.now()}.${bannerFile.name.split('.').pop()}`;
                   const up = await supabase.storage.from('banners').upload(fn, bannerFile);
-                  if (!up.error && up.data) {
-                    banner_url = supabase.storage.from('banners').getPublicUrl(up.data.path).data.publicUrl;
+                  if (up.error) {
+                    setSubmitting(false);
+                    return toast.error("Falha ao enviar o banner. Tente sem imagem.");
                   }
+                  banner_url = supabase.storage.from('banners').getPublicUrl(up.data.path).data.publicUrl;
                 }
                 const { error } = await supabase.from('eventos').insert({
                   usuario_id: usuario.id,

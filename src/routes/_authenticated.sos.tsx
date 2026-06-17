@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { ShieldAlert, Eye, AlertTriangle, Navigation, Plus, ShieldCheck, Crown, X, Phone, MessageSquare, MapPin, Search, User } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { activatePlusSubscription } from "@/lib/subscription.functions";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -180,21 +182,18 @@ function SOSPage() {
   const [activating, setActivating] = useState(false);
   const pressInterval = useRef<NodeJS.Timeout | null>(null);
 
+  const activatePlusFn = useServerFn(activatePlusSubscription);
   const ativarAssinatura = async () => {
     if (!usuario?.id) return;
     setActivating(true);
-    const validade = new Date();
-    validade.setDate(validade.getDate() + 30);
-    const { error } = await supabase
-      .from('usuarios')
-      .update({ assinante_plus: true, validade_assinatura: validade.toISOString() })
-      .eq('id', usuario.id);
-    setActivating(false);
-    if (error) {
-      toast.error("Erro ao ativar assinatura.");
-    } else {
+    try {
+      await activatePlusFn();
       toast.success("✅ Vizinho Seguro ativado!");
       await refreshUsuario();
+    } catch (err: any) {
+      toast.error(err?.message || "Erro ao ativar assinatura.");
+    } finally {
+      setActivating(false);
     }
   };
 
@@ -237,17 +236,23 @@ function SOSPage() {
   }, [isAssinante, usuario?.bairro]);
 
   const fetchAlerts = async () => {
+    if (!usuario?.bairro) {
+      setAlerts([]);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     const { data, error } = await supabase
       .from('alertas_seguranca')
       .select('*')
-      .eq('bairro', usuario?.bairro || '')
+      .eq('bairro', usuario.bairro)
       .eq('ativo', true)
       .gt('expira_em', new Date().toISOString())
       .order('criado_em', { ascending: false });
 
     if (error) {
       console.error("Error fetching alerts:", error);
+      toast.error("Erro ao carregar alertas");
     } else {
       setAlerts(data || []);
     }
@@ -255,17 +260,19 @@ function SOSPage() {
   };
 
   const startPress = () => {
+    if (pressInterval.current) clearInterval(pressInterval.current);
     setSosProgress(0);
     pressInterval.current = setInterval(() => {
       setSosProgress(prev => {
         if (prev >= 100) {
           clearInterval(pressInterval.current!);
+          pressInterval.current = null;
           triggerSOS();
           return 100;
         }
-        return prev + 2.5; 
+        return prev + 2.5;
       });
-    }, 50); // exactly 2 seconds
+    }, 50);
   };
 
   const stopPress = () => {
@@ -325,10 +332,11 @@ function SOSPage() {
     }
 
     const { error } = await supabase.rpc('increment_confirmacoes' as any, { alert_id: alertId });
-    
+
     if (error) {
-       console.error("RPC error:", error);
-       // Fallback logic could go here
+      console.error("RPC error:", error);
+      toast.error("Erro ao confirmar alerta. Tente novamente.");
+      return;
     }
 
     localStorage.setItem('confirmed_alerts', JSON.stringify([...confirmedAlerts, alertId]));

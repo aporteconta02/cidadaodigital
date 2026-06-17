@@ -20,19 +20,23 @@ function CarrinhoPage() {
   const [observacao, setObservacao] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Group by loja
+  // Group by loja (apenas itens com loja_id válida)
   const porLoja = useMemo(() => {
     const groups: Record<string, CartItem[]> = {};
     for (const it of itens) {
-      const k = it.loja_id || 'sem-loja';
-      (groups[k] ||= []).push(it);
+      if (!it.loja_id) continue; // ignora itens sem loja (evita FK violation)
+      (groups[it.loja_id] ||= []).push(it);
     }
     return groups;
   }, [itens]);
 
+  const itensInvalidos = useMemo(() => itens.filter(it => !it.loja_id), [itens]);
+
   const finalizar = async () => {
     if (!usuario) return toast.error("Faça login primeiro");
     if (itens.length === 0) return toast.error("Carrinho vazio");
+    if (itensInvalidos.length > 0) return toast.error("Há itens sem loja associada. Remova-os para continuar.");
+    if (Object.keys(porLoja).length === 0) return toast.error("Nenhum item válido para finalizar");
     if (tipoEntrega === 'entrega' && !endereco.trim()) return toast.error("Informe o endereço de entrega");
 
     setSubmitting(true);
