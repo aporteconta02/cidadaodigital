@@ -54,6 +54,7 @@ interface MapProps {
   }>;
   onConfirmAlert?: (alertId: string) => void;
   isAdminView?: boolean;
+  light?: boolean;
 }
 
 function ChangeView({ center, zoom }: { center: [number, number]; zoom: number }) {
@@ -69,7 +70,8 @@ export default function MapInner({
   zoom = 13, 
   markers = [], 
   onConfirmAlert,
-  isAdminView 
+  isAdminView,
+  light = false,
 }: MapProps) {
   const actualZoom = typeof zoom === 'number' ? zoom : 13;
   
@@ -77,8 +79,10 @@ export default function MapInner({
     <MapContainer center={center} zoom={actualZoom} scrollWheelZoom={false} className="w-full h-full">
       <ChangeView center={center} zoom={actualZoom} />
       <TileLayer
-        attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        attribution={light ? '&copy; OpenStreetMap contributors' : '&copy; CARTO'}
+        url={light
+          ? 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+          : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'}
       />
       {markers.map((marker, i) => (
         <Marker key={marker.id || i} position={marker.position} icon={getIcon(marker.type)}>

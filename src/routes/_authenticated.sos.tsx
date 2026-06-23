@@ -176,10 +176,11 @@ function SOSPage() {
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(!!search?.new);
   const [newAlertType, setNewAlertType] = useState<string>('suspeito');
   const [newAlertDesc, setNewAlertDesc] = useState('');
-  const [activeTab, setActiveTab] = useState<'alertas' | 'contatos'>('alertas');
+  const [activeTab, setActiveTab] = useState<'todos' | 'meus' | 'resolvidos' | 'contatos'>('todos');
   const [resolveTarget, setResolveTarget] = useState<any>(null);
   const [resolveText, setResolveText] = useState('');
   const [activating, setActivating] = useState(false);
+  const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
   const pressInterval = useRef<NodeJS.Timeout | null>(null);
 
   const activatePlusFn = useServerFn(activatePlusSubscription);
@@ -209,11 +210,15 @@ function SOSPage() {
         .on(
           'postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'alertas_seguranca', filter: `bairro=eq.${usuario?.bairro}` },
-          (payload) => {
-            console.log('New alert received:', payload);
-            setAlerts(prev => [payload.new, ...prev]);
-            toast.warning("⚠️ Novo alerta no seu bairro!");
+          () => {
+            fetchAlerts();
+            toast.warning("🚨 Novo alerta na sua região!");
           }
+        )
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'alertas_seguranca', filter: `bairro=eq.${usuario?.bairro}` },
+          () => fetchAlerts()
         )
         .subscribe();
 
@@ -244,11 +249,10 @@ function SOSPage() {
     setLoading(true);
     const { data, error } = await supabase
       .from('alertas_seguranca')
-      .select('*')
+      .select('*, autor:usuarios!alertas_seguranca_usuario_id_fkey(nome, avatar_url, bairro)')
       .eq('bairro', usuario.bairro)
-      .eq('ativo', true)
-      .gt('expira_em', new Date().toISOString())
-      .order('criado_em', { ascending: false });
+      .order('criado_em', { ascending: false })
+      .limit(200);
 
     if (error) {
       console.error("Error fetching alerts:", error);
@@ -302,12 +306,14 @@ function SOSPage() {
   };
 
   const createAlert = async () => {
-    if (!usuario?.id) return;
-    
+    if (!usuario?.id) return toast.error("Faça login para criar um alerta.");
+    if (!usuario.bairro) return toast.error("Cadastre seu bairro no perfil antes de criar alertas.");
+    if (!newAlertType) return toast.error("Escolha o tipo de ocorrência.");
+
     const { error } = await supabase.from('alertas_seguranca').insert({
       usuario_id: usuario.id,
       tipo: newAlertType,
-      descricao: newAlertDesc,
+      descricao: newAlertDesc?.trim() || null,
       latitude: userLocation[0],
       longitude: userLocation[1],
       bairro: usuario.bairro,
@@ -315,9 +321,10 @@ function SOSPage() {
     });
 
     if (error) {
-      toast.error("Erro ao criar alerta.");
+      console.error("Erro ao criar alerta:", error);
+      toast.error(error.message || "Não foi possível publicar o alerta. Tente novamente.");
     } else {
-      toast.success("Alerta criado com sucesso!");
+      toast.success("Alerta criado! Seus vizinhos foram avisados 🛡️");
       setIsAlertModalOpen(false);
       setNewAlertDesc('');
       fetchAlerts();
@@ -420,12 +427,13 @@ function SOSPage() {
   return (
     <div className="relative h-[calc(100vh-144px)] overflow-hidden flex flex-col">
       {/* Map Section (50%) */}
-      <div className="h-1/2 w-full relative">
+      <div className="h-[45%] w-full relative">
         <Map 
-          center={userLocation} 
-          zoom={15}
+          center={mapCenter ?? userLocation} 
+          zoom={mapCenter ? 17 : 15}
           markers={mapMarkers}
           onConfirmAlert={confirmAlert}
+          light
         />
         
         {/* Floating FAB Plus */}
@@ -523,103 +531,157 @@ function SOSPage() {
       {/* Content Section (50%) */}
       <div className="flex-1 w-full bg-bg-primary overflow-hidden flex flex-col">
         {/* Tabs */}
-        <div className="flex border-b border-white/5 px-6">
-          <button 
-            onClick={() => setActiveTab('alertas')}
-            className={cn(
-              "px-4 py-4 text-[10px] font-black uppercase tracking-widest transition-all relative",
-              activeTab === 'alertas' ? "text-primary" : "text-text-muted"
-            )}
-          >
-            Alertas
-            {activeTab === 'alertas' && <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />}
-          </button>
-          <button 
-            onClick={() => setActiveTab('contatos')}
-            className={cn(
-              "px-4 py-4 text-[10px] font-black uppercase tracking-widest transition-all relative",
-              activeTab === 'contatos' ? "text-primary" : "text-text-muted"
-            )}
-          >
-            Contatos
-            {activeTab === 'contatos' && <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />}
-          </button>
+        <div className="flex border-b border-white/5 px-4 overflow-x-auto no-scrollbar">
+          {([
+            { id: 'todos', label: 'Todos' },
+            { id: 'meus', label: 'Meus' },
+            { id: 'resolvidos', label: 'Resolvidos' },
+            { id: 'contatos', label: 'Contatos' },
+          ] as const).map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(t.id)}
+              className={cn(
+                "px-3 py-4 text-[10px] font-black uppercase tracking-widest transition-all relative shrink-0",
+                activeTab === t.id ? "text-primary" : "text-text-muted"
+              )}
+            >
+              {t.label}
+              {activeTab === t.id && <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />}
+            </button>
+          ))}
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 pt-6 pb-24 no-scrollbar">
-          {activeTab === 'alertas' ? (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic">Ocorrências no Bairro</h3>
-                  <span className="px-1.5 py-0.5 rounded bg-white/5 text-[8px] font-black text-text-muted uppercase">{alerts.length}</span>
-                </div>
-                <span className="size-2 rounded-full bg-danger animate-pulse" />
-              </div>
-              
-              {loading ? (
-                <div className="space-y-3">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="h-20 bg-white/5 rounded-2xl animate-pulse" />
-                  ))}
-                </div>
-              ) : alerts.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 text-center opacity-40">
-                  <ShieldCheck size={48} className="mb-4 text-success" />
-                  <p className="text-sm font-bold uppercase tracking-widest">Tudo tranquilo no seu bairro! 🟢</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {alerts.map((alert) => (
-                    <div 
-                      key={alert.id} 
-                      className={cn(
-                        "bg-bg-card rounded-2xl p-4 border border-white/5 shadow-sm transition-all",
-                        ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.color || "border-l-primary",
-                        "border-l-4"
-                      )}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center">
-                            {ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.icon}
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-sm text-text-primary">
-                              {ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES]?.label || 'Alerta'}
-                            </h4>
-                            <p className="text-[10px] text-text-muted font-bold uppercase tracking-tight">
-                              {formatDistanceToNow(new Date(alert.criado_em), { locale: ptBR, addSuffix: true })}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 border border-white/5">
-                          <ShieldCheck size={12} className="text-success" />
-                          <span className="text-[10px] font-black text-text-primary">{alert.confirmacoes || 0}</span>
-                        </div>
-                      </div>
-                      {alert.observacao_resolucao && (
-                        <div className="mt-3 p-3 bg-success/5 border border-success/20 rounded-xl">
-                          <p className="text-[9px] font-black uppercase tracking-widest text-success mb-1">Resolução</p>
-                          <p className="text-xs text-text-secondary">{alert.observacao_resolucao}</p>
-                        </div>
-                      )}
-                      {usuario?.id === alert.usuario_id && !alert.observacao_resolucao && (
-                        <button
-                          onClick={() => { setResolveTarget(alert); setResolveText(''); }}
-                          className="mt-3 w-full py-2 bg-success/10 text-success font-black rounded-xl uppercase tracking-widest text-[10px] active:scale-95"
-                        >
-                          Marcar como Resolvido
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
+          {activeTab === 'contatos' ? (
             <ContatosSection />
-          )}
+          ) : (() => {
+            const now = Date.now();
+            const isAtivo = (a: any) =>
+              a.ativo !== false && !a.resolvido_em && (!a.expira_em || new Date(a.expira_em).getTime() > now);
+            const isResolvido = (a: any) => !!a.resolvido_em;
+            const startOfMonth = new Date(); startOfMonth.setDate(1); startOfMonth.setHours(0,0,0,0);
+            const resolvidosMes = alerts.filter((a) => isResolvido(a) && new Date(a.resolvido_em).getTime() >= startOfMonth.getTime()).length;
+            const totalAtivos = alerts.filter(isAtivo).length;
+
+            let filtered: any[] = [];
+            if (activeTab === 'todos') filtered = alerts.filter(isAtivo);
+            else if (activeTab === 'meus') filtered = alerts.filter((a) => a.usuario_id === usuario?.id);
+            else if (activeTab === 'resolvidos') filtered = alerts.filter(isResolvido);
+
+            return (
+              <div className="space-y-6">
+                {/* Stats */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-2xl p-4 bg-danger/10 border border-danger/20">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-danger">Ativos</p>
+                    <p className="text-2xl font-black text-text-primary">{totalAtivos}</p>
+                  </div>
+                  <div className="rounded-2xl p-4 bg-success/10 border border-success/20">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-success">Resolvidos / mês</p>
+                    <p className="text-2xl font-black text-text-primary">{resolvidosMes}</p>
+                  </div>
+                </div>
+
+                {loading ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="h-24 bg-white/5 rounded-2xl animate-pulse" />
+                    ))}
+                  </div>
+                ) : filtered.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 text-center opacity-40">
+                    <ShieldCheck size={48} className="mb-4 text-success" />
+                    <p className="text-sm font-bold uppercase tracking-widest">
+                      {activeTab === 'meus' ? 'Você ainda não criou alertas' : activeTab === 'resolvidos' ? 'Nenhum alerta resolvido' : 'Tudo tranquilo no seu bairro! 🟢'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {filtered.map((alert) => {
+                      const resolvido = isResolvido(alert);
+                      const tipo = ALERT_TYPES[alert.tipo as keyof typeof ALERT_TYPES];
+                      const autorNome = alert.autor?.nome || 'Vizinho';
+                      const autorAvatar = alert.autor?.avatar_url;
+                      return (
+                        <div
+                          key={alert.id}
+                          className={cn(
+                            "bg-bg-card rounded-2xl p-4 border border-white/5 shadow-sm transition-all border-l-4",
+                            tipo?.color || "border-l-primary",
+                            resolvido && "opacity-60"
+                          )}
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-start gap-3 min-w-0">
+                              <div className="size-10 shrink-0 rounded-xl bg-white/5 flex items-center justify-center">
+                                {tipo?.icon}
+                              </div>
+                              <div className="min-w-0">
+                                <h4 className="font-bold text-sm text-text-primary truncate">{tipo?.label || 'Alerta'}</h4>
+                                <p className="text-[10px] text-text-muted font-bold uppercase tracking-tight">
+                                  {formatDistanceToNow(new Date(alert.criado_em), { locale: ptBR, addSuffix: true })}
+                                  {alert.bairro ? ` • ${alert.bairro}` : ''}
+                                </p>
+                              </div>
+                            </div>
+                            <span className={cn(
+                              "shrink-0 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-lg",
+                              resolvido ? "bg-success/15 text-success" : "bg-danger/15 text-danger"
+                            )}>
+                              {resolvido ? 'Resolvido' : 'Ativo'}
+                            </span>
+                          </div>
+
+                          {alert.descricao && (
+                            <p className="mt-3 text-xs text-text-secondary leading-relaxed">{alert.descricao}</p>
+                          )}
+
+                          <div className="mt-3 flex items-center gap-2">
+                            <div className="size-6 rounded-full bg-white/10 overflow-hidden flex items-center justify-center text-[10px] font-black text-text-primary shrink-0">
+                              {autorAvatar ? <img src={autorAvatar} alt={autorNome} className="size-full object-cover" /> : autorNome.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="text-[10px] font-bold text-text-muted truncate">{autorNome}</span>
+                            <span className="ml-auto flex items-center gap-1 text-[10px] font-black text-text-muted">
+                              <ShieldCheck size={12} className="text-success" /> {alert.confirmacoes || 0}
+                            </span>
+                          </div>
+
+                          {alert.observacao_resolucao && (
+                            <div className="mt-3 p-3 bg-success/5 border border-success/20 rounded-xl">
+                              <p className="text-[9px] font-black uppercase tracking-widest text-success mb-1">
+                                Resolução {alert.resolvido_em && `• ${new Date(alert.resolvido_em).toLocaleDateString('pt-BR')}`}
+                              </p>
+                              <p className="text-xs text-text-secondary">{alert.observacao_resolucao}</p>
+                            </div>
+                          )}
+
+                          <div className="mt-3 flex gap-2">
+                            {alert.latitude && alert.longitude && (
+                              <button
+                                onClick={() => setMapCenter([Number(alert.latitude), Number(alert.longitude)])}
+                                className="flex-1 py-2 bg-primary/10 text-primary font-black rounded-xl uppercase tracking-widest text-[10px] active:scale-95"
+                              >
+                                Ver no mapa
+                              </button>
+                            )}
+                            {usuario?.id === alert.usuario_id && !resolvido && (
+                              <button
+                                onClick={() => { setResolveTarget(alert); setResolveText(''); }}
+                                className="flex-1 py-2 bg-success/10 text-success font-black rounded-xl uppercase tracking-widest text-[10px] active:scale-95"
+                              >
+                                Resolver
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
       </div>
 
