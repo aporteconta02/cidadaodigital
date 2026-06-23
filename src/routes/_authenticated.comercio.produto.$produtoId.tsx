@@ -45,7 +45,7 @@ function ProdutoPage() {
         <div>
           <h1 className="text-2xl font-bold text-text-primary mb-2">{produto.nome}</h1>
           <div className="text-2xl font-black text-primary mb-3">{formatBRL(produto.preco)}</div>
-          <Link to={`/comercio/loja/${produto.loja_id}`} className="flex items-center gap-2 p-3 bg-bg-card rounded-md border border-white/5">
+          <Link to="/comercio/loja/$lojaId" params={{ lojaId: produto.loja_id }} className="flex items-center gap-2 p-3 bg-bg-card rounded-md border border-white/5">
             <Store size={18} className="text-primary" />
             <span className="text-sm font-bold">{produto.lojas?.nome}</span>
           </Link>

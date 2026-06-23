@@ -129,7 +129,7 @@ function ComercioPage() {
           </div>
           <div className="flex gap-4 px-4 overflow-x-auto no-scrollbar pb-2">
             {lojasPremium.map((store) => (
-              <Link key={store.id} to={`/comercio/loja/${store.id}`} className="flex-[0_0_180px] group">
+              <Link key={store.id} to="/comercio/loja/$lojaId" params={{ lojaId: store.id }} className="flex-[0_0_180px] group">
                 <div className="h-[100px] rounded-t-xl overflow-hidden bg-white/5">
                   {store.logo_url
                     ? <img src={store.logo_url} className="w-full h-full object-cover" alt={store.nome} />
@@ -160,7 +160,7 @@ function ComercioPage() {
               </div>
               <div className="flex gap-4 px-4 overflow-x-auto no-scrollbar pb-2">
                 {lojas.map((store) => (
-                  <Link key={store.id} to={`/comercio/loja/${store.id}`} className="flex-[0_0_200px] group">
+                  <Link key={store.id} to="/comercio/loja/$lojaId" params={{ lojaId: store.id }} className="flex-[0_0_200px] group">
                     <div className="h-[100px] rounded-t-xl overflow-hidden bg-white/5">
                       {store.logo_url
                         ? <img src={store.logo_url} className="w-full h-full object-cover" alt={store.nome} />
@@ -196,7 +196,7 @@ function ComercioPage() {
 
                   return (
                     <div key={product.id} className="bg-bg-card rounded-2xl overflow-hidden border border-white/5 flex flex-col group">
-                      <Link to={`/comercio/produto/${product.id}`} className="aspect-square bg-white/5 relative overflow-hidden">
+                      <Link to="/comercio/produto/$produtoId" params={{ produtoId: product.id }} className="aspect-square bg-white/5 relative overflow-hidden">
                         {product.foto_url
                           ? <img src={product.foto_url} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" alt={product.nome} />
                           : <div className="w-full h-full flex items-center justify-center text-text-muted opacity-10"><ShoppingBag size={48} /></div>}
