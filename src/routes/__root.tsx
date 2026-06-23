@@ -186,7 +186,6 @@ function RootComponent() {
         <CartProvider>
         <div className={cn(
           "flex min-h-screen flex-col bg-bg-primary text-text-primary overflow-x-hidden font-jakarta",
-          !isPublicPage && "pb-[72px]"
         )}>
         <Toaster position="top-center" expand={true} richColors />
         <OfflineBanner />
@@ -206,7 +205,7 @@ function RootComponent() {
                 to="/perfil"
                 className="flex items-center gap-2 active:scale-95 transition-transform min-w-0"
               >
-                <div className="size-10 rounded-full overflow-hidden flex items-center justify-center bg-bg-elevated ring-2 ring-primary shadow-[0_0_12px_var(--primary-glow)]">
+                <div className="size-10 rounded-full overflow-hidden flex items-center justify-center bg-bg-elevated ring-2 ring-primary shadow-[0_0_12px_var(--primary-glow)] shrink-0">
                   {profile?.avatar_url ? (
                     <img src={profile.avatar_url} alt={profile.nome} className="size-full object-cover" />
                   ) : (
@@ -224,77 +223,93 @@ function RootComponent() {
               </Link>
 
               {/* Center: brand */}
-              <Link to="/dashboard" className="flex-1 text-center">
-                <h1 className="text-base sm:text-lg font-bold tracking-tighter font-space uppercase italic bg-gradient-hero bg-clip-text text-transparent">
+              <Link to="/dashboard" className="flex-1 text-center min-w-0">
+                <h1 className="text-base sm:text-lg font-bold tracking-tighter font-space uppercase italic bg-gradient-hero bg-clip-text text-transparent truncate">
                   CIDADÃO<span>+</span>
                 </h1>
               </Link>
 
-              {/* Right: theme + SOS */}
+              {/* Right: theme + hamburger */}
               <div className="flex items-center gap-2">
                 <ThemeToggle />
-                <Link
-                  to="/sos"
-                  className="relative size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-transform active:scale-95 cursor-pointer"
-                >
-                  <ShieldAlert size={18} className="text-text-primary" />
-                </Link>
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <button
+                      aria-label="Abrir menu"
+                      className="size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-transform active:scale-95 cursor-pointer"
+                    >
+                      <Menu size={20} className="text-text-primary" />
+                    </button>
+                  </SheetTrigger>
+                  <SheetContent
+                    side="right"
+                    className="w-[88vw] sm:w-[380px] bg-bg-primary border-l border-white/5 p-0 flex flex-col"
+                  >
+                    {/* Drawer header: profile */}
+                    <div className="p-6 border-b border-white/5 bg-gradient-to-br from-primary/15 to-transparent">
+                      <div className="flex items-center gap-4">
+                        <div className="size-16 rounded-full overflow-hidden flex items-center justify-center bg-bg-elevated ring-2 ring-primary shadow-[0_0_18px_var(--primary-glow)] shrink-0">
+                          {profile?.avatar_url ? (
+                            <img src={profile.avatar_url} alt={profile.nome} className="size-full object-cover" />
+                          ) : (
+                            <span className="text-text-primary font-bold text-lg">
+                              {profile?.nome?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'CP'}
+                            </span>
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-base font-bold text-text-primary truncate">
+                            {profile?.nome || 'Cidadão'}
+                          </p>
+                          <p className="text-xs text-text-muted flex items-center gap-1 mt-0.5">
+                            <MapPin size={12} />
+                            <span className="truncate">{(profile as any)?.cidade || 'Santa Luzia - MG'}</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Nav list */}
+                    <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+                      <DrawerNavLink to="/dashboard" icon={<Home size={20} />} label="Início" />
+                      <DrawerNavLink to="/comercio" icon={<ShoppingBag size={20} />} label="Mercado" />
+                      <DrawerNavLink to="/comunidade" icon={<Megaphone size={20} />} label="Denúncias / Solicitações" search={{ tab: 'denuncias' }} />
+                      <DrawerNavLink to="/comunidade" icon={<Calendar size={20} />} label="Eventos" search={{ tab: 'eventos' }} />
+                      <DrawerNavLink to="/sos" icon={<ShieldAlert size={20} />} label="Vizinho Seguro" />
+                      <DrawerNavLink to="/comunidade" icon={<Users size={20} />} label="Voz do Povo" search={{ tab: 'voz' }} />
+                      <DrawerNavLink to="/comunidade" icon={<ClipboardList size={20} />} label="Mural" search={{ tab: 'mural' }} />
+                      <DrawerNavLink to="/comercio" icon={<Star size={20} />} label="Benefícios" />
+                      <DrawerNavLink to="/comunidade" icon={<Phone size={20} />} label="Telefones" search={{ tab: 'telefones' }} />
+                      <DrawerNavLink to="/transporte" icon={<Bus size={20} />} label="Transporte" />
+
+                      <div className="h-px bg-white/5 my-3" />
+
+                      <DrawerNavLink to="/perfil" icon={<Settings size={20} />} label="Configurações" />
+                      <SheetClose asChild>
+                        <button
+                          onClick={async () => {
+                            await supabase.auth.signOut();
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-danger hover:bg-danger/10 transition-colors"
+                        >
+                          <LogOut size={20} />
+                          <span className="text-sm font-bold">Sair da conta</span>
+                        </button>
+                      </SheetClose>
+                    </nav>
+                  </SheetContent>
+                </Sheet>
               </div>
             </div>
           </header>
-
         )}
 
         {/* Main Content Area */}
-        <main className={cn("flex-1 w-full", !isPublicPage && "max-w-lg mx-auto overflow-y-auto")}>
+        <main className={cn("flex-1 w-full", !isPublicPage && "max-w-lg mx-auto")}>
           <div key={location.pathname} className="page-transition-container">
             <Outlet />
           </div>
         </main>
-
-        {/* Bottom Navigation (Hidden on landing/auth) */}
-        {!isPublicPage && (
-          <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#0A0A0F]/90 backdrop-blur-[20px] border-t border-white/5 pb-safe shadow-card">
-            <div className="flex items-center justify-around bottom-nav-height max-w-lg mx-auto relative px-4">
-              <NavLink to="/dashboard" icon={<Home size={22} />} label="Início" />
-              <NavLink to="/comercio" icon={<ShoppingBag size={22} />} label="Mercado" cartBadge />
-              
-              {/* Central Plus Button */}
-              <Drawer>
-                <DrawerTrigger asChild>
-                  <button className="relative z-10 size-14 rounded-full bg-gradient-hero -translate-y-4 flex items-center justify-center text-white shadow-[0_8px_24px_rgba(108,99,255,0.5)] active:scale-90 transition-transform cursor-pointer">
-                    <Plus size={28} strokeWidth={3} />
-                  </button>
-                </DrawerTrigger>
-                <DrawerContent className="bg-bg-elevated border-border-custom max-w-lg mx-auto rounded-t-3xl">
-                  <div className="p-6 grid grid-cols-2 gap-4">
-                    <ActionButton onClick={() => router.navigate({ to: '/comunidade', search: { tab: 'denuncias', new: true } as any })} icon={<Megaphone className="text-primary" />} label="Denunciar" />
-                    <ActionButton onClick={() => router.navigate({ to: '/comunidade', search: { tab: 'eventos', new: true } as any })} icon={<Calendar className="text-secondary" />} label="Novo Evento" />
-                    <ActionButton onClick={() => router.navigate({ to: '/comunidade', search: { tab: 'mural', new: true } as any })} icon={<ClipboardList className="text-success" />} label="Mural" />
-                    <ActionButton onClick={() => router.navigate({ to: '/sos', search: { new: true } as any })} icon={<AlertCircle className="text-danger" />} label="Reportar Alerta" />
-                  </div>
-                  <div className="px-6 pb-8">
-                    <DrawerClose asChild>
-                      <button className="w-full py-4 rounded-md bg-white/5 text-text-secondary font-bold uppercase tracking-wider text-xs">
-                        Cancelar
-                      </button>
-                    </DrawerClose>
-                  </div>
-                </DrawerContent>
-              </Drawer>
-
-              <NavLink to="/comunidade" icon={<Users size={22} />} label="Cidade" />
-              <NavLink to="/sos" icon={<ShieldAlert size={22} />} label="Seguro" />
-              <NavLink to="/perfil" icon={<User size={22} />} label="Perfil" />
-              <button 
-                onClick={async () => {
-                  await supabase.auth.signOut();
-                }}
-                className="hidden" // Botão invisível para facilitar teste de logout se necessário, ou apenas deixar no perfil
-              />
-            </div>
-          </nav>
-        )}
         </div>
         </CartProvider>
       </AuthProvider>
@@ -302,43 +317,27 @@ function RootComponent() {
 );
 }
 
-function NavLink({ to, icon, label, cartBadge }: { to: string; icon: React.ReactNode; label: string; cartBadge?: boolean }) {
+function DrawerNavLink({ to, icon, label, search }: { to: string; icon: React.ReactNode; label: string; search?: Record<string, unknown> }) {
   const { totalItens } = useCart();
+  const showCart = to === "/comercio";
   return (
-    <Link 
-      to={to} 
-      className="flex flex-col items-center gap-1 group relative py-2 w-14"
-      activeProps={{ className: "text-primary active-link" }}
-      inactiveProps={{ className: "text-text-muted" }}
-    >
-      <div className="transition-all group-active:scale-90 relative">
-        {icon}
-        {cartBadge && totalItens > 0 && (
-          <div className="absolute -top-1 -right-1 size-4 bg-primary text-white text-[8px] font-black rounded-full flex items-center justify-center border border-bg-primary">
+    <SheetClose asChild>
+      <Link
+        to={to}
+        search={search as any}
+        className="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary hover:bg-white/5 transition-colors group"
+        activeProps={{ className: "!bg-primary/20 !text-primary font-bold" }}
+      >
+        <span className="shrink-0">{icon}</span>
+        <span className="text-sm font-medium flex-1 truncate">{label}</span>
+        {showCart && totalItens > 0 && (
+          <span className="size-5 bg-primary text-white text-[10px] font-black rounded-full flex items-center justify-center">
             {totalItens}
-          </div>
+          </span>
         )}
-      </div>
-      <span className="text-[10px] font-bold uppercase tracking-tight hidden group-[.active-link]:block">
-        {label}
-      </span>
-      
-      {/* Active Indicator Point */}
-      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full opacity-0 transition-opacity group-[.active-link]:opacity-100" />
-    </Link>
+      </Link>
+    </SheetClose>
   );
 }
 
-function ActionButton({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick?: () => void }) {
-  return (
-    <button onClick={onClick} className="flex flex-col items-center justify-center gap-3 p-4 rounded-xl bg-white/5 border border-white/5 active:scale-95 transition-all hover:bg-white/10">
-      <div className="size-12 rounded-full bg-bg-primary flex items-center justify-center shadow-card">
-        {React.cloneElement(icon as React.ReactElement<{ size?: number }>, { size: 24 })}
-      </div>
-      <span className="micro-text font-bold text-text-primary uppercase tracking-wider text-center">
-        {label}
-      </span>
-    </button>
-  );
-}
 
