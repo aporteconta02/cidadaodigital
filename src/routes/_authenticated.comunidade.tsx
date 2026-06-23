@@ -501,6 +501,18 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
   const [submitting, setSubmitting] = useState(false);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [form, setForm] = useState({ titulo: '', descricao: '', data_evento: '', local_nome: '', endereco: '', categoria: 'Cultura', gratuito: true, preco_ingresso: '' });
+  const [confirmados, setConfirmados] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem('eventos_confirmados') || '[]')); } catch { return new Set(); }
+  });
+  const toggleConfirmar = (id: string) => {
+    setConfirmados(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) { next.delete(id); toast.success('Presença cancelada'); }
+      else { next.add(id); toast.success('Presença confirmada! 🎉'); }
+      localStorage.setItem('eventos_confirmados', JSON.stringify([...next]));
+      return next;
+    });
+  };
 
   const fetchEventos = useCallback(async () => {
     setLoading(true);
@@ -586,6 +598,17 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
                     <span className="text-[10px] font-black uppercase tracking-widest text-warning bg-warning/10 px-3 py-2 rounded-full">R$ {Number(event.preco_ingresso).toFixed(2).replace('.', ',')}</span>
                   )}
                   <button
+                    onClick={() => toggleConfirmar(event.id)}
+                    className={cn(
+                      "h-10 px-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 active:scale-95 transition-all border",
+                      confirmados.has(event.id)
+                        ? "bg-success text-white border-success"
+                        : "bg-primary/10 text-primary border-primary/20"
+                    )}
+                  >
+                    <CheckCircle2 size={14} /> {confirmados.has(event.id) ? 'Confirmado' : 'Eu vou'}
+                  </button>
+                  <button
                     onClick={async () => {
                       const url = `${window.location.origin}/comunidade?tab=eventos`;
                       const text = `${event.titulo} — ${format(new Date(event.data_evento), "dd/MM 'às' HH:mm", { locale: ptBR })} · ${event.local_nome || ''}`;
@@ -650,7 +673,8 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
                     setSubmitting(false);
                     return toast.error("Falha ao enviar o banner. Tente sem imagem.");
                   }
-                  banner_url = supabase.storage.from('banners').getPublicUrl(up.data.path).data.publicUrl;
+                  const { data: signed } = await supabase.storage.from('banners').createSignedUrl(up.data.path, 60 * 60 * 24 * 365);
+                  banner_url = signed?.signedUrl || null;
                 }
                 const { error } = await supabase.from('eventos').insert({
                   usuario_id: usuario.id,
