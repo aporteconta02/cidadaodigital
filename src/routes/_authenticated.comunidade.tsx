@@ -180,8 +180,8 @@ function DenunciasTab({ autoOpen = false }: { autoOpen?: boolean }) {
         setSubmitting(false);
         return;
       }
-      const { data: { publicUrl } } = supabase.storage.from('fotos-denuncias').getPublicUrl(data.path);
-      uploadedUrl = publicUrl;
+      const { data: signed } = await supabase.storage.from('fotos-denuncias').createSignedUrl(data.path, 60 * 60 * 24 * 365);
+      uploadedUrl = signed?.signedUrl || '';
     }
 
     const { error } = await supabase.from('denuncias').insert({
@@ -984,7 +984,10 @@ function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
                 if (foto) {
                   const fn = `${usuario.id}/${Date.now()}.${foto.name.split('.').pop()}`;
                   const up = await supabase.storage.from('fotos-denuncias').upload(fn, foto);
-                  if (!up.error) foto_url = supabase.storage.from('fotos-denuncias').getPublicUrl(up.data.path).data.publicUrl;
+                  if (!up.error) {
+                    const { data: signed } = await supabase.storage.from('fotos-denuncias').createSignedUrl(up.data.path, 60 * 60 * 24 * 365);
+                    foto_url = signed?.signedUrl || '';
+                  }
                 }
                 const { error } = await supabase.from('mural_avisos').insert({
                   usuario_id: usuario.id,
