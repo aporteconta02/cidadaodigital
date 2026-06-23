@@ -20,10 +20,8 @@ import { toast } from "sonner";
 import { useAuthStore } from "@/hooks/use-auth-store";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (search: Record<string, unknown>) => {
-    return {
-      redirect: (search.redirect as string) || undefined,
-    }
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } => {
+    return typeof search.redirect === "string" ? { redirect: search.redirect } : {};
   },
   component: AuthPage,
 });
