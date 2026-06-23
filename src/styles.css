@@ -176,6 +176,41 @@ html.light {
   height: 72px;
 }
 
+/* Safe-area utilities (iPhone notch / Android gesture bar) */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+.pl-safe { padding-left: env(safe-area-inset-left, 0px); }
+.pr-safe { padding-right: env(safe-area-inset-right, 0px); }
+
+/* iOS Safari: inputs < 16px trigger automatic zoom on focus — force min 16px */
+@media (max-width: 640px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* Minimum touch target: 48px (WCAG) on coarse pointers */
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  a.btn,
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 44px;
+  }
+}
+
+/* Smooth scrolling + momentum on iOS */
+html, body {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+
 @keyframes sos-pulse {
   0% { box-shadow: 0 0 0 0 rgba(255,59,92,0.7) }
   70% { box-shadow: 0 0 0 20px rgba(255,59,92,0) }

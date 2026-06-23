@@ -22,6 +22,8 @@ import { useAuthStore } from "@/hooks/use-auth-store";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { InstallPrompt } from "@/components/InstallPrompt";
+import { OfflineBanner } from "@/components/OfflineBanner";
 
 function NotFoundComponent() {
   return (
@@ -186,6 +188,8 @@ function RootComponent() {
           !isPublicPage && "pb-[72px]"
         )}>
         <Toaster position="top-center" expand={true} richColors />
+        <OfflineBanner />
+        <InstallPrompt />
         {/* Floating theme toggle on public pages */}
         {isPublicPage && (
           <div className="fixed top-4 right-4 z-50">
