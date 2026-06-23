@@ -35,7 +35,7 @@ function LojaPage() {
   if (!loja) return <div className="p-10 text-center text-text-muted">Loja não encontrada</div>;
 
   return (
-    <div className="pb-32 bg-bg-primary min-h-screen">
+    <div className="pb-8 bg-bg-primary min-h-screen">
       <div className="relative h-[180px] bg-white/5">
         {loja.banner_url && <img src={loja.banner_url} className="w-full h-full object-cover" alt={loja.nome} />}
         <Link to="/comercio" className="absolute top-6 left-4 size-10 rounded-full bg-black/40 flex items-center justify-center text-white">

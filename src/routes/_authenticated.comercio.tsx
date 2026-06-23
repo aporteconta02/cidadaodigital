@@ -73,7 +73,7 @@ function ComercioPage() {
   }, [activeCategory, search]);
 
   return (
-    <div className="pb-32 animate-in fade-in duration-500 bg-bg-primary min-h-screen">
+    <div className="pb-8 animate-in fade-in duration-500 bg-bg-primary min-h-screen">
       <header className="px-4 pt-4 mb-4">
         <div className="relative group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
@@ -244,7 +244,7 @@ function ComercioPage() {
       {totalItens > 0 && (
         <Link
           to="/carrinho"
-          className="fixed bottom-24 right-4 z-40 bg-primary text-white rounded-full h-14 px-5 flex items-center gap-2 shadow-glow active:scale-95 transition-transform"
+          className="fixed bottom-6 right-4 z-40 bg-primary text-white rounded-full h-14 px-5 flex items-center gap-2 shadow-glow active:scale-95 transition-transform"
         >
           <ShoppingCart size={20} />
           <span className="font-bold text-sm">{totalItens} {totalItens === 1 ? 'item' : 'itens'}</span>

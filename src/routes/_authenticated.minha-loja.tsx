@@ -97,8 +97,11 @@ function MinhaLojaPage() {
       const path = `${loja.id}/${Date.now()}.${ext}`;
       const { error } = await supabase.storage.from('fotos-produtos').upload(path, file);
       if (error) throw error;
-      const { data: { publicUrl } } = supabase.storage.from('fotos-produtos').getPublicUrl(path);
-      setFormData(f => ({ ...f, foto_url: publicUrl }));
+      const { data: signed, error: signErr } = await supabase.storage
+        .from('fotos-produtos')
+        .createSignedUrl(path, 60 * 60 * 24 * 365);
+      if (signErr || !signed) throw signErr || new Error("Falha ao gerar URL");
+      setFormData(f => ({ ...f, foto_url: signed.signedUrl }));
       toast.success("Foto enviada!");
     } catch (err: any) {
       toast.error(err.message || "Erro no upload");
@@ -174,7 +177,7 @@ function MinhaLojaPage() {
   const pedidosPendentes = pedidos.filter(p => ['pendente', 'confirmado', 'preparando'].includes(p.status)).length;
 
   return (
-    <div className="min-h-screen bg-bg-primary pb-32 px-4 pt-6">
+    <div className="min-h-screen bg-bg-primary pb-8 px-4 pt-6">
       <Link to="/perfil" className="inline-flex items-center gap-2 text-text-muted mb-4"><ChevronLeft size={18} /> Voltar</Link>
       <h1 className="text-2xl font-black mb-1">{loja.nome}</h1>
       <p className="text-xs text-text-muted uppercase font-bold mb-6">{loja.categoria} · {loja.aprovada ? '✅ Aprovada' : '⏳ Aguardando aprovação'}</p>
