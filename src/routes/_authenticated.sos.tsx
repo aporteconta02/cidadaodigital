@@ -263,25 +263,31 @@ function SOSPage() {
     setLoading(false);
   };
 
-  const startPress = () => {
+  const startPress = (e?: React.PointerEvent | React.MouseEvent | React.TouchEvent) => {
+    e?.preventDefault?.();
     if (pressInterval.current) clearInterval(pressInterval.current);
     setSosProgress(0);
     pressInterval.current = setInterval(() => {
       setSosProgress(prev => {
         if (prev >= 100) {
-          clearInterval(pressInterval.current!);
-          pressInterval.current = null;
+          if (pressInterval.current) {
+            clearInterval(pressInterval.current);
+            pressInterval.current = null;
+          }
           triggerSOS();
           return 100;
         }
-        return prev + 2.5;
+        return prev + 3.5;
       });
     }, 50);
   };
 
   const stopPress = () => {
-    if (pressInterval.current) clearInterval(pressInterval.current);
-    if (sosProgress < 100) setSosProgress(0);
+    if (pressInterval.current) {
+      clearInterval(pressInterval.current);
+      pressInterval.current = null;
+    }
+    setSosProgress((p) => (p >= 100 ? p : 0));
   };
 
   const triggerSOS = async () => {
@@ -512,18 +518,20 @@ function SOSPage() {
           )}
           
           <button
-            onMouseDown={startPress}
-            onMouseUp={stopPress}
-            onMouseLeave={stopPress}
-            onTouchStart={startPress}
-            onTouchEnd={stopPress}
+            type="button"
+            onPointerDown={startPress}
+            onPointerUp={stopPress}
+            onPointerCancel={stopPress}
+            onPointerLeave={stopPress}
+            onContextMenu={(e) => e.preventDefault()}
+            style={{ touchAction: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
             className={cn(
-              "size-20 rounded-full flex flex-col items-center justify-center bg-danger shadow-[0_8px_32px_rgba(255,59,92,0.4)] transition-all select-none active:scale-95",
+              "size-20 rounded-full flex flex-col items-center justify-center bg-danger shadow-[0_8px_32px_rgba(255,59,92,0.4)] transition-all select-none active:scale-95 cursor-pointer",
               !sosActive && "sos-pulse"
             )}
           >
-            <span className="text-white text-2xl font-black italic leading-none">SOS</span>
-            <span className="text-[8px] text-white/70 font-bold uppercase tracking-widest mt-1">Segure</span>
+            <span className="text-white text-2xl font-black italic leading-none pointer-events-none">SOS</span>
+            <span className="text-[8px] text-white/70 font-bold uppercase tracking-widest mt-1 pointer-events-none">Segure</span>
           </button>
         </div>
       </div>
