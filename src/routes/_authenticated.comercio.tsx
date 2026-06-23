@@ -196,7 +196,7 @@ function ComercioPage() {
 
                   return (
                     <div key={product.id} className="bg-bg-card rounded-2xl overflow-hidden border border-white/5 flex flex-col group">
-                      <Link to={`/comercio/produto/${product.id}`} className="aspect-square bg-white/5 relative overflow-hidden">
+                      <Link to="/comercio/produto/$produtoId" params={{ produtoId: product.id }} className="aspect-square bg-white/5 relative overflow-hidden">
                         {product.foto_url
                           ? <img src={product.foto_url} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" alt={product.nome} />
                           : <div className="w-full h-full flex items-center justify-center text-text-muted opacity-10"><ShoppingBag size={48} /></div>}
