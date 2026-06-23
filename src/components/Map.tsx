@@ -14,6 +14,7 @@ interface MapProps {
   }>;
   onConfirmAlert?: (alertId: string) => void;
   isAdminView?: boolean;
+  light?: boolean;
 }
 
 const MapInner = lazy(() => import('./MapInner'));
