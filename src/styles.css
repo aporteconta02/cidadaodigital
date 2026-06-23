@@ -77,6 +77,26 @@
   --gradient-gold: linear-gradient(135deg, #FFD700 0%, #FF8C00 100%);
 }
 
+html.light {
+  --bg-primary: #FFFFFF;
+  --bg-card: #F4F4F7;
+  --bg-elevated: #ECECF2;
+  --border-custom: #E2E2EA;
+  --primary: #6C63FF;
+  --primary-glow: rgba(108, 99, 255, 0.25);
+  --secondary: #FF6B35;
+  --success: #00A86B;
+  --danger: #E5304E;
+  --warning: #E0A300;
+  --gold: #C99B00;
+  --text-primary: #14141C;
+  --text-secondary: #5A5A6A;
+  --text-muted: #9A9AAA;
+
+  --gradient-card: linear-gradient(145deg, #FFFFFF 0%, #F4F4F7 100%);
+}
+
+
 @layer base {
   * {
     border-color: var(--color-border-custom);

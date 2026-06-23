@@ -21,6 +21,7 @@ import { useAuthStore } from "@/hooks/use-auth-store";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 function NotFoundComponent() {
   return (
@@ -176,6 +177,12 @@ function RootComponent() {
           !isPublicPage && "pb-[72px]"
         )}>
         <Toaster position="top-center" expand={true} richColors />
+        {/* Floating theme toggle on public pages */}
+        {isPublicPage && (
+          <div className="fixed top-4 right-4 z-50">
+            <ThemeToggle />
+          </div>
+        )}
         {/* App Header (Hidden on landing/auth) */}
         {!isPublicPage && (
           <header className="sticky top-0 z-40 bg-bg-primary/80 backdrop-blur-xl px-4 py-4 border-b border-white/5">
@@ -185,6 +192,7 @@ function RootComponent() {
                   CIDADÃO<span className="">.</span><span className="">PLUS</span>
                 </h1>
                 <div className="flex items-center gap-3">
+                  <ThemeToggle />
                   <Link 
                     to="/sos"
                     className="relative size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-transform active:scale-95 cursor-pointer"
