@@ -782,6 +782,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ride_offers_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "ride_offers_request_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
@@ -898,6 +905,13 @@ export type Database = {
             columns: ["driver_aceito_id"]
             isOneToOne: false
             referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ride_requests_driver_aceito_id_fkey"
+            columns: ["driver_aceito_id"]
+            isOneToOne: false
+            referencedRelation: "drivers_public"
             referencedColumns: ["id"]
           },
         ]
@@ -1048,7 +1062,59 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      drivers_public: {
+        Row: {
+          avaliacao_media: number | null
+          id: string | null
+          modelo_veiculo: string | null
+          online: boolean | null
+          status_aprovacao:
+            | Database["public"]["Enums"]["driver_approval_status"]
+            | null
+          tipo_veiculo:
+            | Database["public"]["Enums"]["driver_vehicle_type"]
+            | null
+          total_corridas: number | null
+          usuario_id: string | null
+        }
+        Insert: {
+          avaliacao_media?: number | null
+          id?: string | null
+          modelo_veiculo?: string | null
+          online?: boolean | null
+          status_aprovacao?:
+            | Database["public"]["Enums"]["driver_approval_status"]
+            | null
+          tipo_veiculo?:
+            | Database["public"]["Enums"]["driver_vehicle_type"]
+            | null
+          total_corridas?: number | null
+          usuario_id?: string | null
+        }
+        Update: {
+          avaliacao_media?: number | null
+          id?: string | null
+          modelo_veiculo?: string | null
+          online?: boolean | null
+          status_aprovacao?:
+            | Database["public"]["Enums"]["driver_approval_status"]
+            | null
+          tipo_veiculo?:
+            | Database["public"]["Enums"]["driver_vehicle_type"]
+            | null
+          total_corridas?: number | null
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drivers_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: true
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       current_usuario_id: { Args: never; Returns: string }
