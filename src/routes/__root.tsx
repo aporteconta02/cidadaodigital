@@ -188,6 +188,8 @@ function RootComponent() {
           !isPublicPage && "pb-[72px]"
         )}>
         <Toaster position="top-center" expand={true} richColors />
+        <OfflineBanner />
+        <InstallPrompt />
         {/* Floating theme toggle on public pages */}
         {isPublicPage && (
           <div className="fixed top-4 right-4 z-50">
