@@ -891,6 +891,16 @@ function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ titulo: '', texto: '', tipo: 'geral' });
   const [foto, setFoto] = useState<File | null>(null);
+  const [curtidas, setCurtidas] = useState<Record<string, boolean>>(() => {
+    try { return JSON.parse(localStorage.getItem('mural_curtidas') || '{}'); } catch { return {}; }
+  });
+  const toggleCurtir = (id: string) => {
+    setCurtidas(prev => {
+      const next = { ...prev, [id]: !prev[id] };
+      localStorage.setItem('mural_curtidas', JSON.stringify(next));
+      return next;
+    });
+  };
 
   const categories: Array<{ label: string, value: string }> = [
     { label: 'Todos', value: 'todos' },
