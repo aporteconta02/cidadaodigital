@@ -30,9 +30,9 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 const QUICK_ACCESS = [
   { label: "Mercado", icon: <ShoppingBag size={24} />, color: "text-primary", to: "/comercio" },
-  { label: "Denunciar", icon: <Megaphone size={24} />, color: "text-secondary", to: "/comunidade", search: { tab: 'denuncias' } },
+  { label: "Denúncias / Solicitações", icon: <Megaphone size={24} />, color: "text-secondary", to: "/comunidade", search: { tab: 'denuncias' } },
   { label: "Eventos", icon: <Calendar size={24} />, color: "text-success", to: "/comunidade", search: { tab: 'eventos' } },
-  { label: "Seguro", icon: <ShieldCheck size={24} />, color: "text-primary", to: "/sos" },
+  { label: "Vizinho Seguro", icon: <ShieldCheck size={24} />, color: "text-primary", to: "/sos" },
   { label: "Voz do Povo", icon: <MessageSquare size={24} />, color: "text-secondary", to: "/comunidade", search: { tab: 'voz' } },
   { label: "Mural", icon: <ClipboardList size={24} />, color: "text-success", to: "/comunidade", search: { tab: 'mural' } },
   { label: "Benefícios", icon: <Star size={24} />, color: "text-gold", to: "/perfil" },
