@@ -186,6 +186,7 @@ function RootComponent() {
                   CIDADÃO<span className="">.</span><span className="">PLUS</span>
                 </h1>
                 <div className="flex items-center gap-3">
+                  <ThemeToggle />
                   <Link 
                     to="/sos"
                     className="relative size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-transform active:scale-95 cursor-pointer"
