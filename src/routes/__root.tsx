@@ -177,6 +177,12 @@ function RootComponent() {
           !isPublicPage && "pb-[72px]"
         )}>
         <Toaster position="top-center" expand={true} richColors />
+        {/* Floating theme toggle on public pages */}
+        {isPublicPage && (
+          <div className="fixed top-4 right-4 z-50">
+            <ThemeToggle />
+          </div>
+        )}
         {/* App Header (Hidden on landing/auth) */}
         {!isPublicPage && (
           <header className="sticky top-0 z-40 bg-bg-primary/80 backdrop-blur-xl px-4 py-4 border-b border-white/5">
