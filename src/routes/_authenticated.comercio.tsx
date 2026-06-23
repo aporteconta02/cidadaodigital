@@ -244,7 +244,7 @@ function ComercioPage() {
       {totalItens > 0 && (
         <Link
           to="/carrinho"
-          className="fixed bottom-24 right-4 z-40 bg-primary text-white rounded-full h-14 px-5 flex items-center gap-2 shadow-glow active:scale-95 transition-transform"
+          className="fixed bottom-6 right-4 z-40 bg-primary text-white rounded-full h-14 px-5 flex items-center gap-2 shadow-glow active:scale-95 transition-transform"
         >
           <ShoppingCart size={20} />
           <span className="font-bold text-sm">{totalItens} {totalItens === 1 ? 'item' : 'itens'}</span>
