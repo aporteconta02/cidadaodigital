@@ -24,6 +24,7 @@ import { Route as AdminFinanceiroRouteImport } from './routes/admin.financeiro'
 import { Route as AdminEventosRouteImport } from './routes/admin.eventos'
 import { Route as AdminDenunciasRouteImport } from './routes/admin.denuncias'
 import { Route as AdminBannersRouteImport } from './routes/admin.banners'
+import { Route as AuthenticatedTransporteRouteImport } from './routes/_authenticated.transporte'
 import { Route as AuthenticatedSosRouteImport } from './routes/_authenticated.sos'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated.perfil'
 import { Route as AuthenticatedPedidosRouteImport } from './routes/_authenticated.pedidos'
@@ -111,6 +112,11 @@ const AdminBannersRoute = AdminBannersRouteImport.update({
   path: '/banners',
   getParentRoute: () => AdminRoute,
 } as any)
+const AuthenticatedTransporteRoute = AuthenticatedTransporteRouteImport.update({
+  id: '/transporte',
+  path: '/transporte',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedSosRoute = AuthenticatedSosRouteImport.update({
   id: '/sos',
   path: '/sos',
@@ -189,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/pedidos': typeof AuthenticatedPedidosRouteWithChildren
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
+  '/transporte': typeof AuthenticatedTransporteRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/denuncias': typeof AdminDenunciasRoute
   '/admin/eventos': typeof AdminEventosRoute
@@ -216,6 +223,7 @@ export interface FileRoutesByTo {
   '/pedidos': typeof AuthenticatedPedidosRouteWithChildren
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
+  '/transporte': typeof AuthenticatedTransporteRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/denuncias': typeof AdminDenunciasRoute
   '/admin/eventos': typeof AdminEventosRoute
@@ -246,6 +254,7 @@ export interface FileRoutesById {
   '/_authenticated/pedidos': typeof AuthenticatedPedidosRouteWithChildren
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/sos': typeof AuthenticatedSosRoute
+  '/_authenticated/transporte': typeof AuthenticatedTransporteRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/denuncias': typeof AdminDenunciasRoute
   '/admin/eventos': typeof AdminEventosRoute
@@ -276,6 +285,7 @@ export interface FileRouteTypes {
     | '/pedidos'
     | '/perfil'
     | '/sos'
+    | '/transporte'
     | '/admin/banners'
     | '/admin/denuncias'
     | '/admin/eventos'
@@ -303,6 +313,7 @@ export interface FileRouteTypes {
     | '/pedidos'
     | '/perfil'
     | '/sos'
+    | '/transporte'
     | '/admin/banners'
     | '/admin/denuncias'
     | '/admin/eventos'
@@ -332,6 +343,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pedidos'
     | '/_authenticated/perfil'
     | '/_authenticated/sos'
+    | '/_authenticated/transporte'
     | '/admin/banners'
     | '/admin/denuncias'
     | '/admin/eventos'
@@ -463,6 +475,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBannersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_authenticated/transporte': {
+      id: '/_authenticated/transporte'
+      path: '/transporte'
+      fullPath: '/transporte'
+      preLoaderRoute: typeof AuthenticatedTransporteRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/sos': {
       id: '/_authenticated/sos'
       path: '/sos'
@@ -586,6 +605,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPedidosRoute: typeof AuthenticatedPedidosRouteWithChildren
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
   AuthenticatedSosRoute: typeof AuthenticatedSosRoute
+  AuthenticatedTransporteRoute: typeof AuthenticatedTransporteRoute
   AuthenticatedPedidoConfirmadoPedidoIdRoute: typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
 }
 
@@ -598,6 +618,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPedidosRoute: AuthenticatedPedidosRouteWithChildren,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
   AuthenticatedSosRoute: AuthenticatedSosRoute,
+  AuthenticatedTransporteRoute: AuthenticatedTransporteRoute,
   AuthenticatedPedidoConfirmadoPedidoIdRoute:
     AuthenticatedPedidoConfirmadoPedidoIdRoute,
 }
