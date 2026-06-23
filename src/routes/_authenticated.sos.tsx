@@ -210,11 +210,15 @@ function SOSPage() {
         .on(
           'postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'alertas_seguranca', filter: `bairro=eq.${usuario?.bairro}` },
-          (payload) => {
-            console.log('New alert received:', payload);
-            setAlerts(prev => [payload.new, ...prev]);
-            toast.warning("⚠️ Novo alerta no seu bairro!");
+          () => {
+            fetchAlerts();
+            toast.warning("🚨 Novo alerta na sua região!");
           }
+        )
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'alertas_seguranca', filter: `bairro=eq.${usuario?.bairro}` },
+          () => fetchAlerts()
         )
         .subscribe();
 
