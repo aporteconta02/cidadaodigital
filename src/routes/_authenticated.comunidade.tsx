@@ -980,7 +980,7 @@ function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
 
       <Dialog open={isNewOpen} onOpenChange={setIsNewOpen}>
         <DialogTrigger asChild>
-          <button className="fixed bottom-24 right-6 size-16 rounded-full bg-success text-white shadow-glow flex items-center justify-center active:scale-90 transition-transform z-40">
+          <button className="fixed bottom-6 right-6 size-16 rounded-full bg-success text-white shadow-glow flex items-center justify-center active:scale-90 transition-transform z-40">
             <Plus size={32} strokeWidth={3} />
           </button>
         </DialogTrigger>
