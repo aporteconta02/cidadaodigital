@@ -185,42 +185,50 @@ function RootComponent() {
         )}
         {/* App Header (Hidden on landing/auth) */}
         {!isPublicPage && (
-          <header className="sticky top-0 z-40 bg-bg-primary/80 backdrop-blur-xl px-4 py-4 border-b border-white/5">
-            <div className="flex flex-col gap-3 max-w-lg mx-auto">
-              <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold tracking-tighter font-space uppercase italic bg-gradient-hero bg-clip-text text-transparent">
-                  CIDADÃO<span className="">.</span><span className="">PLUS</span>
-                </h1>
-                <div className="flex items-center gap-3">
-                  <ThemeToggle />
-                  <Link 
-                    to="/sos"
-                    className="relative size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-transform active:scale-95 cursor-pointer"
-                  >
-                    <ShieldAlert size={20} className="text-text-primary" />
-                    <div className="absolute -top-1 -right-1 size-5 bg-danger rounded-full flex items-center justify-center text-[10px] font-bold text-white border-2 border-bg-primary">
-                      3
-                    </div>
-                  </Link>
-                  <div className="size-10 rounded-full bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center transition-transform active:scale-95 cursor-pointer">
-                    {profile?.avatar_url ? (
-                      <img src={profile.avatar_url} alt={profile.nome} className="size-full object-cover" />
-                    ) : (
-                      <span className="text-text-primary font-bold text-xs">
-                        {profile?.nome?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'CP'}
-                      </span>
-                    )}
-                  </div>
+          <header className="sticky top-0 z-40 bg-bg-primary/80 backdrop-blur-xl px-4 py-3 border-b border-white/5">
+            <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
+              {/* Left: avatar + greeting */}
+              <Link
+                to="/perfil"
+                className="flex items-center gap-2 active:scale-95 transition-transform min-w-0"
+              >
+                <div className="size-10 rounded-full overflow-hidden flex items-center justify-center bg-bg-elevated ring-2 ring-primary shadow-[0_0_12px_var(--primary-glow)]">
+                  {profile?.avatar_url ? (
+                    <img src={profile.avatar_url} alt={profile.nome} className="size-full object-cover" />
+                  ) : (
+                    <span className="text-text-primary font-bold text-xs">
+                      {profile?.nome?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'CP'}
+                    </span>
+                  )}
                 </div>
+                <div className="flex flex-col leading-tight min-w-0">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Olá,</span>
+                  <span className="text-xs font-bold text-text-primary truncate max-w-[110px]">
+                    {profile?.nome?.split(' ')[0] || 'Cidadão'}!
+                  </span>
+                </div>
+              </Link>
+
+              {/* Center: brand */}
+              <Link to="/dashboard" className="flex-1 text-center">
+                <h1 className="text-base sm:text-lg font-bold tracking-tighter font-space uppercase italic bg-gradient-hero bg-clip-text text-transparent">
+                  CIDADÃO<span>+</span>
+                </h1>
+              </Link>
+
+              {/* Right: theme + SOS */}
+              <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <Link
+                  to="/sos"
+                  className="relative size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-transform active:scale-95 cursor-pointer"
+                >
+                  <ShieldAlert size={18} className="text-text-primary" />
+                </Link>
               </div>
-              <button className="flex items-center gap-1.5 w-fit px-3 py-1.5 rounded-full bg-white/5 border border-white/10 active:scale-95 transition-transform">
-                <MapPin size={14} className="text-primary" />
-                <span className="micro-text font-bold text-text-primary uppercase tracking-wider">
-                  {profile?.cidade && profile?.bairro ? `${profile.cidade}, ${profile.bairro}` : (profile?.cidade || profile?.bairro || 'Localização')}
-                </span>
-              </button>
             </div>
           </header>
+
         )}
 
         {/* Main Content Area */}
