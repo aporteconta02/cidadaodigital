@@ -177,7 +177,7 @@ function MinhaLojaPage() {
   const pedidosPendentes = pedidos.filter(p => ['pendente', 'confirmado', 'preparando'].includes(p.status)).length;
 
   return (
-    <div className="min-h-screen bg-bg-primary pb-32 px-4 pt-6">
+    <div className="min-h-screen bg-bg-primary pb-8 px-4 pt-6">
       <Link to="/perfil" className="inline-flex items-center gap-2 text-text-muted mb-4"><ChevronLeft size={18} /> Voltar</Link>
       <h1 className="text-2xl font-black mb-1">{loja.nome}</h1>
       <p className="text-xs text-text-muted uppercase font-bold mb-6">{loja.categoria} · {loja.aprovada ? '✅ Aprovada' : '⏳ Aguardando aprovação'}</p>
