@@ -598,6 +598,17 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
                     <span className="text-[10px] font-black uppercase tracking-widest text-warning bg-warning/10 px-3 py-2 rounded-full">R$ {Number(event.preco_ingresso).toFixed(2).replace('.', ',')}</span>
                   )}
                   <button
+                    onClick={() => toggleConfirmar(event.id)}
+                    className={cn(
+                      "h-10 px-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 active:scale-95 transition-all border",
+                      confirmados.has(event.id)
+                        ? "bg-success text-white border-success"
+                        : "bg-primary/10 text-primary border-primary/20"
+                    )}
+                  >
+                    <CheckCircle2 size={14} /> {confirmados.has(event.id) ? 'Confirmado' : 'Eu vou'}
+                  </button>
+                  <button
                     onClick={async () => {
                       const url = `${window.location.origin}/comunidade?tab=eventos`;
                       const text = `${event.titulo} — ${format(new Date(event.data_evento), "dd/MM 'às' HH:mm", { locale: ptBR })} · ${event.local_nome || ''}`;
