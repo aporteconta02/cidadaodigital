@@ -263,25 +263,31 @@ function SOSPage() {
     setLoading(false);
   };
 
-  const startPress = () => {
+  const startPress = (e?: React.PointerEvent | React.MouseEvent | React.TouchEvent) => {
+    e?.preventDefault?.();
     if (pressInterval.current) clearInterval(pressInterval.current);
     setSosProgress(0);
     pressInterval.current = setInterval(() => {
       setSosProgress(prev => {
         if (prev >= 100) {
-          clearInterval(pressInterval.current!);
-          pressInterval.current = null;
+          if (pressInterval.current) {
+            clearInterval(pressInterval.current);
+            pressInterval.current = null;
+          }
           triggerSOS();
           return 100;
         }
-        return prev + 2.5;
+        return prev + 3.5;
       });
     }, 50);
   };
 
   const stopPress = () => {
-    if (pressInterval.current) clearInterval(pressInterval.current);
-    if (sosProgress < 100) setSosProgress(0);
+    if (pressInterval.current) {
+      clearInterval(pressInterval.current);
+      pressInterval.current = null;
+    }
+    setSosProgress((p) => (p >= 100 ? p : 0));
   };
 
   const triggerSOS = async () => {
