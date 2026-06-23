@@ -87,6 +87,29 @@ function DashboardPage() {
     fetchData();
   }, [usuario]);
 
+  // Realtime: motoristas online
+  useEffect(() => {
+    const channel = supabase
+      .channel('drivers-online-home')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'drivers' },
+        async () => {
+          const { count } = await supabase
+            .from('drivers')
+            .select('id', { count: 'exact', head: true })
+            .eq('online', true)
+            .eq('status_aprovacao', 'aprovado');
+          setData((prev: any) => ({ ...prev, driversOnline: count || 0 }));
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Bom dia";
