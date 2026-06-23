@@ -973,9 +973,23 @@ function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
                 </div>
                 <h5 className="text-base font-bold text-white leading-snug">{post.titulo}</h5>
                 <p className="text-sm text-text-muted line-clamp-3 leading-relaxed">{post.texto}</p>
-                <div className="flex items-center gap-1.5 text-text-muted/60">
-                  <MapPin size={10} />
-                  <span className="text-[9px] font-bold uppercase tracking-widest">{post.bairro}</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-text-muted/60">
+                    <MapPin size={10} />
+                    <span className="text-[9px] font-bold uppercase tracking-widest">{post.bairro}</span>
+                  </div>
+                  <button
+                    onClick={() => toggleCurtir(post.id)}
+                    className={cn(
+                      "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all active:scale-95",
+                      curtidas[post.id]
+                        ? "bg-danger/15 text-danger border-danger/30"
+                        : "bg-white/5 text-text-muted border-white/5"
+                    )}
+                  >
+                    <Heart size={12} className={cn(curtidas[post.id] && "fill-danger")} />
+                    {curtidas[post.id] ? 'Curtido' : 'Curtir'}
+                  </button>
                 </div>
               </div>
               {post.foto_url && (
