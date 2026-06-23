@@ -205,6 +205,71 @@ export type Database = {
           },
         ]
       }
+      drivers: {
+        Row: {
+          avaliacao_media: number
+          chave_pix: string
+          cnh_foto_url: string
+          created_at: string
+          foto_url: string | null
+          id: string
+          modelo_veiculo: string
+          motivo_recusa: string | null
+          nome_completo: string
+          online: boolean
+          placa: string
+          status_aprovacao: Database["public"]["Enums"]["driver_approval_status"]
+          tipo_veiculo: Database["public"]["Enums"]["driver_vehicle_type"]
+          total_corridas: number
+          updated_at: string
+          usuario_id: string
+        }
+        Insert: {
+          avaliacao_media?: number
+          chave_pix: string
+          cnh_foto_url: string
+          created_at?: string
+          foto_url?: string | null
+          id?: string
+          modelo_veiculo: string
+          motivo_recusa?: string | null
+          nome_completo: string
+          online?: boolean
+          placa: string
+          status_aprovacao?: Database["public"]["Enums"]["driver_approval_status"]
+          tipo_veiculo: Database["public"]["Enums"]["driver_vehicle_type"]
+          total_corridas?: number
+          updated_at?: string
+          usuario_id: string
+        }
+        Update: {
+          avaliacao_media?: number
+          chave_pix?: string
+          cnh_foto_url?: string
+          created_at?: string
+          foto_url?: string | null
+          id?: string
+          modelo_veiculo?: string
+          motivo_recusa?: string | null
+          nome_completo?: string
+          online?: boolean
+          placa?: string
+          status_aprovacao?: Database["public"]["Enums"]["driver_approval_status"]
+          tipo_veiculo?: Database["public"]["Enums"]["driver_vehicle_type"]
+          total_corridas?: number
+          updated_at?: string
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drivers_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: true
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       eventos: {
         Row: {
           aprovado: boolean | null
@@ -680,6 +745,163 @@ export type Database = {
           },
         ]
       }
+      ride_offers: {
+        Row: {
+          created_at: string
+          driver_id: string
+          id: string
+          request_id: string
+          status: Database["public"]["Enums"]["ride_offer_status"]
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          created_at?: string
+          driver_id: string
+          id?: string
+          request_id: string
+          status?: Database["public"]["Enums"]["ride_offer_status"]
+          updated_at?: string
+          valor: number
+        }
+        Update: {
+          created_at?: string
+          driver_id?: string
+          id?: string
+          request_id?: string
+          status?: Database["public"]["Enums"]["ride_offer_status"]
+          updated_at?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ride_offers_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ride_offers_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "ride_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ride_ratings: {
+        Row: {
+          avaliado_id: string
+          avaliador_id: string
+          comentario: string | null
+          created_at: string
+          estrelas: number
+          id: string
+          request_id: string
+          tipo: Database["public"]["Enums"]["ride_rating_type"]
+        }
+        Insert: {
+          avaliado_id: string
+          avaliador_id: string
+          comentario?: string | null
+          created_at?: string
+          estrelas: number
+          id?: string
+          request_id: string
+          tipo: Database["public"]["Enums"]["ride_rating_type"]
+        }
+        Update: {
+          avaliado_id?: string
+          avaliador_id?: string
+          comentario?: string | null
+          created_at?: string
+          estrelas?: number
+          id?: string
+          request_id?: string
+          tipo?: Database["public"]["Enums"]["ride_rating_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ride_ratings_avaliado_id_fkey"
+            columns: ["avaliado_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ride_ratings_avaliador_id_fkey"
+            columns: ["avaliador_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ride_ratings_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "ride_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ride_requests: {
+        Row: {
+          cliente_id: string
+          created_at: string
+          destino: string
+          driver_aceito_id: string | null
+          id: string
+          observacao: string | null
+          oferta_aceita_id: string | null
+          origem: string
+          status: Database["public"]["Enums"]["ride_request_status"]
+          tipo_servico: Database["public"]["Enums"]["ride_service_type"]
+          updated_at: string
+        }
+        Insert: {
+          cliente_id: string
+          created_at?: string
+          destino: string
+          driver_aceito_id?: string | null
+          id?: string
+          observacao?: string | null
+          oferta_aceita_id?: string | null
+          origem: string
+          status?: Database["public"]["Enums"]["ride_request_status"]
+          tipo_servico: Database["public"]["Enums"]["ride_service_type"]
+          updated_at?: string
+        }
+        Update: {
+          cliente_id?: string
+          created_at?: string
+          destino?: string
+          driver_aceito_id?: string | null
+          id?: string
+          observacao?: string | null
+          oferta_aceita_id?: string | null
+          origem?: string
+          status?: Database["public"]["Enums"]["ride_request_status"]
+          tipo_servico?: Database["public"]["Enums"]["ride_service_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ride_requests_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ride_requests_driver_aceito_id_fkey"
+            columns: ["driver_aceito_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       telefones_uteis: {
         Row: {
           categoria: string
@@ -829,6 +1051,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_usuario_id: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -837,9 +1060,16 @@ export type Database = {
         Returns: boolean
       }
       increment_confirmacoes: { Args: { alert_id: string }; Returns: undefined }
+      is_approved_driver: { Args: { _usuario_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      driver_approval_status: "pendente" | "aprovado" | "recusado"
+      driver_vehicle_type: "carro" | "moto" | "ambos"
+      ride_offer_status: "pendente" | "aceita" | "recusada"
+      ride_rating_type: "cliente_para_driver" | "driver_para_cliente"
+      ride_request_status: "aberta" | "aceita" | "concluida" | "cancelada"
+      ride_service_type: "carro" | "moto" | "entrega"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -968,6 +1198,12 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      driver_approval_status: ["pendente", "aprovado", "recusado"],
+      driver_vehicle_type: ["carro", "moto", "ambos"],
+      ride_offer_status: ["pendente", "aceita", "recusada"],
+      ride_rating_type: ["cliente_para_driver", "driver_para_cliente"],
+      ride_request_status: ["aberta", "aceita", "concluida", "cancelada"],
+      ride_service_type: ["carro", "moto", "entrega"],
     },
   },
 } as const
