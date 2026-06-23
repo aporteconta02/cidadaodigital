@@ -87,6 +87,29 @@ function DashboardPage() {
     fetchData();
   }, [usuario]);
 
+  // Realtime: motoristas online
+  useEffect(() => {
+    const channel = supabase
+      .channel('drivers-online-home')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'drivers' },
+        async () => {
+          const { count } = await supabase
+            .from('drivers')
+            .select('id', { count: 'exact', head: true })
+            .eq('online', true)
+            .eq('status_aprovacao', 'aprovado');
+          setData((prev: any) => ({ ...prev, driversOnline: count || 0 }));
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Bom dia";
@@ -112,7 +135,7 @@ function DashboardPage() {
   );
 
   return (
-    <div className="pb-32 bg-bg-primary min-h-screen animate-in fade-in duration-500">
+    <div className="pb-8 bg-bg-primary min-h-screen animate-in fade-in duration-500">
       {/* Welcome gradient banner */}
       <section className="px-4 pt-5">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-hero p-6 shadow-[0_12px_40px_var(--primary-glow)]">
