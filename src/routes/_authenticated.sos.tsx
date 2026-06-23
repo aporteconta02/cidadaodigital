@@ -176,10 +176,11 @@ function SOSPage() {
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(!!search?.new);
   const [newAlertType, setNewAlertType] = useState<string>('suspeito');
   const [newAlertDesc, setNewAlertDesc] = useState('');
-  const [activeTab, setActiveTab] = useState<'alertas' | 'contatos'>('alertas');
+  const [activeTab, setActiveTab] = useState<'todos' | 'meus' | 'resolvidos' | 'contatos'>('todos');
   const [resolveTarget, setResolveTarget] = useState<any>(null);
   const [resolveText, setResolveText] = useState('');
   const [activating, setActivating] = useState(false);
+  const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
   const pressInterval = useRef<NodeJS.Timeout | null>(null);
 
   const activatePlusFn = useServerFn(activatePlusSubscription);
