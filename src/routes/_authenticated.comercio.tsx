@@ -160,7 +160,7 @@ function ComercioPage() {
               </div>
               <div className="flex gap-4 px-4 overflow-x-auto no-scrollbar pb-2">
                 {lojas.map((store) => (
-                  <Link key={store.id} to={`/comercio/loja/${store.id}`} className="flex-[0_0_200px] group">
+                  <Link key={store.id} to="/comercio/loja/$lojaId" params={{ lojaId: store.id }} className="flex-[0_0_200px] group">
                     <div className="h-[100px] rounded-t-xl overflow-hidden bg-white/5">
                       {store.logo_url
                         ? <img src={store.logo_url} className="w-full h-full object-cover" alt={store.nome} />
