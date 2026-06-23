@@ -112,14 +112,17 @@ function PerfilPage() {
 
       if (error) throw error;
 
-      const { data: { publicUrl } } = supabase.storage
+      // Bucket é privado — usar signed URL de longa duração (1 ano)
+      const { data: signed, error: signErr } = await supabase.storage
         .from('avatares')
-        .getPublicUrl(data.path);
+        .createSignedUrl(data.path, 60 * 60 * 24 * 365);
+      if (signErr || !signed) throw signErr || new Error('Falha ao gerar URL do avatar');
 
       const { error: updateError } = await supabase
         .from('usuarios')
-        .update({ avatar_url: publicUrl })
+        .update({ avatar_url: signed.signedUrl })
         .eq('id', usuario.id);
+
 
       if (updateError) throw updateError;
       
