@@ -118,16 +118,23 @@ function AuthPage() {
 
       if (authError) {
         console.error("Erro no signUp:", authError);
-        if (authError.message.includes('already registered') || authError.message.includes('already been registered')) {
+        const msg = (authError.message || '').toLowerCase();
+        const code = (authError as any).code || '';
+        if (msg.includes('already registered') || msg.includes('already been registered') || code === 'user_already_exists') {
           setErro('Este e-mail já está cadastrado. Faça login.');
-        } else if (authError.message.includes('Password')) {
+        } else if (code === 'weak_password' || msg.includes('pwned') || msg.includes('compromised') || msg.includes('weak password')) {
+          setErro('Essa senha é muito comum/vazada. Use uma senha mais forte (8+ caracteres com letras, números e símbolos).');
+        } else if (msg.includes('password')) {
           setErro('Senha inválida. Use ao menos 6 caracteres.');
+        } else if (msg.includes('invalid') && msg.includes('email')) {
+          setErro('E-mail inválido. Verifique e tente novamente.');
         } else {
           setErro('Erro ao criar conta: ' + authError.message);
         }
         setLoading(false);
         return;
       }
+
 
       if (!authData || !authData.user) {
         setErro('Erro ao criar conta. Tente novamente.');
