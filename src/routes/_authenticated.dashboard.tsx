@@ -11,7 +11,8 @@ import {
   ChevronRight,
   MapPin,
   ShieldAlert,
-  AlertCircle
+  AlertCircle,
+  Car
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
