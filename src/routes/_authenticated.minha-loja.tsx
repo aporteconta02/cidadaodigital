@@ -244,7 +244,7 @@ function MinhaLojaPage() {
                   <span className={cn("text-[9px] font-black uppercase px-2 py-0.5 rounded", STATUS_COLOR[p.status])}>{p.status}</span>
                 </div>
               </div>
-              <Link to={`/pedidos/${p.id}`} className="text-[10px] text-primary uppercase font-bold">Ver detalhes →</Link>
+              <Link to="/pedidos/$pedidoId" params={{ pedidoId: p.id }} className="text-[10px] text-primary uppercase font-bold">Ver detalhes →</Link>
               {STATUS_FLOW[p.status]?.length > 0 && (
                 <div className="flex gap-2 mt-3 flex-wrap">
                   {STATUS_FLOW[p.status].map(s => (
