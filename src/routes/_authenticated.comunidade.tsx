@@ -650,7 +650,8 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
                     setSubmitting(false);
                     return toast.error("Falha ao enviar o banner. Tente sem imagem.");
                   }
-                  banner_url = supabase.storage.from('banners').getPublicUrl(up.data.path).data.publicUrl;
+                  const { data: signed } = await supabase.storage.from('banners').createSignedUrl(up.data.path, 60 * 60 * 24 * 365);
+                  banner_url = signed?.signedUrl || null;
                 }
                 const { error } = await supabase.from('eventos').insert({
                   usuario_id: usuario.id,
