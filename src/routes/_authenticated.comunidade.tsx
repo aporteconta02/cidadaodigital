@@ -2,7 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { 
   Plus, MapPin, Clock, Megaphone, Calendar, ClipboardList, Vote, Phone, 
   Search, CheckCircle2, AlertCircle, ChevronRight, Share2, Camera, Image,
-  X, Check, ArrowLeft, Filter, TrendingUp, Users, Info, MessageSquare, Heart
+  X, Check, ArrowLeft, Filter, TrendingUp, Users, Info, MessageSquare, Heart,
+  Building2, FileText, DollarSign, Car, Vote as VoteIcon, Siren
 } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -1070,9 +1071,28 @@ function TelefonesTab() {
           <p className="text-sm font-bold uppercase tracking-widest">Nenhum telefone encontrado</p>
         </div>
       ) : (
-        Object.entries(groups).map(([cat, items]: [string, any]) => (
+        Object.entries(groups).map(([cat, items]: [string, any]) => {
+          const catIcons: Record<string, any> = {
+            'Prefeitura Municipal': Building2,
+            'Serviços ao Cidadão': FileText,
+            'Tributos e Finanças': DollarSign,
+            'Trânsito': Car,
+            'Eleições': VoteIcon,
+            'Emergências': Siren,
+          };
+          const Icon = catIcons[cat] || Phone;
+          const isEmergency = cat === 'Emergências';
+          return (
           <div key={cat} className="space-y-4">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted italic px-2">{cat}</h3>
+            <div className="flex items-center gap-3 px-2">
+              <div className={cn(
+                "size-10 rounded-2xl flex items-center justify-center",
+                isEmergency ? "bg-danger/15 text-danger" : "bg-primary/15 text-primary"
+              )}>
+                <Icon size={18} />
+              </div>
+              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white">{cat}</h3>
+            </div>
             <div className="space-y-3">
               {items.map((item: any) => (
                 <div 
@@ -1082,18 +1102,19 @@ function TelefonesTab() {
                     item.destaque && "border-l-4 border-l-danger bg-danger/5"
                   )}
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="size-12 rounded-2xl bg-white/5 flex items-center justify-center">
+                  <div className="flex items-center gap-4 min-w-0 flex-1">
+                    <div className="size-12 rounded-2xl bg-white/5 flex items-center justify-center shrink-0">
                       <Phone size={20} className={item.destaque ? "text-danger" : "text-primary"} />
                     </div>
-                    <div>
-                      <h4 className="font-bold text-base text-white leading-none mb-1">{item.nome}</h4>
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-base text-white leading-tight mb-1 truncate">{item.nome}</h4>
                       <p className="text-xs text-text-muted font-bold uppercase tracking-widest">{item.telefone}</p>
                     </div>
                   </div>
                   <a 
                     href={`tel:${item.telefone.replace(/\D/g,'')}`}
-                    className="bg-success text-white size-12 rounded-full flex items-center justify-center shadow-[0_8px_20px_rgba(0,214,143,0.3)] active:scale-90 transition-transform"
+                    aria-label={`Ligar para ${item.nome}`}
+                    className="bg-success text-white size-12 rounded-full flex items-center justify-center shadow-[0_8px_20px_rgba(0,214,143,0.3)] active:scale-90 transition-transform shrink-0 ml-2"
                   >
                     <Phone size={20} fill="currentColor" />
                   </a>
@@ -1101,7 +1122,8 @@ function TelefonesTab() {
               ))}
             </div>
           </div>
-        ))
+          );
+        })
       )}
     </div>
   );
