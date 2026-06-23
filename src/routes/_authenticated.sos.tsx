@@ -306,12 +306,14 @@ function SOSPage() {
   };
 
   const createAlert = async () => {
-    if (!usuario?.id) return;
-    
+    if (!usuario?.id) return toast.error("Faça login para criar um alerta.");
+    if (!usuario.bairro) return toast.error("Cadastre seu bairro no perfil antes de criar alertas.");
+    if (!newAlertType) return toast.error("Escolha o tipo de ocorrência.");
+
     const { error } = await supabase.from('alertas_seguranca').insert({
       usuario_id: usuario.id,
       tipo: newAlertType,
-      descricao: newAlertDesc,
+      descricao: newAlertDesc?.trim() || null,
       latitude: userLocation[0],
       longitude: userLocation[1],
       bairro: usuario.bairro,
@@ -319,9 +321,10 @@ function SOSPage() {
     });
 
     if (error) {
-      toast.error("Erro ao criar alerta.");
+      console.error("Erro ao criar alerta:", error);
+      toast.error(error.message || "Não foi possível publicar o alerta. Tente novamente.");
     } else {
-      toast.success("Alerta criado com sucesso!");
+      toast.success("Alerta criado! Seus vizinhos foram avisados 🛡️");
       setIsAlertModalOpen(false);
       setNewAlertDesc('');
       fetchAlerts();
