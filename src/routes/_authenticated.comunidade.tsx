@@ -501,6 +501,18 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
   const [submitting, setSubmitting] = useState(false);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [form, setForm] = useState({ titulo: '', descricao: '', data_evento: '', local_nome: '', endereco: '', categoria: 'Cultura', gratuito: true, preco_ingresso: '' });
+  const [confirmados, setConfirmados] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem('eventos_confirmados') || '[]')); } catch { return new Set(); }
+  });
+  const toggleConfirmar = (id: string) => {
+    setConfirmados(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) { next.delete(id); toast.success('Presença cancelada'); }
+      else { next.add(id); toast.success('Presença confirmada! 🎉'); }
+      localStorage.setItem('eventos_confirmados', JSON.stringify([...next]));
+      return next;
+    });
+  };
 
   const fetchEventos = useCallback(async () => {
     setLoading(true);
