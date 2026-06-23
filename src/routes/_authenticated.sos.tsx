@@ -420,12 +420,13 @@ function SOSPage() {
   return (
     <div className="relative h-[calc(100vh-144px)] overflow-hidden flex flex-col">
       {/* Map Section (50%) */}
-      <div className="h-1/2 w-full relative">
+      <div className="h-[45%] w-full relative">
         <Map 
-          center={userLocation} 
-          zoom={15}
+          center={mapCenter ?? userLocation} 
+          zoom={mapCenter ? 17 : 15}
           markers={mapMarkers}
           onConfirmAlert={confirmAlert}
+          light
         />
         
         {/* Floating FAB Plus */}
