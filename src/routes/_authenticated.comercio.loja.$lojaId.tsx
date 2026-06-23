@@ -73,7 +73,7 @@ function LojaPage() {
             <div className="grid grid-cols-2 gap-4">
               {produtos.map((p) => (
                 <div key={p.id} className="bg-bg-card rounded-md border border-white/5 overflow-hidden">
-                  <Link to={`/comercio/produto/${p.id}`} className="aspect-square bg-white/5 block">
+                  <Link to="/comercio/produto/$produtoId" params={{ produtoId: p.id }} className="aspect-square bg-white/5 block">
                     {p.foto_url && <img src={p.foto_url} className="w-full h-full object-cover" alt={p.nome} />}
                   </Link>
                   <div className="p-3">
