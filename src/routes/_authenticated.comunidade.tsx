@@ -2,7 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { 
   Plus, MapPin, Clock, Megaphone, Calendar, ClipboardList, Vote, Phone, 
   Search, CheckCircle2, AlertCircle, ChevronRight, Share2, Camera, Image,
-  X, Check, ArrowLeft, Filter, TrendingUp, Users, Info, MessageSquare, Heart
+  X, Check, ArrowLeft, Filter, TrendingUp, Users, Info, MessageSquare, Heart,
+  Building2, FileText, DollarSign, Car, Vote as VoteIcon, Siren
 } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
