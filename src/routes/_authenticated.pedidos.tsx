@@ -51,7 +51,7 @@ function PedidosPage() {
       ) : (
         <div className="space-y-3">
           {pedidos.map(p => (
-            <Link key={p.id} to={`/pedidos/${p.id}`} className="flex items-center gap-3 p-4 bg-bg-card border border-white/5 rounded-lg">
+            <Link key={p.id} to="/pedidos/$pedidoId" params={{ pedidoId: p.id }} className="flex items-center gap-3 p-4 bg-bg-card border border-white/5 rounded-lg">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xs font-mono text-text-muted">#{p.id.slice(0, 8).toUpperCase()}</span>
