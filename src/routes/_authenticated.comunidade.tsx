@@ -180,8 +180,8 @@ function DenunciasTab({ autoOpen = false }: { autoOpen?: boolean }) {
         setSubmitting(false);
         return;
       }
-      const { data: { publicUrl } } = supabase.storage.from('fotos-denuncias').getPublicUrl(data.path);
-      uploadedUrl = publicUrl;
+      const { data: signed } = await supabase.storage.from('fotos-denuncias').createSignedUrl(data.path, 60 * 60 * 24 * 365);
+      uploadedUrl = signed?.signedUrl || '';
     }
 
     const { error } = await supabase.from('denuncias').insert({
