@@ -18,6 +18,7 @@ import {
   DollarSign,
   Star,
   Package,
+  Car,
   ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -68,6 +69,7 @@ function AdminLayout() {
     { label: "Usuários", icon: Users, path: "/admin/usuarios" },
     { label: "Lojas e Comércio", icon: ShoppingBag, path: "/admin/lojas", badge: pending.lojas },
     { label: "Pedidos", icon: Package, path: "/admin/pedidos" },
+    { label: "Transporte", icon: Car, path: "/admin/transporte" },
     { label: "Denúncias", icon: Megaphone, path: "/admin/denuncias", badge: pending.denuncias },
     { label: "Eventos", icon: Calendar, path: "/admin/eventos", badge: pending.eventos },
     { label: "Voz do Povo", icon: MessageSquare, path: "/admin/pesquisas" },

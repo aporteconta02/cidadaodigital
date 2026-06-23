@@ -16,6 +16,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
+import { Route as AdminTransporteRouteImport } from './routes/admin.transporte'
 import { Route as AdminTelefonesRouteImport } from './routes/admin.telefones'
 import { Route as AdminSegurancaRouteImport } from './routes/admin.seguranca'
 import { Route as AdminPesquisasRouteImport } from './routes/admin.pesquisas'
@@ -24,6 +25,7 @@ import { Route as AdminFinanceiroRouteImport } from './routes/admin.financeiro'
 import { Route as AdminEventosRouteImport } from './routes/admin.eventos'
 import { Route as AdminDenunciasRouteImport } from './routes/admin.denuncias'
 import { Route as AdminBannersRouteImport } from './routes/admin.banners'
+import { Route as AuthenticatedTransporteRouteImport } from './routes/_authenticated.transporte'
 import { Route as AuthenticatedSosRouteImport } from './routes/_authenticated.sos'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated.perfil'
 import { Route as AuthenticatedPedidosRouteImport } from './routes/_authenticated.pedidos'
@@ -71,6 +73,11 @@ const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
   path: '/usuarios',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminTransporteRoute = AdminTransporteRouteImport.update({
+  id: '/transporte',
+  path: '/transporte',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminTelefonesRoute = AdminTelefonesRouteImport.update({
   id: '/telefones',
   path: '/telefones',
@@ -110,6 +117,11 @@ const AdminBannersRoute = AdminBannersRouteImport.update({
   id: '/banners',
   path: '/banners',
   getParentRoute: () => AdminRoute,
+} as any)
+const AuthenticatedTransporteRoute = AuthenticatedTransporteRouteImport.update({
+  id: '/transporte',
+  path: '/transporte',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedSosRoute = AuthenticatedSosRouteImport.update({
   id: '/sos',
@@ -189,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/pedidos': typeof AuthenticatedPedidosRouteWithChildren
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
+  '/transporte': typeof AuthenticatedTransporteRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/denuncias': typeof AdminDenunciasRoute
   '/admin/eventos': typeof AdminEventosRoute
@@ -197,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/admin/pesquisas': typeof AdminPesquisasRoute
   '/admin/seguranca': typeof AdminSegurancaRoute
   '/admin/telefones': typeof AdminTelefonesRoute
+  '/admin/transporte': typeof AdminTransporteRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/': typeof AdminIndexRoute
   '/pedido-confirmado/$pedidoId': typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
@@ -216,6 +230,7 @@ export interface FileRoutesByTo {
   '/pedidos': typeof AuthenticatedPedidosRouteWithChildren
   '/perfil': typeof AuthenticatedPerfilRoute
   '/sos': typeof AuthenticatedSosRoute
+  '/transporte': typeof AuthenticatedTransporteRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/denuncias': typeof AdminDenunciasRoute
   '/admin/eventos': typeof AdminEventosRoute
@@ -224,6 +239,7 @@ export interface FileRoutesByTo {
   '/admin/pesquisas': typeof AdminPesquisasRoute
   '/admin/seguranca': typeof AdminSegurancaRoute
   '/admin/telefones': typeof AdminTelefonesRoute
+  '/admin/transporte': typeof AdminTransporteRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin': typeof AdminIndexRoute
   '/pedido-confirmado/$pedidoId': typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
@@ -246,6 +262,7 @@ export interface FileRoutesById {
   '/_authenticated/pedidos': typeof AuthenticatedPedidosRouteWithChildren
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/sos': typeof AuthenticatedSosRoute
+  '/_authenticated/transporte': typeof AuthenticatedTransporteRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/denuncias': typeof AdminDenunciasRoute
   '/admin/eventos': typeof AdminEventosRoute
@@ -254,6 +271,7 @@ export interface FileRoutesById {
   '/admin/pesquisas': typeof AdminPesquisasRoute
   '/admin/seguranca': typeof AdminSegurancaRoute
   '/admin/telefones': typeof AdminTelefonesRoute
+  '/admin/transporte': typeof AdminTransporteRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/': typeof AdminIndexRoute
   '/_authenticated/pedido-confirmado/$pedidoId': typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
@@ -276,6 +294,7 @@ export interface FileRouteTypes {
     | '/pedidos'
     | '/perfil'
     | '/sos'
+    | '/transporte'
     | '/admin/banners'
     | '/admin/denuncias'
     | '/admin/eventos'
@@ -284,6 +303,7 @@ export interface FileRouteTypes {
     | '/admin/pesquisas'
     | '/admin/seguranca'
     | '/admin/telefones'
+    | '/admin/transporte'
     | '/admin/usuarios'
     | '/admin/'
     | '/pedido-confirmado/$pedidoId'
@@ -303,6 +323,7 @@ export interface FileRouteTypes {
     | '/pedidos'
     | '/perfil'
     | '/sos'
+    | '/transporte'
     | '/admin/banners'
     | '/admin/denuncias'
     | '/admin/eventos'
@@ -311,6 +332,7 @@ export interface FileRouteTypes {
     | '/admin/pesquisas'
     | '/admin/seguranca'
     | '/admin/telefones'
+    | '/admin/transporte'
     | '/admin/usuarios'
     | '/admin'
     | '/pedido-confirmado/$pedidoId'
@@ -332,6 +354,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pedidos'
     | '/_authenticated/perfil'
     | '/_authenticated/sos'
+    | '/_authenticated/transporte'
     | '/admin/banners'
     | '/admin/denuncias'
     | '/admin/eventos'
@@ -340,6 +363,7 @@ export interface FileRouteTypes {
     | '/admin/pesquisas'
     | '/admin/seguranca'
     | '/admin/telefones'
+    | '/admin/transporte'
     | '/admin/usuarios'
     | '/admin/'
     | '/_authenticated/pedido-confirmado/$pedidoId'
@@ -407,6 +431,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsuariosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/transporte': {
+      id: '/admin/transporte'
+      path: '/transporte'
+      fullPath: '/admin/transporte'
+      preLoaderRoute: typeof AdminTransporteRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/telefones': {
       id: '/admin/telefones'
       path: '/telefones'
@@ -462,6 +493,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/banners'
       preLoaderRoute: typeof AdminBannersRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/_authenticated/transporte': {
+      id: '/_authenticated/transporte'
+      path: '/transporte'
+      fullPath: '/transporte'
+      preLoaderRoute: typeof AuthenticatedTransporteRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/sos': {
       id: '/_authenticated/sos'
@@ -586,6 +624,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPedidosRoute: typeof AuthenticatedPedidosRouteWithChildren
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
   AuthenticatedSosRoute: typeof AuthenticatedSosRoute
+  AuthenticatedTransporteRoute: typeof AuthenticatedTransporteRoute
   AuthenticatedPedidoConfirmadoPedidoIdRoute: typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
 }
 
@@ -598,6 +637,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPedidosRoute: AuthenticatedPedidosRouteWithChildren,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
   AuthenticatedSosRoute: AuthenticatedSosRoute,
+  AuthenticatedTransporteRoute: AuthenticatedTransporteRoute,
   AuthenticatedPedidoConfirmadoPedidoIdRoute:
     AuthenticatedPedidoConfirmadoPedidoIdRoute,
 }
@@ -615,6 +655,7 @@ interface AdminRouteChildren {
   AdminPesquisasRoute: typeof AdminPesquisasRoute
   AdminSegurancaRoute: typeof AdminSegurancaRoute
   AdminTelefonesRoute: typeof AdminTelefonesRoute
+  AdminTransporteRoute: typeof AdminTransporteRoute
   AdminUsuariosRoute: typeof AdminUsuariosRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -628,6 +669,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPesquisasRoute: AdminPesquisasRoute,
   AdminSegurancaRoute: AdminSegurancaRoute,
   AdminTelefonesRoute: AdminTelefonesRoute,
+  AdminTransporteRoute: AdminTransporteRoute,
   AdminUsuariosRoute: AdminUsuariosRoute,
   AdminIndexRoute: AdminIndexRoute,
 }

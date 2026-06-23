@@ -11,7 +11,8 @@ import {
   ChevronRight,
   MapPin,
   ShieldAlert,
-  AlertCircle
+  AlertCircle,
+  Car
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -30,6 +31,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 const QUICK_ACCESS = [
   { label: "Mercado", icon: <ShoppingBag size={24} />, color: "text-primary", to: "/comercio" },
+  { label: "Transporte", icon: <Car size={24} />, color: "text-primary", to: "/transporte" },
   { label: "Denúncias / Solicitações", icon: <Megaphone size={24} />, color: "text-secondary", to: "/comunidade", search: { tab: 'denuncias' } },
   { label: "Eventos", icon: <Calendar size={24} />, color: "text-success", to: "/comunidade", search: { tab: 'eventos' } },
   { label: "Vizinho Seguro", icon: <ShieldCheck size={24} />, color: "text-primary", to: "/sos" },
