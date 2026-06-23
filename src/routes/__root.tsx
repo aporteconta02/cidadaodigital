@@ -9,14 +9,15 @@ import {
   useLocation,
 } from "@tanstack/react-router";
 import React, { useEffect, type ReactNode } from "react";
-import { Home, ShoppingBag, Users, ShieldAlert, User, Plus, Megaphone, Calendar, ClipboardList, AlertCircle, MapPin, MessageSquare, Phone } from "lucide-react";
+import { Home, ShoppingBag, Users, ShieldAlert, User, Megaphone, Calendar, ClipboardList, Phone, Bus, Star, MapPin, Menu, X, Settings, LogOut } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/use-auth";
 import { CartProvider, useCart } from "@/hooks/use-cart";
-import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthStore } from "@/hooks/use-auth-store";
+
 
 
 import appCss from "../styles.css?url";
