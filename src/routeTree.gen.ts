@@ -16,6 +16,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
+import { Route as AdminTransporteRouteImport } from './routes/admin.transporte'
 import { Route as AdminTelefonesRouteImport } from './routes/admin.telefones'
 import { Route as AdminSegurancaRouteImport } from './routes/admin.seguranca'
 import { Route as AdminPesquisasRouteImport } from './routes/admin.pesquisas'
@@ -70,6 +71,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
   id: '/usuarios',
   path: '/usuarios',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTransporteRoute = AdminTransporteRouteImport.update({
+  id: '/transporte',
+  path: '/transporte',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminTelefonesRoute = AdminTelefonesRouteImport.update({
@@ -204,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/admin/pesquisas': typeof AdminPesquisasRoute
   '/admin/seguranca': typeof AdminSegurancaRoute
   '/admin/telefones': typeof AdminTelefonesRoute
+  '/admin/transporte': typeof AdminTransporteRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/': typeof AdminIndexRoute
   '/pedido-confirmado/$pedidoId': typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
@@ -232,6 +239,7 @@ export interface FileRoutesByTo {
   '/admin/pesquisas': typeof AdminPesquisasRoute
   '/admin/seguranca': typeof AdminSegurancaRoute
   '/admin/telefones': typeof AdminTelefonesRoute
+  '/admin/transporte': typeof AdminTransporteRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin': typeof AdminIndexRoute
   '/pedido-confirmado/$pedidoId': typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
@@ -263,6 +271,7 @@ export interface FileRoutesById {
   '/admin/pesquisas': typeof AdminPesquisasRoute
   '/admin/seguranca': typeof AdminSegurancaRoute
   '/admin/telefones': typeof AdminTelefonesRoute
+  '/admin/transporte': typeof AdminTransporteRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/': typeof AdminIndexRoute
   '/_authenticated/pedido-confirmado/$pedidoId': typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
@@ -294,6 +303,7 @@ export interface FileRouteTypes {
     | '/admin/pesquisas'
     | '/admin/seguranca'
     | '/admin/telefones'
+    | '/admin/transporte'
     | '/admin/usuarios'
     | '/admin/'
     | '/pedido-confirmado/$pedidoId'
@@ -322,6 +332,7 @@ export interface FileRouteTypes {
     | '/admin/pesquisas'
     | '/admin/seguranca'
     | '/admin/telefones'
+    | '/admin/transporte'
     | '/admin/usuarios'
     | '/admin'
     | '/pedido-confirmado/$pedidoId'
@@ -352,6 +363,7 @@ export interface FileRouteTypes {
     | '/admin/pesquisas'
     | '/admin/seguranca'
     | '/admin/telefones'
+    | '/admin/transporte'
     | '/admin/usuarios'
     | '/admin/'
     | '/_authenticated/pedido-confirmado/$pedidoId'
@@ -417,6 +429,13 @@ declare module '@tanstack/react-router' {
       path: '/usuarios'
       fullPath: '/admin/usuarios'
       preLoaderRoute: typeof AdminUsuariosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/transporte': {
+      id: '/admin/transporte'
+      path: '/transporte'
+      fullPath: '/admin/transporte'
+      preLoaderRoute: typeof AdminTransporteRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/telefones': {
@@ -636,6 +655,7 @@ interface AdminRouteChildren {
   AdminPesquisasRoute: typeof AdminPesquisasRoute
   AdminSegurancaRoute: typeof AdminSegurancaRoute
   AdminTelefonesRoute: typeof AdminTelefonesRoute
+  AdminTransporteRoute: typeof AdminTransporteRoute
   AdminUsuariosRoute: typeof AdminUsuariosRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -649,6 +669,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPesquisasRoute: AdminPesquisasRoute,
   AdminSegurancaRoute: AdminSegurancaRoute,
   AdminTelefonesRoute: AdminTelefonesRoute,
+  AdminTransporteRoute: AdminTransporteRoute,
   AdminUsuariosRoute: AdminUsuariosRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
