@@ -73,7 +73,7 @@ function ComercioPage() {
   }, [activeCategory, search]);
 
   return (
-    <div className="pb-32 animate-in fade-in duration-500 bg-bg-primary min-h-screen">
+    <div className="pb-8 animate-in fade-in duration-500 bg-bg-primary min-h-screen">
       <header className="px-4 pt-4 mb-4">
         <div className="relative group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
