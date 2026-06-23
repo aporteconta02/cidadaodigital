@@ -245,11 +245,10 @@ function SOSPage() {
     setLoading(true);
     const { data, error } = await supabase
       .from('alertas_seguranca')
-      .select('*')
+      .select('*, autor:usuarios!alertas_seguranca_usuario_id_fkey(nome, avatar_url, bairro)')
       .eq('bairro', usuario.bairro)
-      .eq('ativo', true)
-      .gt('expira_em', new Date().toISOString())
-      .order('criado_em', { ascending: false });
+      .order('criado_em', { ascending: false })
+      .limit(200);
 
     if (error) {
       console.error("Error fetching alerts:", error);
