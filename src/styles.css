@@ -172,9 +172,8 @@ html.light {
 
 
 
-.bottom-nav-height {
-  height: 72px;
-}
+
+
 
 /* Safe-area utilities (iPhone notch / Android gesture bar) */
 .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
