@@ -299,7 +299,7 @@ function DenunciasTab({ autoOpen = false }: { autoOpen?: boolean }) {
 
       <Dialog open={isNewModalOpen} onOpenChange={setIsNewModalOpen}>
         <DialogTrigger asChild>
-          <button className="fixed bottom-24 right-6 size-16 rounded-full bg-primary text-white shadow-glow flex items-center justify-center active:scale-90 transition-transform z-40">
+          <button className="fixed bottom-6 right-6 size-16 rounded-full bg-primary text-white shadow-glow flex items-center justify-center active:scale-90 transition-transform z-40">
             <Plus size={32} strokeWidth={3} />
           </button>
         </DialogTrigger>
@@ -631,7 +631,7 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
 
       <Dialog open={isNewOpen} onOpenChange={setIsNewOpen}>
         <DialogTrigger asChild>
-          <button className="fixed bottom-24 right-6 size-16 rounded-full bg-secondary text-white shadow-glow flex items-center justify-center active:scale-90 transition-transform z-40">
+          <button className="fixed bottom-6 right-6 size-16 rounded-full bg-secondary text-white shadow-glow flex items-center justify-center active:scale-90 transition-transform z-40">
             <Plus size={32} strokeWidth={3} />
           </button>
         </DialogTrigger>
@@ -891,6 +891,16 @@ function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ titulo: '', texto: '', tipo: 'geral' });
   const [foto, setFoto] = useState<File | null>(null);
+  const [curtidas, setCurtidas] = useState<Record<string, boolean>>(() => {
+    try { return JSON.parse(localStorage.getItem('mural_curtidas') || '{}'); } catch { return {}; }
+  });
+  const toggleCurtir = (id: string) => {
+    setCurtidas(prev => {
+      const next = { ...prev, [id]: !prev[id] };
+      localStorage.setItem('mural_curtidas', JSON.stringify(next));
+      return next;
+    });
+  };
 
   const categories: Array<{ label: string, value: string }> = [
     { label: 'Todos', value: 'todos' },
@@ -963,9 +973,23 @@ function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
                 </div>
                 <h5 className="text-base font-bold text-white leading-snug">{post.titulo}</h5>
                 <p className="text-sm text-text-muted line-clamp-3 leading-relaxed">{post.texto}</p>
-                <div className="flex items-center gap-1.5 text-text-muted/60">
-                  <MapPin size={10} />
-                  <span className="text-[9px] font-bold uppercase tracking-widest">{post.bairro}</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-text-muted/60">
+                    <MapPin size={10} />
+                    <span className="text-[9px] font-bold uppercase tracking-widest">{post.bairro}</span>
+                  </div>
+                  <button
+                    onClick={() => toggleCurtir(post.id)}
+                    className={cn(
+                      "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all active:scale-95",
+                      curtidas[post.id]
+                        ? "bg-danger/15 text-danger border-danger/30"
+                        : "bg-white/5 text-text-muted border-white/5"
+                    )}
+                  >
+                    <Heart size={12} className={cn(curtidas[post.id] && "fill-danger")} />
+                    {curtidas[post.id] ? 'Curtido' : 'Curtir'}
+                  </button>
                 </div>
               </div>
               {post.foto_url && (
@@ -980,7 +1004,7 @@ function MuralTab({ autoOpen = false }: { autoOpen?: boolean }) {
 
       <Dialog open={isNewOpen} onOpenChange={setIsNewOpen}>
         <DialogTrigger asChild>
-          <button className="fixed bottom-24 right-6 size-16 rounded-full bg-success text-white shadow-glow flex items-center justify-center active:scale-90 transition-transform z-40">
+          <button className="fixed bottom-6 right-6 size-16 rounded-full bg-success text-white shadow-glow flex items-center justify-center active:scale-90 transition-transform z-40">
             <Plus size={32} strokeWidth={3} />
           </button>
         </DialogTrigger>
