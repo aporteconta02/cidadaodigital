@@ -25,6 +25,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 function NotFoundComponent() {
   return (
@@ -181,6 +182,7 @@ function RootComponent() {
 
 
   return (
+    <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <CartProvider>
@@ -314,6 +316,7 @@ function RootComponent() {
         </CartProvider>
       </AuthProvider>
     </QueryClientProvider>
+    </ErrorBoundary>
 );
 }
 
