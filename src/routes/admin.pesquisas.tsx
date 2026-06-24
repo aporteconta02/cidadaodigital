@@ -47,7 +47,7 @@ function AdminPesquisas() {
   const [newPesquisa, setNewPesquisa] = useState({
     titulo: "",
     descricao: "",
-    categoria: "Geral",
+    categoria: "geral",
     tipo: "unica",
     encerra_em: format(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd'),
     opcoes: ["", ""]
@@ -86,7 +86,8 @@ function AdminPesquisas() {
     });
 
     if (error) {
-      toast.error("Erro ao criar pesquisa");
+      console.error("Erro ao criar pesquisa:", error);
+      toast.error(`Erro ao criar pesquisa: ${error.message}`);
     } else {
       toast.success("Pesquisa publicada!");
       setShowCreateModal(false);
@@ -94,7 +95,7 @@ function AdminPesquisas() {
       setNewPesquisa({
         titulo: "",
         descricao: "",
-        categoria: "Geral",
+        categoria: "geral",
         tipo: "unica",
         encerra_em: format(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd'),
         opcoes: ["", ""]
