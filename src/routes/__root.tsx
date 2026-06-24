@@ -316,6 +316,7 @@ function RootComponent() {
         </CartProvider>
       </AuthProvider>
     </QueryClientProvider>
+    </ErrorBoundary>
 );
 }
 
