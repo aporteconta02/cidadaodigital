@@ -182,6 +182,7 @@ function RootComponent() {
 
 
   return (
+    <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <CartProvider>
