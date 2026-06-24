@@ -291,23 +291,44 @@ function SOSPage() {
   };
 
   const triggerSOS = async () => {
-    if (!usuario?.id) return;
+    if (!usuario?.id) {
+      toast.error("Faça login para acionar o SOS.");
+      return;
+    }
     setSosActive(true);
-    
+    try { (navigator as any).vibrate?.(200); } catch {}
+
+    // Try to get a fresh GPS fix right before sending
+    let lat = userLocation[0];
+    let lng = userLocation[1];
+    try {
+      const pos: GeolocationPosition = await new Promise((resolve, reject) => {
+        if (!navigator.geolocation) return reject(new Error("no geo"));
+        navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 5000 });
+      });
+      lat = pos.coords.latitude;
+      lng = pos.coords.longitude;
+      setUserLocation([lat, lng]);
+    } catch {
+      // continue with last known location
+    }
+
     const { error } = await supabase.from('alertas_seguranca').insert({
       usuario_id: usuario.id,
       tipo: 'sos',
-      descricao: `SOS acionado por ${usuario.nome}`,
-      latitude: userLocation[0],
-      longitude: userLocation[1],
-      bairro: usuario.bairro,
-      expira_em: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), 
+      descricao: `SOS acionado por ${usuario.nome ?? 'usuário'}`,
+      latitude: lat,
+      longitude: lng,
+      bairro: usuario.bairro || 'Não informado',
+      expira_em: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
     });
 
     if (error) {
-      toast.error("Erro ao disparar SOS.");
+      console.error("Erro SOS:", error);
+      toast.error(error.message || "Erro ao disparar SOS.");
+      setSosActive(false);
     } else {
-      toast.error("🚨 SOS ACIONADO! Autoridades e vizinhos notificados.");
+      toast.success("🚨 SOS ACIONADO! Autoridades e vizinhos notificados.");
     }
   };
 
