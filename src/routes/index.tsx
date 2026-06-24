@@ -123,7 +123,7 @@ function LandingPage() {
                 
                 <motion.h2 
                   initial={{ y: 30, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
+                  animate={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                   className="text-3xl font-bold font-space tracking-tight leading-tight mb-4 uppercase"
                 >
@@ -132,7 +132,7 @@ function LandingPage() {
                 
                 <motion.p 
                   initial={{ y: 20, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
+                  animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.15, duration: 0.6 }}
                   className="text-base text-text-secondary leading-relaxed font-medium opacity-80"
                 >
