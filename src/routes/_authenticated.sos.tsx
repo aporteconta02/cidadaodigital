@@ -267,6 +267,8 @@ function SOSPage() {
     e?.preventDefault?.();
     if (pressInterval.current) clearInterval(pressInterval.current);
     setSosProgress(0);
+    toast.info("Segure por 1,5s para acionar o SOS", { duration: 1500 });
+    try { (navigator as any).vibrate?.(50); } catch {}
     pressInterval.current = setInterval(() => {
       setSosProgress(prev => {
         if (prev >= 100) {
@@ -277,7 +279,7 @@ function SOSPage() {
           triggerSOS();
           return 100;
         }
-        return prev + 3.5;
+        return prev + 5;
       });
     }, 50);
   };
