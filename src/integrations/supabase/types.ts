@@ -916,6 +916,39 @@ export type Database = {
           },
         ]
       }
+      sos_alerts: {
+        Row: {
+          created_at: string | null
+          descricao: string | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          status: string | null
+          tipo: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          status?: string | null
+          tipo: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          status?: string | null
+          tipo?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       telefones_uteis: {
         Row: {
           categoria: string
