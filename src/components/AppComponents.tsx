@@ -12,7 +12,8 @@ export function AppCard({ children, className, gradient, hoverable = true, ...pr
   return (
     <div 
       className={cn(
-        "rounded-3xl border border-white/5 bg-bg-card shadow-card overflow-hidden transition-all",
+        "rounded-[20px] border bg-bg-card backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] overflow-hidden transition-all",
+        "border-[rgba(124,58,237,0.15)]",
         hoverable && "hover-card-effect active:scale-[0.98]",
         gradient && "bg-gradient-card",
         className
