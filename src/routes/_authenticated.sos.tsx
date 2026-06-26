@@ -266,76 +266,61 @@ function SOSPage() {
     setLoading(false);
   };
 
-  const startPress = (e?: React.PointerEvent | React.MouseEvent | React.TouchEvent) => {
-    e?.preventDefault?.();
-    if (pressInterval.current) clearInterval(pressInterval.current);
-    setSosProgress(0);
-    toast.info("Segure por 1,5s para acionar o SOS", { duration: 1500 });
-    try { (navigator as any).vibrate?.(50); } catch {}
-    pressInterval.current = setInterval(() => {
-      setSosProgress(prev => {
-        if (prev >= 100) {
-          if (pressInterval.current) {
-            clearInterval(pressInterval.current);
-            pressInterval.current = null;
-          }
-          triggerSOS();
-          return 100;
-        }
-        return prev + 5;
-      });
-    }, 50);
-  };
-
-  const stopPress = () => {
-    if (pressInterval.current) {
-      clearInterval(pressInterval.current);
-      pressInterval.current = null;
-    }
-    setSosProgress((p) => (p >= 100 ? p : 0));
-  };
-
-  const triggerSOS = async () => {
+  const handleSOSClick = () => {
     if (!usuario?.id) {
       toast.error("Faça login para acionar o SOS.");
       return;
     }
-    setSosActive(true);
-    try { (navigator as any).vibrate?.(200); } catch {}
+    setSosType('assalto');
+    setSosDesc('');
+    setSosModalOpen(true);
+    try { (navigator as any).vibrate?.(50); } catch {}
+  };
 
-    // Try to get a fresh GPS fix right before sending
-    let lat = userLocation[0];
-    let lng = userLocation[1];
+  const submitSOS = async () => {
+    if (!usuario?.id) return;
+    setSosSubmitting(true);
+
+    // Geolocalização opcional
+    let lat: number | null = userLocation[0];
+    let lng: number | null = userLocation[1];
     try {
       const pos: GeolocationPosition = await new Promise((resolve, reject) => {
         if (!navigator.geolocation) return reject(new Error("no geo"));
-        navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 5000 });
+        navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 4000 });
       });
       lat = pos.coords.latitude;
       lng = pos.coords.longitude;
       setUserLocation([lat, lng]);
     } catch {
-      // continue with last known location
+      // continua sem GPS
     }
+
+    const descricao = `[${sosType.toUpperCase()}] ${sosDesc?.trim() || `SOS acionado por ${usuario.nome ?? 'usuário'}`}`;
 
     const { error } = await supabase.from('alertas_seguranca').insert({
       usuario_id: usuario.id,
       tipo: 'sos',
-      descricao: `SOS acionado por ${usuario.nome ?? 'usuário'}`,
+      descricao,
       latitude: lat,
       longitude: lng,
       bairro: usuario.bairro || 'Não informado',
       expira_em: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
     });
 
+    setSosSubmitting(false);
+
     if (error) {
       console.error("Erro SOS:", error);
       toast.error(error.message || "Erro ao disparar SOS.");
-      setSosActive(false);
     } else {
       toast.success("🚨 SOS ACIONADO! Autoridades e vizinhos notificados.");
+      setSosModalOpen(false);
+      setSosActive(true);
+      try { (navigator as any).vibrate?.(200); } catch {}
     }
   };
+
 
   const createAlert = async () => {
     if (!usuario?.id) return toast.error("Faça login para criar um alerta.");
