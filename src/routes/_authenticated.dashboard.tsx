@@ -30,16 +30,18 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 const QUICK_ACCESS = [
-  { label: "Mercado", icon: <ShoppingBag size={24} />, color: "text-primary", to: "/comercio" },
-  { label: "Transporte", icon: <Car size={24} />, color: "text-primary", to: "/transporte" },
-  { label: "Denúncias / Solicitações", icon: <Megaphone size={24} />, color: "text-secondary", to: "/comunidade", search: { tab: 'denuncias' } },
-  { label: "Eventos", icon: <Calendar size={24} />, color: "text-success", to: "/comunidade", search: { tab: 'eventos' } },
-  { label: "Vizinho Seguro", icon: <ShieldCheck size={24} />, color: "text-primary", to: "/sos" },
-  { label: "Voz do Povo", icon: <MessageSquare size={24} />, color: "text-secondary", to: "/comunidade", search: { tab: 'voz' } },
-  { label: "Mural", icon: <ClipboardList size={24} />, color: "text-success", to: "/comunidade", search: { tab: 'mural' } },
-  { label: "Benefícios", icon: <Star size={24} />, color: "text-gold", to: "/perfil" },
-  { label: "Telefones", icon: <Phone size={24} />, color: "text-text-secondary", to: "/comunidade", search: { tab: 'telefones' } },
+  { label: "Mercado",                icon: <ShoppingBag size={22} />,  gradient: "from-[#f97316] to-[#ef4444]", to: "/comercio" },
+  { label: "Transporte",             icon: <Car size={22} />,          gradient: "from-[#06b6d4] to-[#0284c7]", to: "/transporte" },
+  { label: "Denúncias / Solicitações", icon: <Megaphone size={22} />,   gradient: "from-[#ef4444] to-[#dc2626]", to: "/comunidade", search: { tab: 'denuncias' } },
+  { label: "Eventos",                icon: <Calendar size={22} />,     gradient: "from-[#10b981] to-[#059669]", to: "/comunidade", search: { tab: 'eventos' } },
+  { label: "Vizinho Seguro",         icon: <ShieldCheck size={22} />,  gradient: "from-[#3b82f6] to-[#1d4ed8]", to: "/sos" },
+  { label: "Voz do Povo",            icon: <MessageSquare size={22} />,gradient: "from-[#f59e0b] to-[#d97706]", to: "/comunidade", search: { tab: 'voz' } },
+  { label: "Mural",                  icon: <ClipboardList size={22} />,gradient: "from-[#ec4899] to-[#db2777]", to: "/comunidade", search: { tab: 'mural' } },
+  { label: "Benefícios",             icon: <Star size={22} />,         gradient: "from-[#a855f7] to-[#7c3aed]", to: "/perfil" },
+  { label: "Telefones",              icon: <Phone size={22} />,        gradient: "from-[#6b7280] to-[#4b5563]", to: "/comunidade", search: { tab: 'telefones' } },
+  { label: "SOS",                    icon: <ShieldAlert size={22} />,  gradient: "from-[#ef4444] to-[#991b1b]", to: "/sos", pulse: true },
 ];
+
 
 function DashboardPage() {
   const { usuario, loading: authLoading } = useAuth();
