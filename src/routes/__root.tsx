@@ -339,7 +339,19 @@ function RootComponent() {
 );
 }
 
-function DrawerNavLink({ to, icon, label, search }: { to: string; icon: React.ReactNode; label: string; search?: Record<string, unknown> }) {
+function DrawerNavLink({
+  to,
+  icon,
+  label,
+  search,
+  iconGradient = "from-[#a855f7] to-[#7c3aed]",
+}: {
+  to: string;
+  icon: React.ReactNode;
+  label: string;
+  search?: Record<string, unknown>;
+  iconGradient?: string;
+}) {
   const { totalItens } = useCart();
   const showCart = to === "/comercio";
   return (
@@ -347,11 +359,21 @@ function DrawerNavLink({ to, icon, label, search }: { to: string; icon: React.Re
       <Link
         to={to}
         search={search as any}
-        className="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary hover:bg-white/5 transition-colors group"
-        activeProps={{ className: "!bg-primary/20 !text-primary font-bold" }}
+        className="relative flex items-center gap-3 pl-4 pr-4 py-3 rounded-[12px] text-text-secondary hover:bg-white/[0.04] transition-all border-l-[3px] border-transparent"
+        activeProps={{
+          className:
+            "!bg-[rgba(124,58,237,0.15)] !text-text-primary font-semibold !border-l-[3px] !border-[#7c3aed]",
+        }}
       >
-        <span className="shrink-0">{icon}</span>
-        <span className="text-sm font-medium flex-1 truncate">{label}</span>
+        <span
+          className={cn(
+            "shrink-0 size-9 rounded-[10px] flex items-center justify-center text-white bg-gradient-to-br shadow-[0_4px_12px_rgba(0,0,0,0.3)]",
+            iconGradient,
+          )}
+        >
+          {icon}
+        </span>
+        <span className="text-sm font-semibold flex-1 truncate">{label}</span>
         {showCart && totalItens > 0 && (
           <span className="size-5 bg-primary text-white text-[10px] font-black rounded-full flex items-center justify-center">
             {totalItens}
@@ -361,5 +383,6 @@ function DrawerNavLink({ to, icon, label, search }: { to: string; icon: React.Re
     </SheetClose>
   );
 }
+
 
 
