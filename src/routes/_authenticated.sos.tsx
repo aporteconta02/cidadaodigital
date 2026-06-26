@@ -508,44 +508,83 @@ function SOSPage() {
         </Dialog>
       </div>
 
-      {/* SOS Button */}
-      <div className="absolute bottom-6 right-6 z-20">
-        <div className="relative">
-          <div className="absolute -inset-4 rounded-full border-4 border-danger/20" />
-          {sosProgress > 0 && (
-            <svg className="absolute -inset-4 size-28 -rotate-90">
-              <circle
-                cx="56"
-                cy="56"
-                r="52"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="4"
-                strokeDasharray="326.7"
-                strokeDashoffset={326.7 - (326.7 * sosProgress) / 100}
-                className="text-danger transition-all duration-75"
+      {/* SOS Button - fixed, sempre acima do mapa */}
+      <button
+        type="button"
+        onClick={handleSOSClick}
+        onContextMenu={(e) => e.preventDefault()}
+        style={{
+          pointerEvents: 'auto',
+          zIndex: 9999,
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          cursor: 'pointer',
+        }}
+        className={cn(
+          "size-20 rounded-full flex flex-col items-center justify-center bg-danger shadow-[0_8px_32px_rgba(255,59,92,0.4)] transition-all select-none active:scale-95",
+          !sosActive && "sos-pulse"
+        )}
+        aria-label="Acionar SOS"
+      >
+        <span className="text-white text-2xl font-black italic leading-none pointer-events-none">SOS</span>
+        <span className="text-[8px] text-white/70 font-bold uppercase tracking-widest mt-1 pointer-events-none">Toque</span>
+      </button>
+
+      {/* SOS Emergency Modal */}
+      <Dialog open={sosModalOpen} onOpenChange={setSosModalOpen}>
+        <DialogContent className="bg-bg-elevated border-border-custom rounded-3xl p-6 z-[10000]">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black font-space uppercase italic text-white">🚨 Emergência</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-5 mt-4">
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block">Tipo de Emergência</label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { id: 'assalto', label: 'Assalto' },
+                  { id: 'incendio', label: 'Incêndio' },
+                  { id: 'medica', label: 'Médica' },
+                  { id: 'violencia', label: 'Violência' },
+                  { id: 'outro', label: 'Outro' },
+                ].map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setSosType(opt.id)}
+                    className={cn(
+                      "p-3 rounded-xl border-2 text-xs font-bold uppercase tracking-tight text-white transition-all",
+                      sosType === opt.id ? "border-danger bg-danger/15" : "border-white/10 bg-white/5"
+                    )}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block">Descrição (opcional)</label>
+              <textarea
+                value={sosDesc}
+                onChange={(e) => setSosDesc(e.target.value)}
+                placeholder="O que está acontecendo?"
+                className="w-full h-20 bg-white/5 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-danger/50 text-white resize-none"
               />
-            </svg>
-          )}
-          
-          <button
-            type="button"
-            onPointerDown={startPress}
-            onPointerUp={stopPress}
-            onPointerCancel={stopPress}
-            onPointerLeave={stopPress}
-            onContextMenu={(e) => e.preventDefault()}
-            style={{ touchAction: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
-            className={cn(
-              "size-20 rounded-full flex flex-col items-center justify-center bg-danger shadow-[0_8px_32px_rgba(255,59,92,0.4)] transition-all select-none active:scale-95 cursor-pointer",
-              !sosActive && "sos-pulse"
-            )}
-          >
-            <span className="text-white text-2xl font-black italic leading-none pointer-events-none">SOS</span>
-            <span className="text-[8px] text-white/70 font-bold uppercase tracking-widest mt-1 pointer-events-none">Segure</span>
-          </button>
-        </div>
-      </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={submitSOS}
+              disabled={sosSubmitting}
+              className="w-full bg-danger text-white font-black py-4 rounded-2xl uppercase tracking-widest shadow-glow active:scale-95 transition-all disabled:opacity-60"
+            >
+              {sosSubmitting ? 'Enviando...' : 'Confirmar SOS'}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
 
       {/* Content Section (50%) */}
       <div className="flex-1 w-full bg-bg-primary overflow-hidden flex flex-col">
