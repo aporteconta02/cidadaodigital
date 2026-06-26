@@ -25,6 +25,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { registerServiceWorker } from "@/lib/register-sw";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 function NotFoundComponent() {
@@ -179,6 +180,12 @@ function RootComponent() {
       subscription.unsubscribe();
     };
   }, [router]);
+
+  useEffect(() => {
+    registerServiceWorker();
+  }, []);
+
+
 
 
   return (
