@@ -251,19 +251,32 @@ function RootComponent() {
                   </SheetTrigger>
                   <SheetContent
                     side="right"
-                    className="w-[88vw] sm:w-[380px] bg-bg-primary border-l border-white/5 p-0 flex flex-col"
+                    className="w-[88vw] sm:w-[380px] p-0 flex flex-col border-l-0"
+                    style={{
+                      background: 'rgba(10, 0, 16, 0.95)',
+                      backdropFilter: 'blur(30px)',
+                      borderRight: '1px solid rgba(124, 58, 237, 0.2)',
+                    }}
                   >
                     {/* Drawer header: profile */}
-                    <div className="p-6 border-b border-white/5 bg-gradient-to-br from-primary/15 to-transparent">
+                    <div className="p-6 border-b border-[rgba(124,58,237,0.2)] bg-gradient-to-br from-[rgba(124,58,237,0.18)] to-transparent">
                       <div className="flex items-center gap-4">
-                        <div className="size-16 rounded-full overflow-hidden flex items-center justify-center bg-bg-elevated ring-2 ring-primary shadow-[0_0_18px_var(--primary-glow)] shrink-0">
-                          {profile?.avatar_url ? (
-                            <img src={profile.avatar_url} alt={profile.nome} className="size-full object-cover" />
-                          ) : (
-                            <span className="text-text-primary font-bold text-lg">
-                              {profile?.nome?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'CP'}
-                            </span>
-                          )}
+                        <div
+                          className="size-20 rounded-full overflow-hidden flex items-center justify-center shrink-0"
+                          style={{
+                            padding: 3,
+                            background: 'linear-gradient(135deg, #7c3aed, #06b6d4)',
+                          }}
+                        >
+                          <div className="size-full rounded-full overflow-hidden flex items-center justify-center bg-[#0a0010]">
+                            {profile?.avatar_url ? (
+                              <img src={profile.avatar_url} alt={profile.nome} className="size-full object-cover" />
+                            ) : (
+                              <span className="text-text-primary font-bold text-xl">
+                                {profile?.nome?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'CP'}
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="text-base font-bold text-text-primary truncate">
@@ -279,29 +292,29 @@ function RootComponent() {
 
                     {/* Nav list */}
                     <nav className="flex-1 overflow-y-auto p-3 space-y-1">
-                      <DrawerNavLink to="/dashboard" icon={<Home size={20} />} label="Início" />
-                      <DrawerNavLink to="/comercio" icon={<ShoppingBag size={20} />} label="Mercado" />
-                      <DrawerNavLink to="/comunidade" icon={<Megaphone size={20} />} label="Denúncias / Solicitações" search={{ tab: 'denuncias' }} />
-                      <DrawerNavLink to="/comunidade" icon={<Calendar size={20} />} label="Eventos" search={{ tab: 'eventos' }} />
-                      <DrawerNavLink to="/sos" icon={<ShieldAlert size={20} />} label="Vizinho Seguro" />
-                      <DrawerNavLink to="/comunidade" icon={<Users size={20} />} label="Voz do Povo" search={{ tab: 'voz' }} />
-                      <DrawerNavLink to="/comunidade" icon={<ClipboardList size={20} />} label="Mural" search={{ tab: 'mural' }} />
-                      <DrawerNavLink to="/comercio" icon={<Star size={20} />} label="Benefícios" />
-                      <DrawerNavLink to="/comunidade" icon={<Phone size={20} />} label="Telefones" search={{ tab: 'telefones' }} />
-                      <DrawerNavLink to="/transporte" icon={<Bus size={20} />} label="Transporte" />
+                      <DrawerNavLink to="/dashboard"   icon={<Home size={20} />}         label="Início"                    iconGradient="from-[#a855f7] to-[#7c3aed]" />
+                      <DrawerNavLink to="/comercio"    icon={<ShoppingBag size={20} />}  label="Mercado"                   iconGradient="from-[#f97316] to-[#ef4444]" />
+                      <DrawerNavLink to="/comunidade"  icon={<Megaphone size={20} />}    label="Denúncias / Solicitações"  iconGradient="from-[#ef4444] to-[#dc2626]" search={{ tab: 'denuncias' }} />
+                      <DrawerNavLink to="/comunidade"  icon={<Calendar size={20} />}     label="Eventos"                   iconGradient="from-[#10b981] to-[#059669]" search={{ tab: 'eventos' }} />
+                      <DrawerNavLink to="/sos"         icon={<ShieldAlert size={20} />}  label="Vizinho Seguro"            iconGradient="from-[#3b82f6] to-[#1d4ed8]" />
+                      <DrawerNavLink to="/comunidade"  icon={<Users size={20} />}        label="Voz do Povo"               iconGradient="from-[#f59e0b] to-[#d97706]" search={{ tab: 'voz' }} />
+                      <DrawerNavLink to="/comunidade"  icon={<ClipboardList size={20} />} label="Mural"                    iconGradient="from-[#ec4899] to-[#db2777]" search={{ tab: 'mural' }} />
+                      <DrawerNavLink to="/comercio"    icon={<Star size={20} />}         label="Benefícios"                iconGradient="from-[#a855f7] to-[#7c3aed]" />
+                      <DrawerNavLink to="/comunidade"  icon={<Phone size={20} />}        label="Telefones"                 iconGradient="from-[#6b7280] to-[#4b5563]" search={{ tab: 'telefones' }} />
+                      <DrawerNavLink to="/transporte"  icon={<Bus size={20} />}          label="Transporte"                iconGradient="from-[#06b6d4] to-[#0284c7]" />
 
-                      <div className="h-px bg-white/5 my-3" />
+                      <div className="h-px bg-[rgba(124,58,237,0.2)] my-3" />
 
-                      <DrawerNavLink to="/perfil" icon={<Settings size={20} />} label="Configurações" />
+                      <DrawerNavLink to="/perfil" icon={<Settings size={20} />} label="Configurações" iconGradient="from-[#a855f7] to-[#7c3aed]" />
                       <SheetClose asChild>
                         <button
                           onClick={async () => {
                             await supabase.auth.signOut();
                           }}
-                          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-danger hover:bg-danger/10 transition-colors"
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-[12px] text-danger hover:bg-danger/10 transition-colors"
                         >
                           <LogOut size={20} />
-                          <span className="text-sm font-bold">Sair da conta</span>
+                          <span className="text-sm font-semibold">Sair da conta</span>
                         </button>
                       </SheetClose>
                     </nav>
