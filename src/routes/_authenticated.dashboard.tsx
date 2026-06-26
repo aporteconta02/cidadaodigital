@@ -138,15 +138,25 @@ function DashboardPage() {
 
   return (
     <div className="pb-8 bg-bg-primary min-h-screen animate-in fade-in duration-500">
-      {/* Welcome gradient banner */}
+      {/* Welcome animated gradient banner with particles */}
       <section className="px-4 pt-5">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-hero p-6 shadow-[0_12px_40px_var(--primary-glow)]">
-          <div className="absolute -top-10 -right-10 size-40 rounded-full bg-white/10 blur-2xl" />
+        <div className="welcome-banner relative overflow-hidden rounded-3xl p-6 shadow-[0_12px_40px_rgba(76,29,149,0.45)]">
+          {/* Particles */}
+          <span className="welcome-particle" style={{ width: 8,  height: 8,  top: '15%', left: '12%', animationDelay: '0s'   }} />
+          <span className="welcome-particle" style={{ width: 14, height: 14, top: '55%', left: '78%', animationDelay: '1.2s' }} />
+          <span className="welcome-particle" style={{ width: 6,  height: 6,  top: '75%', left: '25%', animationDelay: '2.4s' }} />
+          <span className="welcome-particle" style={{ width: 10, height: 10, top: '30%', left: '60%', animationDelay: '0.6s' }} />
+          <span className="welcome-particle" style={{ width: 5,  height: 5,  top: '85%', left: '55%', animationDelay: '3s'   }} />
+          {/* Geometric shapes */}
+          <div className="absolute -top-12 -right-12 size-44 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-16 -left-10 size-40 rounded-full bg-[#06b6d4]/20 blur-3xl pointer-events-none" />
+          <div className="absolute top-4 right-6 size-16 rotate-45 border border-white/15 rounded-lg pointer-events-none" />
+
           <div className="relative z-10">
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/80">
+            <p className="text-[10px] font-black uppercase tracking-widest text-white/80 welcome-banner-text">
               {getGreeting()}
             </p>
-            <h2 className="text-2xl font-black font-space tracking-tight text-white mt-1">
+            <h2 className="text-2xl font-black font-space tracking-tight text-white mt-1 welcome-banner-text">
               {usuario?.nome?.split(' ')[0]} 👋
             </h2>
             <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-white/90">
@@ -155,6 +165,7 @@ function DashboardPage() {
           </div>
         </div>
       </section>
+
 
       {/* Drivers online pill */}
       <section className="px-4 mt-4">
