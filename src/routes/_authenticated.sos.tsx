@@ -278,46 +278,59 @@ function SOSPage() {
   };
 
   const submitSOS = async () => {
-    if (!usuario?.id) return;
+    if (sosSubmitting) return;
     setSosSubmitting(true);
 
-    // Geolocalização opcional
-    let lat: number | null = userLocation[0];
-    let lng: number | null = userLocation[1];
     try {
-      const pos: GeolocationPosition = await new Promise((resolve, reject) => {
-        if (!navigator.geolocation) return reject(new Error("no geo"));
-        navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 4000 });
-      });
-      lat = pos.coords.latitude;
-      lng = pos.coords.longitude;
-      setUserLocation([lat, lng]);
-    } catch {
-      // continua sem GPS
-    }
+      const { data: { user } } = await supabase.auth.getUser();
 
-    const descricao = `[${sosType.toUpperCase()}] ${sosDesc?.trim() || `SOS acionado por ${usuario.nome ?? 'usuário'}`}`;
+      if (!user) {
+        toast.error('Você precisa estar logado');
+        return;
+      }
 
-    const { error } = await supabase.from('alertas_seguranca').insert({
-      usuario_id: usuario.id,
-      tipo: 'sos',
-      descricao,
-      latitude: lat,
-      longitude: lng,
-      bairro: usuario.bairro || 'Não informado',
-      expira_em: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
-    });
+      let lat: number | null = userLocation[0] ?? null;
+      let lng: number | null = userLocation[1] ?? null;
+      try {
+        const pos: GeolocationPosition = await new Promise((resolve, reject) => {
+          if (!navigator.geolocation) return reject(new Error("no geo"));
+          navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 4000 });
+        });
+        lat = pos.coords.latitude;
+        lng = pos.coords.longitude;
+        setUserLocation([lat, lng]);
+      } catch {
+        // continua sem GPS
+      }
 
-    setSosSubmitting(false);
+      const { error } = await supabase
+        .from('sos_alerts')
+        .insert({
+          user_id: user.id,
+          tipo: sosType,
+          descricao: sosDesc?.trim() || null,
+          latitude: lat,
+          longitude: lng,
+          status: 'ativo',
+        });
 
-    if (error) {
-      console.error("Erro SOS:", error);
-      toast.error(error.message || "Erro ao disparar SOS.");
-    } else {
+      if (error) {
+        console.error('Erro SOS:', error);
+        toast.error('Erro ao enviar: ' + error.message);
+        return;
+      }
+
       toast.success("🚨 SOS ACIONADO! Autoridades e vizinhos notificados.");
       setSosModalOpen(false);
       setSosActive(true);
+      setSosType('assalto');
+      setSosDesc('');
       try { (navigator as any).vibrate?.(200); } catch {}
+    } catch (err: any) {
+      console.error('Erro inesperado:', err);
+      toast.error('Erro inesperado: ' + (err?.message || 'tente novamente'));
+    } finally {
+      setSosSubmitting(false);
     }
   };
 
@@ -579,7 +592,7 @@ function SOSPage() {
               disabled={sosSubmitting}
               className="w-full bg-danger text-white font-black py-4 rounded-2xl uppercase tracking-widest shadow-glow active:scale-95 transition-all disabled:opacity-60"
             >
-              {sosSubmitting ? 'Enviando...' : 'Confirmar SOS'}
+              {sosSubmitting ? 'Salvando...' : 'Confirmar SOS'}
             </button>
           </div>
         </DialogContent>
