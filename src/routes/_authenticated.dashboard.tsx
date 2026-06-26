@@ -222,14 +222,20 @@ function DashboardPage() {
           {quickAccessWithBadges.map((item, idx) => (
             <motion.button
               key={idx}
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.04, duration: 0.3 }}
-              onClick={() => navigate({ to: item.to as any, search: item.search as any })}
-              className="flex flex-col items-center gap-2 group active:scale-95 transition-all"
+              transition={{ delay: idx * 0.05, duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+              onClick={() => navigate({ to: item.to as any, search: (item as any).search })}
+              className="module-card flex flex-col items-center gap-2 group rounded-2xl p-2 bg-white/[0.03] backdrop-blur-xl border border-white/5"
             >
-              <div className="relative size-[72px] rounded-2xl glass flex items-center justify-center shadow-card border border-white/5 hover:shadow-[0_0_20px_var(--primary-glow)] transition-shadow">
-                <div className={item.color}>{item.icon}</div>
+              <div
+                className={cn(
+                  "relative size-12 rounded-full flex items-center justify-center text-white shadow-[0_6px_18px_rgba(0,0,0,0.35)] bg-gradient-to-br",
+                  item.gradient,
+                  (item as any).pulse && "pulse-red"
+                )}
+              >
+                {item.icon}
                 {item.badge > 0 && (
                   <div className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1.5 rounded-full bg-danger text-white text-[10px] font-black flex items-center justify-center border-2 border-bg-primary">
                     {item.badge > 99 ? '99+' : item.badge}
@@ -240,6 +246,7 @@ function DashboardPage() {
             </motion.button>
           ))}
         </div>
+
       </section>
 
       {/* O que está acontecendo */}
