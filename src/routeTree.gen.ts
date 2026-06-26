@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as LimparCacheRouteImport } from './routes/limpar-cache'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -42,6 +43,11 @@ import { Route as AuthenticatedComercioLojaLojaIdRouteImport } from './routes/_a
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LimparCacheRoute = LimparCacheRouteImport.update({
+  id: '/limpar-cache',
+  path: '/limpar-cache',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -192,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/limpar-cache': typeof LimparCacheRoute
   '/reset-password': typeof ResetPasswordRoute
   '/carrinho': typeof AuthenticatedCarrinhoRoute
   '/comercio': typeof AuthenticatedComercioRouteWithChildren
@@ -221,6 +228,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/limpar-cache': typeof LimparCacheRoute
   '/reset-password': typeof ResetPasswordRoute
   '/carrinho': typeof AuthenticatedCarrinhoRoute
   '/comercio': typeof AuthenticatedComercioRouteWithChildren
@@ -253,6 +261,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/limpar-cache': typeof LimparCacheRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/carrinho': typeof AuthenticatedCarrinhoRoute
   '/_authenticated/comercio': typeof AuthenticatedComercioRouteWithChildren
@@ -285,6 +294,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/limpar-cache'
     | '/reset-password'
     | '/carrinho'
     | '/comercio'
@@ -314,6 +324,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/limpar-cache'
     | '/reset-password'
     | '/carrinho'
     | '/comercio'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/admin'
     | '/auth'
+    | '/limpar-cache'
     | '/reset-password'
     | '/_authenticated/carrinho'
     | '/_authenticated/comercio'
@@ -377,6 +389,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
+  LimparCacheRoute: typeof LimparCacheRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
@@ -387,6 +400,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/limpar-cache': {
+      id: '/limpar-cache'
+      path: '/limpar-cache'
+      fullPath: '/limpar-cache'
+      preLoaderRoute: typeof LimparCacheRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -681,6 +701,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
+  LimparCacheRoute: LimparCacheRoute,
   ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
