@@ -200,16 +200,22 @@ function RootComponent() {
         )}
         {/* App Header (Hidden on landing/auth) */}
         {!isPublicPage && (
-          <header className="sticky top-0 z-40 bg-bg-primary/80 backdrop-blur-xl px-4 py-3 border-b border-white/5">
+          <header className="sticky top-0 z-40 px-4 py-3 border-b border-[rgba(124,58,237,0.2)] backdrop-blur-xl" style={{ background: 'rgba(10, 0, 16, 0.85)' }}>
             <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
               {/* Left: avatar + greeting */}
               <Link
                 to="/perfil"
                 className="flex items-center gap-2 active:scale-95 transition-transform min-w-0"
               >
-                <div className="size-10 rounded-full overflow-hidden flex items-center justify-center bg-bg-elevated ring-2 ring-primary shadow-[0_0_12px_var(--primary-glow)] shrink-0">
+                <div
+                  className="size-10 rounded-full overflow-hidden flex items-center justify-center shrink-0"
+                  style={{
+                    border: '2px solid transparent',
+                    background: 'linear-gradient(#0a0010, #0a0010) padding-box, linear-gradient(135deg, #7c3aed, #06b6d4) border-box',
+                  }}
+                >
                   {profile?.avatar_url ? (
-                    <img src={profile.avatar_url} alt={profile.nome} className="size-full object-cover" />
+                    <img src={profile.avatar_url} alt={profile.nome} className="size-full object-cover rounded-full" />
                   ) : (
                     <span className="text-text-primary font-bold text-xs">
                       {profile?.nome?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'CP'}
