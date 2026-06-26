@@ -30,16 +30,18 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 const QUICK_ACCESS = [
-  { label: "Mercado", icon: <ShoppingBag size={24} />, color: "text-primary", to: "/comercio" },
-  { label: "Transporte", icon: <Car size={24} />, color: "text-primary", to: "/transporte" },
-  { label: "Denúncias / Solicitações", icon: <Megaphone size={24} />, color: "text-secondary", to: "/comunidade", search: { tab: 'denuncias' } },
-  { label: "Eventos", icon: <Calendar size={24} />, color: "text-success", to: "/comunidade", search: { tab: 'eventos' } },
-  { label: "Vizinho Seguro", icon: <ShieldCheck size={24} />, color: "text-primary", to: "/sos" },
-  { label: "Voz do Povo", icon: <MessageSquare size={24} />, color: "text-secondary", to: "/comunidade", search: { tab: 'voz' } },
-  { label: "Mural", icon: <ClipboardList size={24} />, color: "text-success", to: "/comunidade", search: { tab: 'mural' } },
-  { label: "Benefícios", icon: <Star size={24} />, color: "text-gold", to: "/perfil" },
-  { label: "Telefones", icon: <Phone size={24} />, color: "text-text-secondary", to: "/comunidade", search: { tab: 'telefones' } },
+  { label: "Mercado",                icon: <ShoppingBag size={22} />,  gradient: "from-[#f97316] to-[#ef4444]", to: "/comercio" },
+  { label: "Transporte",             icon: <Car size={22} />,          gradient: "from-[#06b6d4] to-[#0284c7]", to: "/transporte" },
+  { label: "Denúncias / Solicitações", icon: <Megaphone size={22} />,   gradient: "from-[#ef4444] to-[#dc2626]", to: "/comunidade", search: { tab: 'denuncias' } },
+  { label: "Eventos",                icon: <Calendar size={22} />,     gradient: "from-[#10b981] to-[#059669]", to: "/comunidade", search: { tab: 'eventos' } },
+  { label: "Vizinho Seguro",         icon: <ShieldCheck size={22} />,  gradient: "from-[#3b82f6] to-[#1d4ed8]", to: "/sos" },
+  { label: "Voz do Povo",            icon: <MessageSquare size={22} />,gradient: "from-[#f59e0b] to-[#d97706]", to: "/comunidade", search: { tab: 'voz' } },
+  { label: "Mural",                  icon: <ClipboardList size={22} />,gradient: "from-[#ec4899] to-[#db2777]", to: "/comunidade", search: { tab: 'mural' } },
+  { label: "Benefícios",             icon: <Star size={22} />,         gradient: "from-[#a855f7] to-[#7c3aed]", to: "/perfil" },
+  { label: "Telefones",              icon: <Phone size={22} />,        gradient: "from-[#6b7280] to-[#4b5563]", to: "/comunidade", search: { tab: 'telefones' } },
+  { label: "SOS",                    icon: <ShieldAlert size={22} />,  gradient: "from-[#ef4444] to-[#991b1b]", to: "/sos", pulse: true },
 ];
+
 
 function DashboardPage() {
   const { usuario, loading: authLoading } = useAuth();
@@ -136,15 +138,25 @@ function DashboardPage() {
 
   return (
     <div className="pb-8 bg-bg-primary min-h-screen animate-in fade-in duration-500">
-      {/* Welcome gradient banner */}
+      {/* Welcome animated gradient banner with particles */}
       <section className="px-4 pt-5">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-hero p-6 shadow-[0_12px_40px_var(--primary-glow)]">
-          <div className="absolute -top-10 -right-10 size-40 rounded-full bg-white/10 blur-2xl" />
+        <div className="welcome-banner relative overflow-hidden rounded-3xl p-6 shadow-[0_12px_40px_rgba(76,29,149,0.45)]">
+          {/* Particles */}
+          <span className="welcome-particle" style={{ width: 8,  height: 8,  top: '15%', left: '12%', animationDelay: '0s'   }} />
+          <span className="welcome-particle" style={{ width: 14, height: 14, top: '55%', left: '78%', animationDelay: '1.2s' }} />
+          <span className="welcome-particle" style={{ width: 6,  height: 6,  top: '75%', left: '25%', animationDelay: '2.4s' }} />
+          <span className="welcome-particle" style={{ width: 10, height: 10, top: '30%', left: '60%', animationDelay: '0.6s' }} />
+          <span className="welcome-particle" style={{ width: 5,  height: 5,  top: '85%', left: '55%', animationDelay: '3s'   }} />
+          {/* Geometric shapes */}
+          <div className="absolute -top-12 -right-12 size-44 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-16 -left-10 size-40 rounded-full bg-[#06b6d4]/20 blur-3xl pointer-events-none" />
+          <div className="absolute top-4 right-6 size-16 rotate-45 border border-white/15 rounded-lg pointer-events-none" />
+
           <div className="relative z-10">
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/80">
+            <p className="text-[10px] font-black uppercase tracking-widest text-white/80 welcome-banner-text">
               {getGreeting()}
             </p>
-            <h2 className="text-2xl font-black font-space tracking-tight text-white mt-1">
+            <h2 className="text-2xl font-black font-space tracking-tight text-white mt-1 welcome-banner-text">
               {usuario?.nome?.split(' ')[0]} 👋
             </h2>
             <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-white/90">
@@ -153,6 +165,7 @@ function DashboardPage() {
           </div>
         </div>
       </section>
+
 
       {/* Drivers online pill */}
       <section className="px-4 mt-4">
@@ -209,14 +222,20 @@ function DashboardPage() {
           {quickAccessWithBadges.map((item, idx) => (
             <motion.button
               key={idx}
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.04, duration: 0.3 }}
-              onClick={() => navigate({ to: item.to as any, search: item.search as any })}
-              className="flex flex-col items-center gap-2 group active:scale-95 transition-all"
+              transition={{ delay: idx * 0.05, duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+              onClick={() => navigate({ to: item.to as any, search: (item as any).search })}
+              className="module-card flex flex-col items-center gap-2 group rounded-2xl p-2 bg-white/[0.03] backdrop-blur-xl border border-white/5"
             >
-              <div className="relative size-[72px] rounded-2xl glass flex items-center justify-center shadow-card border border-white/5 hover:shadow-[0_0_20px_var(--primary-glow)] transition-shadow">
-                <div className={item.color}>{item.icon}</div>
+              <div
+                className={cn(
+                  "relative size-12 rounded-full flex items-center justify-center text-white shadow-[0_6px_18px_rgba(0,0,0,0.35)] bg-gradient-to-br",
+                  item.gradient,
+                  (item as any).pulse && "pulse-red"
+                )}
+              >
+                {item.icon}
                 {item.badge > 0 && (
                   <div className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1.5 rounded-full bg-danger text-white text-[10px] font-black flex items-center justify-center border-2 border-bg-primary">
                     {item.badge > 99 ? '99+' : item.badge}
@@ -227,6 +246,7 @@ function DashboardPage() {
             </motion.button>
           ))}
         </div>
+
       </section>
 
       {/* O que está acontecendo */}
