@@ -168,8 +168,11 @@ const ALERT_TYPES = {
 function SOSPage() {
   const search = Route.useSearch() as any;
   const { usuario, isAssinante, refreshUsuario } = useAuth();
-  const [sosProgress, setSosProgress] = useState(0);
   const [sosActive, setSosActive] = useState(false);
+  const [sosModalOpen, setSosModalOpen] = useState(false);
+  const [sosType, setSosType] = useState<string>('assalto');
+  const [sosDesc, setSosDesc] = useState('');
+  const [sosSubmitting, setSosSubmitting] = useState(false);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState<[number, number]>([-23.5612, -46.6623]);
@@ -181,7 +184,6 @@ function SOSPage() {
   const [resolveText, setResolveText] = useState('');
   const [activating, setActivating] = useState(false);
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
-  const pressInterval = useRef<NodeJS.Timeout | null>(null);
 
   const activatePlusFn = useServerFn(activatePlusSubscription);
   const ativarAssinatura = async () => {
@@ -197,6 +199,7 @@ function SOSPage() {
       setActivating(false);
     }
   };
+
 
   // Fetch alerts and user location
   useEffect(() => {
