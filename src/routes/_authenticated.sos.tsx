@@ -444,7 +444,7 @@ function SOSPage() {
   return (
     <div className="relative h-[calc(100vh-144px)] overflow-hidden flex flex-col">
       {/* Map Section (50%) */}
-      <div className="h-[45%] w-full relative">
+      <div className="h-[45%] w-full relative" style={{ zIndex: 1 }}>
         <Map 
           center={mapCenter ?? userLocation} 
           zoom={mapCenter ? 17 : 15}
