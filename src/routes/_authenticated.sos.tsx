@@ -168,8 +168,11 @@ const ALERT_TYPES = {
 function SOSPage() {
   const search = Route.useSearch() as any;
   const { usuario, isAssinante, refreshUsuario } = useAuth();
-  const [sosProgress, setSosProgress] = useState(0);
   const [sosActive, setSosActive] = useState(false);
+  const [sosModalOpen, setSosModalOpen] = useState(false);
+  const [sosType, setSosType] = useState<string>('assalto');
+  const [sosDesc, setSosDesc] = useState('');
+  const [sosSubmitting, setSosSubmitting] = useState(false);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState<[number, number]>([-23.5612, -46.6623]);
@@ -181,7 +184,6 @@ function SOSPage() {
   const [resolveText, setResolveText] = useState('');
   const [activating, setActivating] = useState(false);
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
-  const pressInterval = useRef<NodeJS.Timeout | null>(null);
 
   const activatePlusFn = useServerFn(activatePlusSubscription);
   const ativarAssinatura = async () => {
@@ -197,6 +199,7 @@ function SOSPage() {
       setActivating(false);
     }
   };
+
 
   // Fetch alerts and user location
   useEffect(() => {
@@ -263,76 +266,61 @@ function SOSPage() {
     setLoading(false);
   };
 
-  const startPress = (e?: React.PointerEvent | React.MouseEvent | React.TouchEvent) => {
-    e?.preventDefault?.();
-    if (pressInterval.current) clearInterval(pressInterval.current);
-    setSosProgress(0);
-    toast.info("Segure por 1,5s para acionar o SOS", { duration: 1500 });
-    try { (navigator as any).vibrate?.(50); } catch {}
-    pressInterval.current = setInterval(() => {
-      setSosProgress(prev => {
-        if (prev >= 100) {
-          if (pressInterval.current) {
-            clearInterval(pressInterval.current);
-            pressInterval.current = null;
-          }
-          triggerSOS();
-          return 100;
-        }
-        return prev + 5;
-      });
-    }, 50);
-  };
-
-  const stopPress = () => {
-    if (pressInterval.current) {
-      clearInterval(pressInterval.current);
-      pressInterval.current = null;
-    }
-    setSosProgress((p) => (p >= 100 ? p : 0));
-  };
-
-  const triggerSOS = async () => {
+  const handleSOSClick = () => {
     if (!usuario?.id) {
       toast.error("Faça login para acionar o SOS.");
       return;
     }
-    setSosActive(true);
-    try { (navigator as any).vibrate?.(200); } catch {}
+    setSosType('assalto');
+    setSosDesc('');
+    setSosModalOpen(true);
+    try { (navigator as any).vibrate?.(50); } catch {}
+  };
 
-    // Try to get a fresh GPS fix right before sending
-    let lat = userLocation[0];
-    let lng = userLocation[1];
+  const submitSOS = async () => {
+    if (!usuario?.id) return;
+    setSosSubmitting(true);
+
+    // Geolocalização opcional
+    let lat: number | null = userLocation[0];
+    let lng: number | null = userLocation[1];
     try {
       const pos: GeolocationPosition = await new Promise((resolve, reject) => {
         if (!navigator.geolocation) return reject(new Error("no geo"));
-        navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 5000 });
+        navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 4000 });
       });
       lat = pos.coords.latitude;
       lng = pos.coords.longitude;
       setUserLocation([lat, lng]);
     } catch {
-      // continue with last known location
+      // continua sem GPS
     }
+
+    const descricao = `[${sosType.toUpperCase()}] ${sosDesc?.trim() || `SOS acionado por ${usuario.nome ?? 'usuário'}`}`;
 
     const { error } = await supabase.from('alertas_seguranca').insert({
       usuario_id: usuario.id,
       tipo: 'sos',
-      descricao: `SOS acionado por ${usuario.nome ?? 'usuário'}`,
+      descricao,
       latitude: lat,
       longitude: lng,
       bairro: usuario.bairro || 'Não informado',
       expira_em: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
     });
 
+    setSosSubmitting(false);
+
     if (error) {
       console.error("Erro SOS:", error);
       toast.error(error.message || "Erro ao disparar SOS.");
-      setSosActive(false);
     } else {
       toast.success("🚨 SOS ACIONADO! Autoridades e vizinhos notificados.");
+      setSosModalOpen(false);
+      setSosActive(true);
+      try { (navigator as any).vibrate?.(200); } catch {}
     }
   };
+
 
   const createAlert = async () => {
     if (!usuario?.id) return toast.error("Faça login para criar um alerta.");
@@ -456,7 +444,7 @@ function SOSPage() {
   return (
     <div className="relative h-[calc(100vh-144px)] overflow-hidden flex flex-col">
       {/* Map Section (50%) */}
-      <div className="h-[45%] w-full relative">
+      <div className="h-[45%] w-full relative" style={{ zIndex: 1 }}>
         <Map 
           center={mapCenter ?? userLocation} 
           zoom={mapCenter ? 17 : 15}
@@ -520,44 +508,83 @@ function SOSPage() {
         </Dialog>
       </div>
 
-      {/* SOS Button */}
-      <div className="absolute bottom-6 right-6 z-20">
-        <div className="relative">
-          <div className="absolute -inset-4 rounded-full border-4 border-danger/20" />
-          {sosProgress > 0 && (
-            <svg className="absolute -inset-4 size-28 -rotate-90">
-              <circle
-                cx="56"
-                cy="56"
-                r="52"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="4"
-                strokeDasharray="326.7"
-                strokeDashoffset={326.7 - (326.7 * sosProgress) / 100}
-                className="text-danger transition-all duration-75"
+      {/* SOS Button - fixed, sempre acima do mapa */}
+      <button
+        type="button"
+        onClick={handleSOSClick}
+        onContextMenu={(e) => e.preventDefault()}
+        style={{
+          pointerEvents: 'auto',
+          zIndex: 9999,
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          cursor: 'pointer',
+        }}
+        className={cn(
+          "size-20 rounded-full flex flex-col items-center justify-center bg-danger shadow-[0_8px_32px_rgba(255,59,92,0.4)] transition-all select-none active:scale-95",
+          !sosActive && "sos-pulse"
+        )}
+        aria-label="Acionar SOS"
+      >
+        <span className="text-white text-2xl font-black italic leading-none pointer-events-none">SOS</span>
+        <span className="text-[8px] text-white/70 font-bold uppercase tracking-widest mt-1 pointer-events-none">Toque</span>
+      </button>
+
+      {/* SOS Emergency Modal */}
+      <Dialog open={sosModalOpen} onOpenChange={setSosModalOpen}>
+        <DialogContent className="bg-bg-elevated border-border-custom rounded-3xl p-6 z-[10000]">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black font-space uppercase italic text-white">🚨 Emergência</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-5 mt-4">
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block">Tipo de Emergência</label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { id: 'assalto', label: 'Assalto' },
+                  { id: 'incendio', label: 'Incêndio' },
+                  { id: 'medica', label: 'Médica' },
+                  { id: 'violencia', label: 'Violência' },
+                  { id: 'outro', label: 'Outro' },
+                ].map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setSosType(opt.id)}
+                    className={cn(
+                      "p-3 rounded-xl border-2 text-xs font-bold uppercase tracking-tight text-white transition-all",
+                      sosType === opt.id ? "border-danger bg-danger/15" : "border-white/10 bg-white/5"
+                    )}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block">Descrição (opcional)</label>
+              <textarea
+                value={sosDesc}
+                onChange={(e) => setSosDesc(e.target.value)}
+                placeholder="O que está acontecendo?"
+                className="w-full h-20 bg-white/5 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-danger/50 text-white resize-none"
               />
-            </svg>
-          )}
-          
-          <button
-            type="button"
-            onPointerDown={startPress}
-            onPointerUp={stopPress}
-            onPointerCancel={stopPress}
-            onPointerLeave={stopPress}
-            onContextMenu={(e) => e.preventDefault()}
-            style={{ touchAction: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
-            className={cn(
-              "size-20 rounded-full flex flex-col items-center justify-center bg-danger shadow-[0_8px_32px_rgba(255,59,92,0.4)] transition-all select-none active:scale-95 cursor-pointer",
-              !sosActive && "sos-pulse"
-            )}
-          >
-            <span className="text-white text-2xl font-black italic leading-none pointer-events-none">SOS</span>
-            <span className="text-[8px] text-white/70 font-bold uppercase tracking-widest mt-1 pointer-events-none">Segure</span>
-          </button>
-        </div>
-      </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={submitSOS}
+              disabled={sosSubmitting}
+              className="w-full bg-danger text-white font-black py-4 rounded-2xl uppercase tracking-widest shadow-glow active:scale-95 transition-all disabled:opacity-60"
+            >
+              {sosSubmitting ? 'Enviando...' : 'Confirmar SOS'}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
 
       {/* Content Section (50%) */}
       <div className="flex-1 w-full bg-bg-primary overflow-hidden flex flex-col">
