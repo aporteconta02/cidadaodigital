@@ -188,31 +188,7 @@ function DashboardPage() {
 
       {/* Hero Banners */}
       <section className="px-4 mb-8 mt-4">
-        {loading ? (
-          <Skeleton className="h-[180px] w-full rounded-2xl" />
-        ) : data.banners.length > 0 ? (
-          <Carousel opts={{ loop: true }} plugins={[Autoplay({ delay: 5000 })]}>
-            <CarouselContent>
-              {data.banners.map((b: any) => (
-                <CarouselItem key={b.id}>
-                  <div 
-                    onClick={() => {
-                      if (!b.link_destino) return;
-                      if (/^https?:\/\//i.test(b.link_destino)) window.open(b.link_destino, '_blank', 'noopener,noreferrer');
-                      else navigate({ to: b.link_destino });
-                    }}
-                    className="h-[180px] w-full rounded-2xl overflow-hidden relative cursor-pointer"
-                  >
-                    <img src={b.imagem_url} className="w-full h-full object-cover" alt="" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent p-6 flex flex-col justify-end">
-                       <h3 className="text-xl font-bold text-white leading-tight">{b.titulo}</h3>
-                    </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
-        ) : null}
+        <BannerCarousel />
       </section>
 
       {/* Quick Access */}
