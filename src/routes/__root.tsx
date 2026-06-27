@@ -89,6 +89,16 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  beforeLoad: async () => {
+    if (typeof window === "undefined") {
+      const { setResponseHeaders } = await import("@tanstack/react-start/server");
+      setResponseHeaders({
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+      });
+    }
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
