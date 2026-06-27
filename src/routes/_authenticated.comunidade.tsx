@@ -493,7 +493,10 @@ function DenunciasTab({ autoOpen = false }: { autoOpen?: boolean }) {
    ============================================================================ */
 
 function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
-  const { usuario } = useAuth();
+  const { usuario, isAdmin } = useAuth();
+  const [isReqOpen, setIsReqOpen] = useState(false);
+  const [reqSubmitting, setReqSubmitting] = useState(false);
+  const [reqForm, setReqForm] = useState({ nome_evento: '', data_evento: '', local: '', descricao: '', contato: '' });
   const [eventos, setEventos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'todos' | 'hoje' | 'semana' | 'mes'>('todos');
