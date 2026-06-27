@@ -23,23 +23,40 @@ export default defineConfig({
           globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,woff,woff2}"],
           navigateFallback: "/",
           navigateFallbackDenylist: [/^\/~oauth/, /^\/api\//],
+          cleanupOutdatedCaches: true,
+          skipWaiting: true,
+          clientsClaim: true,
           runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
+              handler: "NetworkOnly",
+            },
             {
               urlPattern: ({ request }) => request.mode === "navigate",
               handler: "NetworkFirst",
               options: {
-                cacheName: "html-cache",
-                networkTimeoutSeconds: 5,
-                expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 7 },
+                cacheName: "pages-cache",
+                networkTimeoutSeconds: 3,
+                expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 },
               },
             },
             {
               urlPattern: ({ url, sameOrigin }) =>
-                sameOrigin && /\.(?:js|css|woff2?|png|jpg|jpeg|svg|webp|ico)$/.test(url.pathname),
-              handler: "CacheFirst",
+                sameOrigin && /\.(?:js|css)$/i.test(url.pathname),
+              handler: "NetworkFirst",
               options: {
                 cacheName: "assets-cache",
-                expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 },
+                networkTimeoutSeconds: 3,
+                expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 },
+              },
+            },
+            {
+              urlPattern: ({ url, sameOrigin }) =>
+                sameOrigin && /\.(?:png|jpg|jpeg|svg|gif|webp|ico|woff2?)$/i.test(url.pathname),
+              handler: "CacheFirst",
+              options: {
+                cacheName: "images-cache",
+                expiration: { maxEntries: 60, maxAgeSeconds: 60 * 60 * 24 * 7 },
               },
             },
           ],
