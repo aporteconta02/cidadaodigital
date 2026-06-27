@@ -231,6 +231,24 @@ function RootComponent() {
     setTimeout(() => window.location.reload(), 500);
   };
 
+  useEffect(() => {
+    if (typeof caches === "undefined") return;
+    caches.keys().then((cacheNames) => {
+      cacheNames.forEach((cacheName) => {
+        if (
+          !cacheName.includes("workbox") &&
+          !cacheName.includes("pages-cache") &&
+          !cacheName.includes("assets-cache") &&
+          !cacheName.includes("images-cache")
+        ) {
+          caches.delete(cacheName).catch(() => {});
+        }
+      });
+    }).catch(() => {});
+  }, []);
+
+
+
 
 
 
