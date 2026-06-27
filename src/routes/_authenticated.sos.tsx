@@ -184,6 +184,7 @@ function SOSPage() {
   const [resolveText, setResolveText] = useState('');
   const [activating, setActivating] = useState(false);
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
+  const [timeWindow, setTimeWindow] = useState<'all' | '2h' | '24h' | '48h'>('48h');
 
   const activatePlusFn = useServerFn(activatePlusSubscription);
   const ativarAssinatura = async () => {
@@ -441,30 +442,77 @@ function SOSPage() {
     );
   }
 
+  const nowTs = Date.now();
+  const windowMs = timeWindow === '2h' ? 2 * 3600_000
+    : timeWindow === '24h' ? 24 * 3600_000
+    : timeWindow === '48h' ? 48 * 3600_000
+    : Infinity;
+  const mapAlerts = alerts.filter((a) => {
+    if (!a.latitude || !a.longitude) return false;
+    const created = new Date(a.criado_em).getTime();
+    return nowTs - created <= windowMs;
+  });
+
   const mapMarkers = [
     { id: 'user', position: userLocation, title: "Você", description: "Sua localização atual", type: "user" },
-    ...alerts.map(a => ({
+    ...mapAlerts.map(a => ({
       id: a.id,
       position: [Number(a.latitude), Number(a.longitude)] as [number, number],
       title: ALERT_TYPES[a.tipo as keyof typeof ALERT_TYPES]?.label || 'Alerta',
       description: a.descricao,
       type: a.tipo,
       created_at: a.criado_em,
-      confirmacoes: a.confirmacoes
+      confirmacoes: a.confirmacoes,
+      resolved: !!a.resolvido_em,
     }))
   ];
+
+  const handleViewDetails = (id: string) => {
+    const a = alerts.find((x) => x.id === id);
+    if (a?.latitude && a?.longitude) setMapCenter([Number(a.latitude), Number(a.longitude)]);
+    setActiveTab('todos');
+    setTimeout(() => {
+      const el = document.getElementById(`alert-${id}`);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el?.classList.add('ring-2', 'ring-primary');
+      setTimeout(() => el?.classList.remove('ring-2', 'ring-primary'), 2000);
+    }, 100);
+  };
 
   return (
     <div className="relative h-[calc(100vh-144px)] overflow-hidden flex flex-col">
       {/* Map Section (50%) */}
       <div className="h-[45%] w-full relative" style={{ zIndex: 1 }}>
-        <Map 
-          center={mapCenter ?? userLocation} 
+        <Map
+          center={mapCenter ?? userLocation}
           zoom={mapCenter ? 17 : 15}
           markers={mapMarkers}
           onConfirmAlert={confirmAlert}
+          onViewDetails={handleViewDetails}
           light
         />
+
+        {/* Time-window filter pills */}
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 flex gap-1.5 bg-white/90 backdrop-blur-md rounded-full p-1 shadow-lg border border-black/5">
+          {([
+            { id: 'all', label: 'Todos' },
+            { id: '2h', label: '2h' },
+            { id: '24h', label: '24h' },
+            { id: '48h', label: '48h' },
+          ] as const).map((opt) => (
+            <button
+              key={opt.id}
+              onClick={() => setTimeWindow(opt.id)}
+              className={cn(
+                "px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all",
+                timeWindow === opt.id ? "bg-primary text-white shadow" : "text-text-muted hover:text-text-primary"
+              )}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+
         
         {/* Floating FAB Plus */}
         <Dialog open={isAlertModalOpen} onOpenChange={setIsAlertModalOpen}>
@@ -677,6 +725,7 @@ function SOSPage() {
                       return (
                         <div
                           key={alert.id}
+                          id={`alert-${alert.id}`}
                           className={cn(
                             "bg-bg-card rounded-2xl p-4 border border-white/5 shadow-sm transition-all border-l-4",
                             tipo?.color || "border-l-primary",
