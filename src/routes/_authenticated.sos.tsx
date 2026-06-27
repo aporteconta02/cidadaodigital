@@ -272,9 +272,7 @@ function SOSPage() {
       .order('criado_em', { ascending: false })
       .limit(200);
 
-    if (usuario?.bairro) {
-      query = query.eq('bairro', usuario.bairro);
-    }
+    // Não filtra por bairro — exibe todos os alertas ativos das últimas 48h
 
     const { data, error } = await query;
 
