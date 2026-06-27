@@ -771,7 +771,13 @@ function SOSPage() {
                             </div>
                           )}
 
-                          <div className="mt-3 flex gap-2">
+                          <div className="mt-3 flex gap-2 flex-wrap">
+                            <button
+                              onClick={() => setCollabAlert(alert)}
+                              className="flex-1 py-2 bg-primary text-white font-black rounded-xl uppercase tracking-widest text-[10px] active:scale-95"
+                            >
+                              Colaborar
+                            </button>
                             {alert.latitude && alert.longitude && (
                               <button
                                 onClick={() => setMapCenter([Number(alert.latitude), Number(alert.longitude)])}
