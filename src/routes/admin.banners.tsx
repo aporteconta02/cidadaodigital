@@ -259,7 +259,7 @@ function AdminBanners() {
                     <div className="relative group aspect-[21/9] rounded-lg overflow-hidden border-2 border-dashed border-admin-border-light hover:border-admin-primary/50 transition-all">
                        {newBanner.imagem_url ? (
                          <>
-                           <img src={newBanner.imagem_url} className="w-full h-full object-cover" alt="" />
+                           <img src={signedPreview || newBanner.imagem_url} className="w-full h-full object-cover" alt="" />
                            <button 
                              onClick={() => setNewBanner({...newBanner, imagem_url: ""})}
                              className="absolute top-2 right-2 size-8 bg-black/50 rounded-full flex items-center justify-center text-admin-text"
