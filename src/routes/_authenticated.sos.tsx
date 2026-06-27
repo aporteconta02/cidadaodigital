@@ -13,6 +13,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AlertCollaborationDrawer from "@/components/AlertCollaborationDrawer";
+import SecurityStatsTab from "@/components/SecurityStatsTab";
 
 export const Route = createFileRoute("/_authenticated/sos")({
   component: SOSPage,
@@ -180,7 +181,7 @@ function SOSPage() {
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(!!search?.new);
   const [newAlertType, setNewAlertType] = useState<string>('suspeito');
   const [newAlertDesc, setNewAlertDesc] = useState('');
-  const [activeTab, setActiveTab] = useState<'todos' | 'meus' | 'resolvidos' | 'contatos'>('todos');
+  const [activeTab, setActiveTab] = useState<'todos' | 'meus' | 'resolvidos' | 'contatos' | 'estatisticas'>('todos');
   const [resolveTarget, setResolveTarget] = useState<any>(null);
   const [resolveText, setResolveText] = useState('');
   const [activating, setActivating] = useState(false);
@@ -216,9 +217,12 @@ function SOSPage() {
         .on(
           'postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'alertas_seguranca', filter: `bairro=eq.${usuario?.bairro}` },
-          () => {
+          (payload) => {
             fetchAlerts();
-            toast.warning("🚨 Novo alerta na sua região!");
+            const novo: any = payload.new || {};
+            const tipoLabel = ALERT_TYPES[novo.tipo as keyof typeof ALERT_TYPES]?.label || 'Alerta';
+            const local = novo.bairro || 'sua região';
+            toast.warning(`🚨 ${tipoLabel} em ${local} — há poucos segundos`, { duration: 6000 });
           }
         )
         .on(
@@ -653,6 +657,7 @@ function SOSPage() {
             { id: 'todos', label: 'Todos' },
             { id: 'meus', label: 'Meus' },
             { id: 'resolvidos', label: 'Resolvidos' },
+            { id: 'estatisticas', label: '📊 Stats' },
             { id: 'contatos', label: 'Contatos' },
           ] as const).map((t) => (
             <button
@@ -672,6 +677,8 @@ function SOSPage() {
         <div className="flex-1 overflow-y-auto px-6 pt-6 pb-24 no-scrollbar">
           {activeTab === 'contatos' ? (
             <ContatosSection />
+          ) : activeTab === 'estatisticas' ? (
+            <SecurityStatsTab bairro={usuario?.bairro} />
           ) : (() => {
             const now = Date.now();
             const isAtivo = (a: any) =>
