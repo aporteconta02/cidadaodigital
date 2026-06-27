@@ -40,7 +40,6 @@ const QUICK_ACCESS = [
   { label: "Mural",                  icon: <ClipboardList size={22} />,gradient: "from-[#ec4899] to-[#db2777]", to: "/comunidade", search: { tab: 'mural' } },
   { label: "Benefícios",             icon: <Star size={22} />,         gradient: "from-[#a855f7] to-[#7c3aed]", to: "/perfil" },
   { label: "Telefones",              icon: <Phone size={22} />,        gradient: "from-[#6b7280] to-[#4b5563]", to: "/comunidade", search: { tab: 'telefones' } },
-  { label: "SOS",                    icon: <ShieldAlert size={22} />,  gradient: "from-[#ef4444] to-[#991b1b]", to: "/sos", pulse: true },
 ];
 
 
