@@ -510,6 +510,8 @@ function SOSPage() {
 
   return (
     <div className="relative h-[calc(100vh-144px)] overflow-hidden flex flex-col">
+      {/* Banners */}
+      <div className="px-4 pt-3"><BannerCarousel /></div>
       {/* Map Section (50%) */}
       <div className="h-[45%] w-full relative" style={{ zIndex: 1 }}>
         <Map
