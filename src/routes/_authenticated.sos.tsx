@@ -465,7 +465,7 @@ function SOSPage() {
       type: a.tipo,
       created_at: a.criado_em,
       confirmacoes: a.confirmacoes,
-      resolved: !!a.resolvido_em,
+      resolved: !!a.resolvido_em || !!a.resolvido,
     }))
   ];
 
