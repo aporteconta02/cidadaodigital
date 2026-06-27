@@ -222,21 +222,21 @@ function SOSPage() {
       
       // Realtime subscription
       const channel = supabase
-        .channel('alertas-bairro')
+        .channel('alertas-realtime')
         .on(
           'postgres_changes',
-          { event: 'INSERT', schema: 'public', table: 'alertas_seguranca', filter: `bairro=eq.${usuario?.bairro}` },
+          { event: 'INSERT', schema: 'public', table: 'alertas_seguranca' },
           (payload) => {
             fetchAlerts();
             const novo: any = payload.new || {};
             const tipoLabel = ALERT_TYPES[novo.tipo as keyof typeof ALERT_TYPES]?.label || 'Alerta';
             const local = novo.bairro || 'sua região';
-            toast.warning(`🚨 ${tipoLabel} em ${local} — há poucos segundos`, { duration: 6000 });
+            toast.warning(`🚨 ${tipoLabel} em ${local} — agora`, { duration: 6000 });
           }
         )
         .on(
           'postgres_changes',
-          { event: 'UPDATE', schema: 'public', table: 'alertas_seguranca', filter: `bairro=eq.${usuario?.bairro}` },
+          { event: 'UPDATE', schema: 'public', table: 'alertas_seguranca' },
           () => fetchAlerts()
         )
         .subscribe();
