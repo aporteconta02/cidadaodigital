@@ -183,6 +183,22 @@ function RootComponent() {
 
   useEffect(() => {
     registerServiceWorker();
+
+    if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+
+    const onControllerChange = () => window.location.reload();
+    navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
+
+    const interval = window.setInterval(() => {
+      navigator.serviceWorker.getRegistration().then((reg) => {
+        if (reg) reg.update();
+      }).catch(() => {});
+    }, 30000);
+
+    return () => {
+      navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
+      window.clearInterval(interval);
+    };
   }, []);
 
 
