@@ -253,6 +253,31 @@ function RootComponent() {
           "flex min-h-screen flex-col bg-bg-primary text-text-primary overflow-x-hidden font-jakarta",
         )}>
         <Toaster position="top-center" expand={true} richColors />
+        {temAtualizacao && (
+          <div
+            style={{
+              position: "fixed", top: 0, left: 0, right: 0,
+              background: "#7c3aed", color: "white",
+              padding: "12px", textAlign: "center",
+              zIndex: 99999, fontSize: "14px",
+              display: "flex", alignItems: "center",
+              justifyContent: "center", gap: "12px",
+            }}
+          >
+            🔄 Nova versão disponível!
+            <button
+              onClick={aplicarAtualizacao}
+              style={{
+                background: "white", color: "#7c3aed",
+                border: "none", borderRadius: "6px",
+                padding: "4px 12px", cursor: "pointer",
+                fontWeight: "bold",
+              }}
+            >
+              Atualizar agora
+            </button>
+          </div>
+        )}
         <OfflineBanner />
         <InstallPrompt />
         {/* Floating theme toggle on public pages */}
