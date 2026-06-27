@@ -18,7 +18,18 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
   }
 });
 
+const noCacheHtmlMiddleware = createMiddleware().server(async ({ next }) => {
+  const result = await next();
+  const contentType = result.response.headers.get("content-type") ?? "";
+  if (contentType.includes("text/html")) {
+    result.response.headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
+    result.response.headers.set("Pragma", "no-cache");
+    result.response.headers.set("Expires", "0");
+  }
+  return result;
+});
+
 export const startInstance = createStart(() => ({
   functionMiddleware: [attachSupabaseAuth],
-  requestMiddleware: [errorMiddleware],
+  requestMiddleware: [errorMiddleware, noCacheHtmlMiddleware],
 }));

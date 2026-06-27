@@ -8,7 +8,7 @@ import {
   Scripts,
   useLocation,
 } from "@tanstack/react-router";
-import React, { useEffect, type ReactNode } from "react";
+import React, { useEffect, useState, type ReactNode } from "react";
 import { Home, ShoppingBag, Users, ShieldAlert, User, Megaphone, Calendar, ClipboardList, Phone, Bus, Star, MapPin, Menu, X, Settings, LogOut } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/use-auth";
@@ -89,16 +89,6 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  beforeLoad: async () => {
-    if (typeof window === "undefined") {
-      const { setResponseHeaders } = await import("@tanstack/react-start/server");
-      setResponseHeaders({
-        "Cache-Control": "no-cache, no-store, must-revalidate",
-        Pragma: "no-cache",
-        Expires: "0",
-      });
-    }
-  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -191,6 +181,8 @@ function RootComponent() {
     };
   }, [router]);
 
+  const [temAtualizacao, setTemAtualizacao] = useState(false);
+
   useEffect(() => {
     registerServiceWorker();
 
@@ -198,6 +190,25 @@ function RootComponent() {
 
     const onControllerChange = () => window.location.reload();
     navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
+
+    let detachUpdateFound: (() => void) | undefined;
+    navigator.serviceWorker.getRegistration().then((reg) => {
+      if (!reg) return;
+      if (reg.waiting && navigator.serviceWorker.controller) {
+        setTemAtualizacao(true);
+      }
+      const onUpdateFound = () => {
+        const newSW = reg.installing;
+        if (!newSW) return;
+        newSW.addEventListener("statechange", () => {
+          if (newSW.state === "installed" && navigator.serviceWorker.controller) {
+            setTemAtualizacao(true);
+          }
+        });
+      };
+      reg.addEventListener("updatefound", onUpdateFound);
+      detachUpdateFound = () => reg.removeEventListener("updatefound", onUpdateFound);
+    }).catch(() => {});
 
     const interval = window.setInterval(() => {
       navigator.serviceWorker.getRegistration().then((reg) => {
@@ -208,8 +219,17 @@ function RootComponent() {
     return () => {
       navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
       window.clearInterval(interval);
+      detachUpdateFound?.();
     };
   }, []);
+
+  const aplicarAtualizacao = () => {
+    if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.getRegistration().then((reg) => {
+      reg?.waiting?.postMessage({ type: "SKIP_WAITING" });
+    }).catch(() => {});
+    setTimeout(() => window.location.reload(), 500);
+  };
 
 
 
@@ -223,6 +243,31 @@ function RootComponent() {
           "flex min-h-screen flex-col bg-bg-primary text-text-primary overflow-x-hidden font-jakarta",
         )}>
         <Toaster position="top-center" expand={true} richColors />
+        {temAtualizacao && (
+          <div
+            style={{
+              position: "fixed", top: 0, left: 0, right: 0,
+              background: "#7c3aed", color: "white",
+              padding: "12px", textAlign: "center",
+              zIndex: 99999, fontSize: "14px",
+              display: "flex", alignItems: "center",
+              justifyContent: "center", gap: "12px",
+            }}
+          >
+            🔄 Nova versão disponível!
+            <button
+              onClick={aplicarAtualizacao}
+              style={{
+                background: "white", color: "#7c3aed",
+                border: "none", borderRadius: "6px",
+                padding: "4px 12px", cursor: "pointer",
+                fontWeight: "bold",
+              }}
+            >
+              Atualizar agora
+            </button>
+          </div>
+        )}
         <OfflineBanner />
         <InstallPrompt />
         {/* Floating theme toggle on public pages */}
