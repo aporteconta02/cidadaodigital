@@ -186,6 +186,7 @@ function SOSPage() {
   const [activating, setActivating] = useState(false);
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
   const [timeWindow, setTimeWindow] = useState<'all' | '2h' | '24h' | '48h'>('48h');
+  const [collabAlert, setCollabAlert] = useState<any | null>(null);
 
   const activatePlusFn = useServerFn(activatePlusSubscription);
   const ativarAssinatura = async () => {
