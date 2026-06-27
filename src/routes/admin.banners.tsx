@@ -60,7 +60,7 @@ function AdminBanners() {
 
     setUploading(true);
     const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
     const filePath = `public/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
@@ -70,15 +70,24 @@ function AdminBanners() {
     if (uploadError) {
       toast.error("Erro no upload da imagem");
     } else {
-      const { data: { publicUrl } } = supabase.storage
-        .from('banners')
-        .getPublicUrl(filePath);
-      
-      setNewBanner({ ...newBanner, imagem_url: publicUrl });
+      // Store the storage path; signed URLs are generated on read.
+      setNewBanner({ ...newBanner, imagem_url: filePath });
       toast.success("Imagem enviada!");
     }
     setUploading(false);
   };
+
+  const [signedPreview, setSignedPreview] = useState<string>("");
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!newBanner.imagem_url) { setSignedPreview(""); return; }
+      if (/^https?:\/\//i.test(newBanner.imagem_url)) { setSignedPreview(newBanner.imagem_url); return; }
+      const { data } = await supabase.storage.from('banners').createSignedUrl(newBanner.imagem_url, 3600);
+      if (!cancelled) setSignedPreview(data?.signedUrl ?? "");
+    })();
+    return () => { cancelled = true; };
+  }, [newBanner.imagem_url]);
 
   const createBanner = async () => {
     if (!newBanner.imagem_url || !newBanner.titulo) {
