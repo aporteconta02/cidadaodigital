@@ -144,6 +144,37 @@ function AdminEventos() {
         </div>
       </div>
 
+      {/* Solicitações de divulgação */}
+      <div className="bg-admin-surface border border-admin-border-light rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-admin-border-light flex items-center justify-between">
+          <h3 className="text-sm font-bold uppercase tracking-tight">📩 Solicitações de Divulgação (pendentes)</h3>
+          <span className="text-[10px] font-semibold text-admin-text-secondary">{solicitacoes.length}</span>
+        </div>
+        <div className="divide-y divide-admin-border-light">
+          {loadingSol ? (
+            <div className="px-6 py-6 text-sm text-admin-text-secondary animate-pulse">Carregando...</div>
+          ) : solicitacoes.length === 0 ? (
+            <div className="px-6 py-6 text-sm text-admin-text-secondary">Sem solicitações pendentes.</div>
+          ) : (
+            solicitacoes.map((s) => (
+              <div key={s.id} className="px-6 py-4 flex flex-col md:flex-row md:items-center gap-3 md:justify-between">
+                <div className="min-w-0">
+                  <p className="text-sm font-bold truncate">{s.nome_evento}</p>
+                  <p className="text-[11px] text-admin-text-secondary truncate">
+                    {s.data_evento ? format(new Date(s.data_evento), "dd/MM/yy HH:mm") : "Sem data"} · {s.local || "Sem local"} · {s.contato || "Sem contato"}
+                  </p>
+                  {s.descricao && <p className="text-[11px] text-admin-text-secondary mt-1 line-clamp-2">{s.descricao}</p>}
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <button onClick={() => aprovarSolicitacao(s)} className="px-3 py-2 text-[11px] font-semibold bg-admin-success/10 text-admin-success hover:bg-admin-success/20 rounded-lg">Aprovar e publicar</button>
+                  <button onClick={() => recusarSolicitacao(s.id)} className="px-3 py-2 text-[11px] font-semibold bg-admin-danger/10 text-admin-danger hover:bg-admin-danger/20 rounded-lg">Recusar</button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
       {/* Filters */}
       <div className="bg-admin-surface border border-admin-border-light p-4 rounded-lg shadow-sm">
         <select 
