@@ -11,7 +11,7 @@ import Map from '@/components/Map';
 
 type Tipo = 'informacao' | 'confirmacao' | 'resolucao';
 
-const TIPO_META: Record<Tipo, { label: string; icon: JSX.Element; color: string }> = {
+const TIPO_META: Record<Tipo, { label: string; icon: ReactElement; color: string }> = {
   informacao: { label: 'Informação adicional', icon: <MessageSquare size={14} />, color: 'text-primary' },
   confirmacao: { label: 'Confirmo que aconteceu', icon: <CheckCircle2 size={14} />, color: 'text-warning' },
   resolucao: { label: 'Foi resolvido', icon: <Wrench size={14} />, color: 'text-success' },
