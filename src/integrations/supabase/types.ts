@@ -51,6 +51,7 @@ export type Database = {
       }
       alertas_seguranca: {
         Row: {
+          arquivado_em: string | null
           ativo: boolean | null
           bairro: string | null
           confirmacoes: number | null
@@ -64,9 +65,12 @@ export type Database = {
           resolvido: boolean
           resolvido_em: string | null
           tipo: string
+          total_colaboracoes: number
           usuario_id: string | null
+          visivel_ate: string | null
         }
         Insert: {
+          arquivado_em?: string | null
           ativo?: boolean | null
           bairro?: string | null
           confirmacoes?: number | null
@@ -80,9 +84,12 @@ export type Database = {
           resolvido?: boolean
           resolvido_em?: string | null
           tipo: string
+          total_colaboracoes?: number
           usuario_id?: string | null
+          visivel_ate?: string | null
         }
         Update: {
+          arquivado_em?: string | null
           ativo?: boolean | null
           bairro?: string | null
           confirmacoes?: number | null
@@ -96,7 +103,9 @@ export type Database = {
           resolvido?: boolean
           resolvido_em?: string | null
           tipo?: string
+          total_colaboracoes?: number
           usuario_id?: string | null
+          visivel_ate?: string | null
         }
         Relationships: [
           {
