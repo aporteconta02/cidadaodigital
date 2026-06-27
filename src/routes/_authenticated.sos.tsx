@@ -181,7 +181,7 @@ function SOSPage() {
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(!!search?.new);
   const [newAlertType, setNewAlertType] = useState<string>('suspeito');
   const [newAlertDesc, setNewAlertDesc] = useState('');
-  const [activeTab, setActiveTab] = useState<'todos' | 'meus' | 'resolvidos' | 'contatos'>('todos');
+  const [activeTab, setActiveTab] = useState<'todos' | 'meus' | 'resolvidos' | 'contatos' | 'estatisticas'>('todos');
   const [resolveTarget, setResolveTarget] = useState<any>(null);
   const [resolveText, setResolveText] = useState('');
   const [activating, setActivating] = useState(false);
