@@ -11,8 +11,10 @@ interface MapProps {
     type: string;
     created_at?: string;
     confirmacoes?: number;
+    resolved?: boolean;
   }>;
   onConfirmAlert?: (alertId: string) => void;
+  onViewDetails?: (alertId: string) => void;
   isAdminView?: boolean;
   light?: boolean;
 }
