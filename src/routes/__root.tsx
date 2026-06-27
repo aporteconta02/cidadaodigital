@@ -8,7 +8,7 @@ import {
   Scripts,
   useLocation,
 } from "@tanstack/react-router";
-import React, { useEffect, type ReactNode } from "react";
+import React, { useEffect, useState, type ReactNode } from "react";
 import { Home, ShoppingBag, Users, ShieldAlert, User, Megaphone, Calendar, ClipboardList, Phone, Bus, Star, MapPin, Menu, X, Settings, LogOut } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/use-auth";
