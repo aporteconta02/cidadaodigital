@@ -12,6 +12,7 @@ import { activatePlusSubscription } from "@/lib/subscription.functions";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import AlertCollaborationDrawer from "@/components/AlertCollaborationDrawer";
 
 export const Route = createFileRoute("/_authenticated/sos")({
   component: SOSPage,
@@ -185,6 +186,7 @@ function SOSPage() {
   const [activating, setActivating] = useState(false);
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
   const [timeWindow, setTimeWindow] = useState<'all' | '2h' | '24h' | '48h'>('48h');
+  const [collabAlert, setCollabAlert] = useState<any | null>(null);
 
   const activatePlusFn = useServerFn(activatePlusSubscription);
   const ativarAssinatura = async () => {
@@ -463,20 +465,13 @@ function SOSPage() {
       type: a.tipo,
       created_at: a.criado_em,
       confirmacoes: a.confirmacoes,
-      resolved: !!a.resolvido_em,
+      resolved: !!a.resolvido_em || !!a.resolvido,
     }))
   ];
 
   const handleViewDetails = (id: string) => {
     const a = alerts.find((x) => x.id === id);
-    if (a?.latitude && a?.longitude) setMapCenter([Number(a.latitude), Number(a.longitude)]);
-    setActiveTab('todos');
-    setTimeout(() => {
-      const el = document.getElementById(`alert-${id}`);
-      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      el?.classList.add('ring-2', 'ring-primary');
-      setTimeout(() => el?.classList.remove('ring-2', 'ring-primary'), 2000);
-    }, 100);
+    if (a) setCollabAlert(a);
   };
 
   return (
@@ -776,7 +771,13 @@ function SOSPage() {
                             </div>
                           )}
 
-                          <div className="mt-3 flex gap-2">
+                          <div className="mt-3 flex gap-2 flex-wrap">
+                            <button
+                              onClick={() => setCollabAlert(alert)}
+                              className="flex-1 py-2 bg-primary text-white font-black rounded-xl uppercase tracking-widest text-[10px] active:scale-95"
+                            >
+                              Colaborar
+                            </button>
                             {alert.latitude && alert.longitude && (
                               <button
                                 onClick={() => setMapCenter([Number(alert.latitude), Number(alert.longitude)])}
@@ -882,6 +883,12 @@ function SOSPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <AlertCollaborationDrawer
+        alert={collabAlert}
+        onClose={() => setCollabAlert(null)}
+        onResolved={() => { setCollabAlert(null); fetchAlerts(); }}
+      />
     </div>
   );
 }

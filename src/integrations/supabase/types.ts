@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      alerta_colaboracoes: {
+        Row: {
+          alerta_id: string
+          created_at: string
+          id: string
+          texto: string
+          tipo: string
+          user_id: string
+        }
+        Insert: {
+          alerta_id: string
+          created_at?: string
+          id?: string
+          texto: string
+          tipo: string
+          user_id: string
+        }
+        Update: {
+          alerta_id?: string
+          created_at?: string
+          id?: string
+          texto?: string
+          tipo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alerta_colaboracoes_alerta_id_fkey"
+            columns: ["alerta_id"]
+            isOneToOne: false
+            referencedRelation: "alertas_seguranca"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       alertas_seguranca: {
         Row: {
           ativo: boolean | null
@@ -26,6 +61,7 @@ export type Database = {
           latitude: number | null
           longitude: number | null
           observacao_resolucao: string | null
+          resolvido: boolean
           resolvido_em: string | null
           tipo: string
           usuario_id: string | null
@@ -41,6 +77,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           observacao_resolucao?: string | null
+          resolvido?: boolean
           resolvido_em?: string | null
           tipo: string
           usuario_id?: string | null
@@ -56,6 +93,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           observacao_resolucao?: string | null
+          resolvido?: boolean
           resolvido_em?: string | null
           tipo?: string
           usuario_id?: string | null
