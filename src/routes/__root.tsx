@@ -191,6 +191,8 @@ function RootComponent() {
     };
   }, [router]);
 
+  const [temAtualizacao, setTemAtualizacao] = useState(false);
+
   useEffect(() => {
     registerServiceWorker();
 
@@ -198,6 +200,25 @@ function RootComponent() {
 
     const onControllerChange = () => window.location.reload();
     navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
+
+    let detachUpdateFound: (() => void) | undefined;
+    navigator.serviceWorker.getRegistration().then((reg) => {
+      if (!reg) return;
+      if (reg.waiting && navigator.serviceWorker.controller) {
+        setTemAtualizacao(true);
+      }
+      const onUpdateFound = () => {
+        const newSW = reg.installing;
+        if (!newSW) return;
+        newSW.addEventListener("statechange", () => {
+          if (newSW.state === "installed" && navigator.serviceWorker.controller) {
+            setTemAtualizacao(true);
+          }
+        });
+      };
+      reg.addEventListener("updatefound", onUpdateFound);
+      detachUpdateFound = () => reg.removeEventListener("updatefound", onUpdateFound);
+    }).catch(() => {});
 
     const interval = window.setInterval(() => {
       navigator.serviceWorker.getRegistration().then((reg) => {
@@ -208,8 +229,17 @@ function RootComponent() {
     return () => {
       navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
       window.clearInterval(interval);
+      detachUpdateFound?.();
     };
   }, []);
+
+  const aplicarAtualizacao = () => {
+    if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.getRegistration().then((reg) => {
+      reg?.waiting?.postMessage({ type: "SKIP_WAITING" });
+    }).catch(() => {});
+    setTimeout(() => window.location.reload(), 500);
+  };
 
 
 
