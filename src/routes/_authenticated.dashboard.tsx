@@ -18,7 +18,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { BannerCarousel } from "@/components/BannerCarousel";
 import { useAuth } from "@/hooks/use-auth";
 import { Skeleton } from "@/components/ui/skeleton";
 import Autoplay from "embla-carousel-autoplay";
