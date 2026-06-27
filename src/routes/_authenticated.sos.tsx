@@ -725,6 +725,7 @@ function SOSPage() {
                       return (
                         <div
                           key={alert.id}
+                          id={`alert-${alert.id}`}
                           className={cn(
                             "bg-bg-card rounded-2xl p-4 border border-white/5 shadow-sm transition-all border-l-4",
                             tipo?.color || "border-l-primary",
