@@ -161,9 +161,17 @@ function ContatosSection() {
 }
 
 const ALERT_TYPES = {
-  suspeito: { color: "border-l-[#FF3B5C]", icon: <Eye size={18} className="text-[#FF3B5C]" />, label: "Suspeito", hex: "#FF3B5C" },
+  assalto: { color: "border-l-[#ef4444]", icon: <ShieldAlert size={18} className="text-[#ef4444]" />, label: "🔴 Assalto/Roubo", hex: "#ef4444" },
+  briga: { color: "border-l-[#f97316]", icon: <AlertTriangle size={18} className="text-[#f97316]" />, label: "🟠 Briga/Conflito", hex: "#f97316" },
+  vandalismo: { color: "border-l-[#eab308]", icon: <AlertTriangle size={18} className="text-[#eab308]" />, label: "🟡 Vandalismo", hex: "#eab308" },
+  suspeito: { color: "border-l-[#3b82f6]", icon: <Eye size={18} className="text-[#3b82f6]" />, label: "🔵 Suspeito", hex: "#3b82f6" },
+  acidente: { color: "border-l-[#6b7280]", icon: <Navigation size={18} className="text-[#6b7280]" />, label: "⚪ Acidente", hex: "#6b7280" },
+  abandono: { color: "border-l-[#92400e]", icon: <AlertTriangle size={18} className="text-[#92400e]" />, label: "🟤 Abandono/Lixo", hex: "#92400e" },
+  iluminacao: { color: "border-l-[#ca8a04]", icon: <AlertTriangle size={18} className="text-[#ca8a04]" />, label: "💡 Iluminação", hex: "#ca8a04" },
+  drogas: { color: "border-l-[#dc2626]", icon: <ShieldAlert size={18} className="text-[#dc2626]" />, label: "🚨 Drogas", hex: "#dc2626" },
+  outro: { color: "border-l-[#7c3aed]", icon: <AlertTriangle size={18} className="text-[#7c3aed]" />, label: "📌 Outro", hex: "#7c3aed" },
+  // Legacy
   perturbacao: { color: "border-l-[#FF8C00]", icon: <AlertTriangle size={18} className="text-[#FF8C00]" />, label: "Perturbação", hex: "#FF8C00" },
-  acidente: { color: "border-l-[#FFB800]", icon: <Navigation size={18} className="text-[#FFB800]" />, label: "Acidente", hex: "#FFB800" },
   crime: { color: "border-l-[#6C63FF]", icon: <ShieldAlert size={18} className="text-[#6C63FF]" />, label: "Crime", hex: "#6C63FF" },
   sos: { color: "border-l-[#FF3B5C]", icon: <ShieldAlert size={18} className="text-[#FF3B5C]" />, label: "SOS", hex: "#FF3B5C" },
 };
