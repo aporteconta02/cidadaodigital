@@ -19,14 +19,14 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
 });
 
 const noCacheHtmlMiddleware = createMiddleware().server(async ({ next }) => {
-  const response: Response = await next();
-  const contentType = response.headers.get("content-type") ?? "";
+  const result = await next();
+  const contentType = result.response.headers.get("content-type") ?? "";
   if (contentType.includes("text/html")) {
-    response.headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
-    response.headers.set("Pragma", "no-cache");
-    response.headers.set("Expires", "0");
+    result.response.headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
+    result.response.headers.set("Pragma", "no-cache");
+    result.response.headers.set("Expires", "0");
   }
-  return response;
+  return result;
 });
 
 export const startInstance = createStart(() => ({
