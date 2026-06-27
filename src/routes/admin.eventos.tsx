@@ -53,9 +53,58 @@ function AdminEventos() {
     setLoading(false);
   };
 
+  const fetchSolicitacoes = async () => {
+    setLoadingSol(true);
+    const { data } = await supabase
+      .from("solicitacoes_eventos" as any)
+      .select("*")
+      .eq("status", "pendente")
+      .order("created_at", { ascending: false });
+    setSolicitacoes((data as any[]) || []);
+    setLoadingSol(false);
+  };
+
   useEffect(() => {
     fetchEventos();
   }, [filterAprovado]);
+
+  useEffect(() => {
+    fetchSolicitacoes();
+  }, []);
+
+  const aprovarSolicitacao = async (s: any) => {
+    const { error: insErr } = await supabase.from("eventos").insert({
+      titulo: s.nome_evento,
+      descricao: s.descricao || "",
+      data_evento: s.data_evento || new Date().toISOString(),
+      local_nome: s.local || "",
+      endereco: s.local || "",
+      categoria: "Comunitário",
+      gratuito: true,
+      aprovado: true,
+      usuario_id: s.user_id,
+    });
+    if (insErr) { toast.error("Erro ao publicar evento"); return; }
+    const { error: updErr } = await supabase
+      .from("solicitacoes_eventos" as any)
+      .update({ status: "aprovada" })
+      .eq("id", s.id);
+    if (updErr) { toast.error("Evento criado, mas falhou ao atualizar solicitação"); }
+    toast.success("Solicitação aprovada e evento publicado");
+    fetchSolicitacoes();
+    fetchEventos();
+  };
+
+  const recusarSolicitacao = async (id: string) => {
+    const { error } = await supabase
+      .from("solicitacoes_eventos" as any)
+      .update({ status: "recusada" })
+      .eq("id", id);
+    if (error) { toast.error("Erro ao recusar"); return; }
+    toast.success("Solicitação recusada");
+    fetchSolicitacoes();
+  };
+
 
   const updateEvento = async (eventoId: string, updates: any) => {
     const { error } = await supabase
