@@ -657,6 +657,7 @@ function SOSPage() {
             { id: 'todos', label: 'Todos' },
             { id: 'meus', label: 'Meus' },
             { id: 'resolvidos', label: 'Resolvidos' },
+            { id: 'estatisticas', label: '📊 Stats' },
             { id: 'contatos', label: 'Contatos' },
           ] as const).map((t) => (
             <button
