@@ -46,7 +46,14 @@ function AdminBanners() {
       .select("*")
       .order("posicao", { ascending: true });
 
-    if (!error) setBanners(data || []);
+    if (!error) {
+      const resolved = await Promise.all((data || []).map(async (b: any) => {
+        if (!b.imagem_url || /^https?:\/\//i.test(b.imagem_url)) return b;
+        const { data: s } = await supabase.storage.from('banners').createSignedUrl(b.imagem_url, 3600);
+        return { ...b, imagem_url: s?.signedUrl ?? b.imagem_url };
+      }));
+      setBanners(resolved);
+    }
     setLoading(false);
   };
 
