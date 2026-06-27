@@ -493,7 +493,10 @@ function DenunciasTab({ autoOpen = false }: { autoOpen?: boolean }) {
    ============================================================================ */
 
 function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
-  const { usuario } = useAuth();
+  const { usuario, isAdmin } = useAuth();
+  const [isReqOpen, setIsReqOpen] = useState(false);
+  const [reqSubmitting, setReqSubmitting] = useState(false);
+  const [reqForm, setReqForm] = useState({ nome_evento: '', data_evento: '', local: '', descricao: '', contato: '' });
   const [eventos, setEventos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'todos' | 'hoje' | 'semana' | 'mes'>('todos');
@@ -629,80 +632,127 @@ function EventosTab({ autoOpen = false }: { autoOpen?: boolean }) {
         )}
       </div>
 
-      <Dialog open={isNewOpen} onOpenChange={setIsNewOpen}>
-        <DialogTrigger asChild>
-          <button className="fixed bottom-6 right-6 size-16 rounded-full bg-secondary text-white shadow-glow flex items-center justify-center active:scale-90 transition-transform z-40">
-            <Plus size={32} strokeWidth={3} />
-          </button>
-        </DialogTrigger>
-        <DialogContent className="bg-bg-elevated border-border-custom rounded-3xl p-6 max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-black font-space uppercase italic text-white">Propor Evento</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 mt-4">
-            <input type="text" value={form.titulo} onChange={(e) => setForm({...form, titulo: e.target.value})} placeholder="Título do evento" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
-            <input type="datetime-local" value={form.data_evento} onChange={(e) => setForm({...form, data_evento: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
-            <input type="text" value={form.local_nome} onChange={(e) => setForm({...form, local_nome: e.target.value})} placeholder="Local (ex: Praça Central)" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
-            <input type="text" value={form.endereco} onChange={(e) => setForm({...form, endereco: e.target.value})} placeholder="Endereço" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
-            <select value={form.categoria} onChange={(e) => setForm({...form, categoria: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50">
-              {['Cultura','Esporte','Religioso','Educação','Comunitário','Festa','Outros'].map(c => <option key={c} value={c} className="bg-bg-elevated">{c}</option>)}
-            </select>
-            <textarea value={form.descricao} onChange={(e) => setForm({...form, descricao: e.target.value})} maxLength={500} placeholder="Descrição do evento..." className="w-full h-24 bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50 resize-none" />
-            <label className="flex items-center justify-center gap-2 p-4 bg-white/5 border border-dashed border-white/10 rounded-xl cursor-pointer">
-              <Image size={16} className="text-secondary" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-white">{bannerFile ? bannerFile.name : 'Banner do evento (opcional)'}</span>
-              <input type="file" accept="image/*" className="hidden" onChange={(e) => setBannerFile(e.target.files?.[0] || null)} />
-            </label>
-            <label className="flex items-center gap-2 text-xs text-text-muted">
-              <input type="checkbox" checked={form.gratuito} onChange={(e) => setForm({...form, gratuito: e.target.checked, preco_ingresso: e.target.checked ? '' : form.preco_ingresso})} /> Evento gratuito
-            </label>
-            {!form.gratuito && (
-              <input type="number" min="0" step="0.01" value={form.preco_ingresso} onChange={(e) => setForm({...form, preco_ingresso: e.target.value})} placeholder="Valor do ingresso (R$)" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
-            )}
-            <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">Eventos passam por aprovação da administração.</p>
-            <button
-              disabled={submitting}
-              onClick={async () => {
-                if (!usuario?.id || !form.titulo || !form.data_evento) return toast.error("Preencha título e data");
-                setSubmitting(true);
-                let banner_url: string | null = null;
-                if (bannerFile) {
-                  const fn = `${usuario.id}/${Date.now()}.${bannerFile.name.split('.').pop()}`;
-                  const up = await supabase.storage.from('banners').upload(fn, bannerFile);
-                  if (up.error) {
-                    setSubmitting(false);
-                    return toast.error("Falha ao enviar o banner. Tente sem imagem.");
-                  }
-                  const { data: signed } = await supabase.storage.from('banners').createSignedUrl(up.data.path, 60 * 60 * 24 * 365);
-                  banner_url = signed?.signedUrl || null;
-                }
-                const { error } = await supabase.from('eventos').insert({
-                  usuario_id: usuario.id,
-                  titulo: form.titulo,
-                  descricao: form.descricao,
-                  data_evento: new Date(form.data_evento).toISOString(),
-                  local_nome: form.local_nome,
-                  endereco: form.endereco,
-                  categoria: form.categoria,
-                  gratuito: form.gratuito,
-                  preco_ingresso: form.gratuito ? null : (form.preco_ingresso ? Number(form.preco_ingresso) : null),
-                  banner_url,
-                });
-                setSubmitting(false);
-                if (error) return toast.error("Erro ao propor evento");
-                toast.success("Evento enviado para aprovação! ✅");
-                setIsNewOpen(false);
-                setForm({ titulo: '', descricao: '', data_evento: '', local_nome: '', endereco: '', categoria: 'Cultura', gratuito: true, preco_ingresso: '' });
-                setBannerFile(null);
-                fetchEventos();
-              }}
-              className="w-full py-4 bg-secondary text-white font-black rounded-2xl uppercase tracking-widest shadow-glow active:scale-95 transition-all"
-            >
-              {submitting ? 'Enviando...' : 'Propor Evento'}
+      {isAdmin ? (
+        <Dialog open={isNewOpen} onOpenChange={setIsNewOpen}>
+          <DialogTrigger asChild>
+            <button className="fixed bottom-6 right-6 size-16 rounded-full bg-secondary text-white shadow-glow flex items-center justify-center active:scale-90 transition-transform z-40" aria-label="Criar evento">
+              <Plus size={32} strokeWidth={3} />
             </button>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </DialogTrigger>
+          <DialogContent className="bg-bg-elevated border-border-custom rounded-3xl p-6 max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-black font-space uppercase italic text-white">Criar Evento</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <input type="text" value={form.titulo} onChange={(e) => setForm({...form, titulo: e.target.value})} placeholder="Título do evento" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
+              <input type="datetime-local" value={form.data_evento} onChange={(e) => setForm({...form, data_evento: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
+              <input type="text" value={form.local_nome} onChange={(e) => setForm({...form, local_nome: e.target.value})} placeholder="Local (ex: Praça Central)" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
+              <input type="text" value={form.endereco} onChange={(e) => setForm({...form, endereco: e.target.value})} placeholder="Endereço" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
+              <select value={form.categoria} onChange={(e) => setForm({...form, categoria: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50">
+                {['Cultura','Esporte','Religioso','Educação','Comunitário','Festa','Outros'].map(c => <option key={c} value={c} className="bg-bg-elevated">{c}</option>)}
+              </select>
+              <textarea value={form.descricao} onChange={(e) => setForm({...form, descricao: e.target.value})} maxLength={500} placeholder="Descrição do evento..." className="w-full h-24 bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50 resize-none" />
+              <label className="flex items-center justify-center gap-2 p-4 bg-white/5 border border-dashed border-white/10 rounded-xl cursor-pointer">
+                <Image size={16} className="text-secondary" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-white">{bannerFile ? bannerFile.name : 'Banner do evento (opcional)'}</span>
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => setBannerFile(e.target.files?.[0] || null)} />
+              </label>
+              <label className="flex items-center gap-2 text-xs text-text-muted">
+                <input type="checkbox" checked={form.gratuito} onChange={(e) => setForm({...form, gratuito: e.target.checked, preco_ingresso: e.target.checked ? '' : form.preco_ingresso})} /> Evento gratuito
+              </label>
+              {!form.gratuito && (
+                <input type="number" min="0" step="0.01" value={form.preco_ingresso} onChange={(e) => setForm({...form, preco_ingresso: e.target.value})} placeholder="Valor do ingresso (R$)" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
+              )}
+              <button
+                disabled={submitting}
+                onClick={async () => {
+                  if (!usuario?.id || !form.titulo || !form.data_evento) return toast.error("Preencha título e data");
+                  setSubmitting(true);
+                  let banner_url: string | null = null;
+                  if (bannerFile) {
+                    const fn = `${usuario.id}/${Date.now()}.${bannerFile.name.split('.').pop()}`;
+                    const up = await supabase.storage.from('banners').upload(fn, bannerFile);
+                    if (up.error) {
+                      setSubmitting(false);
+                      return toast.error("Falha ao enviar o banner. Tente sem imagem.");
+                    }
+                    const { data: signed } = await supabase.storage.from('banners').createSignedUrl(up.data.path, 60 * 60 * 24 * 365);
+                    banner_url = signed?.signedUrl || null;
+                  }
+                  const { error } = await supabase.from('eventos').insert({
+                    usuario_id: usuario.id,
+                    titulo: form.titulo,
+                    descricao: form.descricao,
+                    data_evento: new Date(form.data_evento).toISOString(),
+                    local_nome: form.local_nome,
+                    endereco: form.endereco,
+                    categoria: form.categoria,
+                    gratuito: form.gratuito,
+                    preco_ingresso: form.gratuito ? null : (form.preco_ingresso ? Number(form.preco_ingresso) : null),
+                    banner_url,
+                    aprovado: true,
+                  });
+                  setSubmitting(false);
+                  if (error) return toast.error("Erro ao criar evento");
+                  toast.success("Evento publicado! ✅");
+                  setIsNewOpen(false);
+                  setForm({ titulo: '', descricao: '', data_evento: '', local_nome: '', endereco: '', categoria: 'Cultura', gratuito: true, preco_ingresso: '' });
+                  setBannerFile(null);
+                  fetchEventos();
+                }}
+                className="w-full py-4 bg-secondary text-white font-black rounded-2xl uppercase tracking-widest shadow-glow active:scale-95 transition-all"
+              >
+                {submitting ? 'Publicando...' : 'Publicar Evento'}
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      ) : (
+        <Dialog open={isReqOpen} onOpenChange={setIsReqOpen}>
+          <DialogTrigger asChild>
+            <button className="fixed bottom-6 right-6 h-14 px-5 rounded-full bg-secondary text-white shadow-glow flex items-center gap-2 active:scale-95 transition-transform z-40 text-[11px] font-black uppercase tracking-widest">
+              <Megaphone size={18} /> Solicitar divulgação
+            </button>
+          </DialogTrigger>
+          <DialogContent className="bg-bg-elevated border-border-custom rounded-3xl p-6 max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-black font-space uppercase italic text-white">📩 Solicitar Divulgação</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <input type="text" value={reqForm.nome_evento} onChange={(e) => setReqForm({...reqForm, nome_evento: e.target.value})} placeholder="Nome do evento" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
+              <input type="datetime-local" value={reqForm.data_evento} onChange={(e) => setReqForm({...reqForm, data_evento: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
+              <input type="text" value={reqForm.local} onChange={(e) => setReqForm({...reqForm, local: e.target.value})} placeholder="Local" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
+              <textarea value={reqForm.descricao} onChange={(e) => setReqForm({...reqForm, descricao: e.target.value})} maxLength={500} placeholder="Descrição do evento..." className="w-full h-24 bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50 resize-none" />
+              <input type="text" value={reqForm.contato} onChange={(e) => setReqForm({...reqForm, contato: e.target.value})} placeholder="Contato do organizador (telefone/whatsapp/email)" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-primary/50" />
+              <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">A administração analisará e publicará se aprovado.</p>
+              <button
+                disabled={reqSubmitting}
+                onClick={async () => {
+                  const authUid = (await supabase.auth.getUser()).data.user?.id;
+                  if (!authUid || !reqForm.nome_evento) return toast.error("Preencha o nome do evento");
+                  setReqSubmitting(true);
+                  const { error } = await supabase.from('solicitacoes_eventos' as any).insert({
+                    user_id: authUid,
+                    nome_evento: reqForm.nome_evento,
+                    data_evento: reqForm.data_evento ? new Date(reqForm.data_evento).toISOString() : null,
+                    local: reqForm.local || null,
+                    descricao: reqForm.descricao || null,
+                    contato: reqForm.contato || null,
+                  });
+                  setReqSubmitting(false);
+                  if (error) return toast.error("Erro ao enviar solicitação");
+                  toast.success("Solicitação enviada! ✅");
+                  setIsReqOpen(false);
+                  setReqForm({ nome_evento: '', data_evento: '', local: '', descricao: '', contato: '' });
+                }}
+                className="w-full py-4 bg-secondary text-white font-black rounded-2xl uppercase tracking-widest shadow-glow active:scale-95 transition-all"
+              >
+                {reqSubmitting ? 'Enviando...' : 'Enviar solicitação'}
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

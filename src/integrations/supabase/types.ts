@@ -963,6 +963,45 @@ export type Database = {
           },
         ]
       }
+      solicitacoes_eventos: {
+        Row: {
+          contato: string | null
+          created_at: string
+          data_evento: string | null
+          descricao: string | null
+          id: string
+          local: string | null
+          nome_evento: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          contato?: string | null
+          created_at?: string
+          data_evento?: string | null
+          descricao?: string | null
+          id?: string
+          local?: string | null
+          nome_evento: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          contato?: string | null
+          created_at?: string
+          data_evento?: string | null
+          descricao?: string | null
+          id?: string
+          local?: string | null
+          nome_evento?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       sos_alerts: {
         Row: {
           created_at: string | null

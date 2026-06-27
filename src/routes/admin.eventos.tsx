@@ -26,6 +26,8 @@ export const Route = createFileRoute("/admin/eventos")({
 function AdminEventos() {
   const [eventos, setEventos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [solicitacoes, setSolicitacoes] = useState<any[]>([]);
+  const [loadingSol, setLoadingSol] = useState(true);
   const [filterAprovado, setFilterAprovado] = useState("todos");
   const [selectedEvento, setSelectedEvento] = useState<any>(null);
   const [rejectionReason, setRejectionReason] = useState("");
@@ -51,9 +53,58 @@ function AdminEventos() {
     setLoading(false);
   };
 
+  const fetchSolicitacoes = async () => {
+    setLoadingSol(true);
+    const { data } = await supabase
+      .from("solicitacoes_eventos" as any)
+      .select("*")
+      .eq("status", "pendente")
+      .order("created_at", { ascending: false });
+    setSolicitacoes((data as any[]) || []);
+    setLoadingSol(false);
+  };
+
   useEffect(() => {
     fetchEventos();
   }, [filterAprovado]);
+
+  useEffect(() => {
+    fetchSolicitacoes();
+  }, []);
+
+  const aprovarSolicitacao = async (s: any) => {
+    const { error: insErr } = await supabase.from("eventos").insert({
+      titulo: s.nome_evento,
+      descricao: s.descricao || "",
+      data_evento: s.data_evento || new Date().toISOString(),
+      local_nome: s.local || "",
+      endereco: s.local || "",
+      categoria: "Comunitário",
+      gratuito: true,
+      aprovado: true,
+      usuario_id: s.user_id,
+    });
+    if (insErr) { toast.error("Erro ao publicar evento"); return; }
+    const { error: updErr } = await supabase
+      .from("solicitacoes_eventos" as any)
+      .update({ status: "aprovada" })
+      .eq("id", s.id);
+    if (updErr) { toast.error("Evento criado, mas falhou ao atualizar solicitação"); }
+    toast.success("Solicitação aprovada e evento publicado");
+    fetchSolicitacoes();
+    fetchEventos();
+  };
+
+  const recusarSolicitacao = async (id: string) => {
+    const { error } = await supabase
+      .from("solicitacoes_eventos" as any)
+      .update({ status: "recusada" })
+      .eq("id", id);
+    if (error) { toast.error("Erro ao recusar"); return; }
+    toast.success("Solicitação recusada");
+    fetchSolicitacoes();
+  };
+
 
   const updateEvento = async (eventoId: string, updates: any) => {
     const { error } = await supabase
@@ -90,6 +141,37 @@ function AdminEventos() {
         <div>
           <h2 className="text-2xl font-bold font-inter uppercase tracking-tight">Gestão de Eventos</h2>
           <p className="text-admin-text-secondary text-sm font-semibold mt-1">Aprove e destaque eventos da comunidade</p>
+        </div>
+      </div>
+
+      {/* Solicitações de divulgação */}
+      <div className="bg-admin-surface border border-admin-border-light rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-admin-border-light flex items-center justify-between">
+          <h3 className="text-sm font-bold uppercase tracking-tight">📩 Solicitações de Divulgação (pendentes)</h3>
+          <span className="text-[10px] font-semibold text-admin-text-secondary">{solicitacoes.length}</span>
+        </div>
+        <div className="divide-y divide-admin-border-light">
+          {loadingSol ? (
+            <div className="px-6 py-6 text-sm text-admin-text-secondary animate-pulse">Carregando...</div>
+          ) : solicitacoes.length === 0 ? (
+            <div className="px-6 py-6 text-sm text-admin-text-secondary">Sem solicitações pendentes.</div>
+          ) : (
+            solicitacoes.map((s) => (
+              <div key={s.id} className="px-6 py-4 flex flex-col md:flex-row md:items-center gap-3 md:justify-between">
+                <div className="min-w-0">
+                  <p className="text-sm font-bold truncate">{s.nome_evento}</p>
+                  <p className="text-[11px] text-admin-text-secondary truncate">
+                    {s.data_evento ? format(new Date(s.data_evento), "dd/MM/yy HH:mm") : "Sem data"} · {s.local || "Sem local"} · {s.contato || "Sem contato"}
+                  </p>
+                  {s.descricao && <p className="text-[11px] text-admin-text-secondary mt-1 line-clamp-2">{s.descricao}</p>}
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <button onClick={() => aprovarSolicitacao(s)} className="px-3 py-2 text-[11px] font-semibold bg-admin-success/10 text-admin-success hover:bg-admin-success/20 rounded-lg">Aprovar e publicar</button>
+                  <button onClick={() => recusarSolicitacao(s.id)} className="px-3 py-2 text-[11px] font-semibold bg-admin-danger/10 text-admin-danger hover:bg-admin-danger/20 rounded-lg">Recusar</button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
