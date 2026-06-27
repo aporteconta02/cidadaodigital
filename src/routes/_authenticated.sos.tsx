@@ -14,6 +14,7 @@ import { ptBR } from "date-fns/locale";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AlertCollaborationDrawer from "@/components/AlertCollaborationDrawer";
 import SecurityStatsTab from "@/components/SecurityStatsTab";
+import { BannerCarousel } from "@/components/BannerCarousel";
 
 export const Route = createFileRoute("/_authenticated/sos")({
   component: SOSPage,
