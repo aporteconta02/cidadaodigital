@@ -883,6 +883,12 @@ function SOSPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <AlertCollaborationDrawer
+        alert={collabAlert}
+        onClose={() => setCollabAlert(null)}
+        onResolved={() => { setCollabAlert(null); fetchAlerts(); }}
+      />
     </div>
   );
 }
