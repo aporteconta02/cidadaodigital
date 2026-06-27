@@ -40,12 +40,16 @@ if (typeof document !== 'undefined' && !document.getElementById('map-pulse-style
 function colorFor(type: string, resolved?: boolean): string {
   if (resolved) return '#00D68F';
   const t = (type || '').toLowerCase();
-  if (['crime', 'sos', 'assalto', 'roubo', 'furto'].includes(t)) return '#FF3B5C';
-  if (['suspeito'].includes(t)) return '#FF8C00';
-  if (['perturbacao', 'barulho', 'atencao', 'acidente'].includes(t)) return '#FFD300';
-  if (['info', 'informacao', 'outro'].includes(t)) return '#3B9BFF';
   if (t === 'user') return '#00D68F';
-  return '#6C63FF';
+  const map: Record<string, string> = {
+    assalto: '#ef4444', roubo: '#ef4444', furto: '#ef4444',
+    briga: '#f97316', vandalismo: '#eab308', suspeito: '#3b82f6',
+    acidente: '#6b7280', abandono: '#92400e', iluminacao: '#ca8a04',
+    drogas: '#dc2626', outro: '#7c3aed',
+    crime: '#FF3B5C', sos: '#FF3B5C',
+    perturbacao: '#FF8C00', barulho: '#FF8C00',
+  };
+  return map[t] || '#6C63FF';
 }
 
 const getIcon = (type: string, resolved?: boolean, pulse?: boolean) => {
