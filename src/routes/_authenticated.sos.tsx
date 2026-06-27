@@ -471,14 +471,7 @@ function SOSPage() {
 
   const handleViewDetails = (id: string) => {
     const a = alerts.find((x) => x.id === id);
-    if (a?.latitude && a?.longitude) setMapCenter([Number(a.latitude), Number(a.longitude)]);
-    setActiveTab('todos');
-    setTimeout(() => {
-      const el = document.getElementById(`alert-${id}`);
-      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      el?.classList.add('ring-2', 'ring-primary');
-      setTimeout(() => el?.classList.remove('ring-2', 'ring-primary'), 2000);
-    }, 100);
+    if (a) setCollabAlert(a);
   };
 
   return (
