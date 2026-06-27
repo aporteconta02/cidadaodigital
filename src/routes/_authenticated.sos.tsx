@@ -677,6 +677,8 @@ function SOSPage() {
         <div className="flex-1 overflow-y-auto px-6 pt-6 pb-24 no-scrollbar">
           {activeTab === 'contatos' ? (
             <ContatosSection />
+          ) : activeTab === 'estatisticas' ? (
+            <SecurityStatsTab bairro={usuario?.bairro} />
           ) : (() => {
             const now = Date.now();
             const isAtivo = (a: any) =>
