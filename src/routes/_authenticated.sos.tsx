@@ -184,6 +184,7 @@ function SOSPage() {
   const [resolveText, setResolveText] = useState('');
   const [activating, setActivating] = useState(false);
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
+  const [timeWindow, setTimeWindow] = useState<'all' | '2h' | '24h' | '48h'>('48h');
 
   const activatePlusFn = useServerFn(activatePlusSubscription);
   const ativarAssinatura = async () => {
