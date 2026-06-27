@@ -352,23 +352,47 @@ function SOSPage() {
     if (!usuario.bairro) return toast.error("Cadastre seu bairro no perfil antes de criar alertas.");
     if (!newAlertType) return toast.error("Escolha o tipo de ocorrência.");
 
-    const { error } = await supabase.from('alertas_seguranca').insert({
+    // Capturar localização fresca via GPS
+    let lat: number | null = userLocation[0] ?? null;
+    let lng: number | null = userLocation[1] ?? null;
+    try {
+      const pos: GeolocationPosition = await new Promise((resolve, reject) => {
+        if (!navigator.geolocation) return reject(new Error('no geo'));
+        navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 5000 });
+      });
+      lat = pos.coords.latitude;
+      lng = pos.coords.longitude;
+      setUserLocation([lat, lng]);
+    } catch {
+      // mantém última posição conhecida
+    }
+
+    if (lat == null || lng == null) {
+      toast.error("Não foi possível obter sua localização. Ative o GPS.");
+      return;
+    }
+
+    const { data, error } = await supabase.from('alertas_seguranca').insert({
       usuario_id: usuario.id,
       tipo: newAlertType,
       descricao: newAlertDesc?.trim() || null,
-      latitude: userLocation[0],
-      longitude: userLocation[1],
+      latitude: lat,
+      longitude: lng,
       bairro: usuario.bairro,
+      ativo: true,
       expira_em: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-    });
+      visivel_ate: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+    }).select().single();
 
     if (error) {
       console.error("Erro ao criar alerta:", error);
       toast.error(error.message || "Não foi possível publicar o alerta. Tente novamente.");
     } else {
-      toast.success("Alerta criado! Seus vizinhos foram avisados 🛡️");
+      toast.success("✅ Alerta publicado no mapa!");
       setIsAlertModalOpen(false);
       setNewAlertDesc('');
+      // Otimista: adiciona já na lista local, depois recarrega
+      if (data) setAlerts((prev) => [data as any, ...prev]);
       fetchAlerts();
     }
   };
