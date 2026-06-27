@@ -26,6 +26,8 @@ export const Route = createFileRoute("/admin/eventos")({
 function AdminEventos() {
   const [eventos, setEventos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [solicitacoes, setSolicitacoes] = useState<any[]>([]);
+  const [loadingSol, setLoadingSol] = useState(true);
   const [filterAprovado, setFilterAprovado] = useState("todos");
   const [selectedEvento, setSelectedEvento] = useState<any>(null);
   const [rejectionReason, setRejectionReason] = useState("");
