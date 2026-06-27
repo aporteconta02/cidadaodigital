@@ -253,10 +253,13 @@ function SOSPage() {
       return;
     }
     setLoading(true);
+    const nowIso = new Date().toISOString();
     const { data, error } = await supabase
       .from('alertas_seguranca')
       .select('*, autor:usuarios!alertas_seguranca_usuario_id_fkey(nome, avatar_url, bairro)')
       .eq('bairro', usuario.bairro)
+      .is('arquivado_em', null)
+      .or(`visivel_ate.gt.${nowIso},visivel_ate.is.null`)
       .order('criado_em', { ascending: false })
       .limit(200);
 
