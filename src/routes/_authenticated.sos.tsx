@@ -14,6 +14,7 @@ import { ptBR } from "date-fns/locale";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AlertCollaborationDrawer from "@/components/AlertCollaborationDrawer";
 import SecurityStatsTab from "@/components/SecurityStatsTab";
+import { BannerCarousel } from "@/components/BannerCarousel";
 
 export const Route = createFileRoute("/_authenticated/sos")({
   component: SOSPage,
@@ -509,6 +510,8 @@ function SOSPage() {
 
   return (
     <div className="relative h-[calc(100vh-144px)] overflow-hidden flex flex-col">
+      {/* Banners */}
+      <div className="px-4 pt-3"><BannerCarousel /></div>
       {/* Map Section (50%) */}
       <div className="h-[45%] w-full relative" style={{ zIndex: 1 }}>
         <Map

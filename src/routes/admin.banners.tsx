@@ -46,7 +46,14 @@ function AdminBanners() {
       .select("*")
       .order("posicao", { ascending: true });
 
-    if (!error) setBanners(data || []);
+    if (!error) {
+      const resolved = await Promise.all((data || []).map(async (b: any) => {
+        if (!b.imagem_url || /^https?:\/\//i.test(b.imagem_url)) return b;
+        const { data: s } = await supabase.storage.from('banners').createSignedUrl(b.imagem_url, 3600);
+        return { ...b, imagem_url: s?.signedUrl ?? b.imagem_url };
+      }));
+      setBanners(resolved);
+    }
     setLoading(false);
   };
 
@@ -60,7 +67,7 @@ function AdminBanners() {
 
     setUploading(true);
     const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
     const filePath = `public/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
@@ -70,15 +77,24 @@ function AdminBanners() {
     if (uploadError) {
       toast.error("Erro no upload da imagem");
     } else {
-      const { data: { publicUrl } } = supabase.storage
-        .from('banners')
-        .getPublicUrl(filePath);
-      
-      setNewBanner({ ...newBanner, imagem_url: publicUrl });
+      // Store the storage path; signed URLs are generated on read.
+      setNewBanner({ ...newBanner, imagem_url: filePath });
       toast.success("Imagem enviada!");
     }
     setUploading(false);
   };
+
+  const [signedPreview, setSignedPreview] = useState<string>("");
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!newBanner.imagem_url) { setSignedPreview(""); return; }
+      if (/^https?:\/\//i.test(newBanner.imagem_url)) { setSignedPreview(newBanner.imagem_url); return; }
+      const { data } = await supabase.storage.from('banners').createSignedUrl(newBanner.imagem_url, 3600);
+      if (!cancelled) setSignedPreview(data?.signedUrl ?? "");
+    })();
+    return () => { cancelled = true; };
+  }, [newBanner.imagem_url]);
 
   const createBanner = async () => {
     if (!newBanner.imagem_url || !newBanner.titulo) {
@@ -243,7 +259,7 @@ function AdminBanners() {
                     <div className="relative group aspect-[21/9] rounded-lg overflow-hidden border-2 border-dashed border-admin-border-light hover:border-admin-primary/50 transition-all">
                        {newBanner.imagem_url ? (
                          <>
-                           <img src={newBanner.imagem_url} className="w-full h-full object-cover" alt="" />
+                           <img src={signedPreview || newBanner.imagem_url} className="w-full h-full object-cover" alt="" />
                            <button 
                              onClick={() => setNewBanner({...newBanner, imagem_url: ""})}
                              className="absolute top-2 right-2 size-8 bg-black/50 rounded-full flex items-center justify-center text-admin-text"
