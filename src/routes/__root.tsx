@@ -24,6 +24,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { DiagnosticPanel } from "@/components/DiagnosticPanel";
 
 function NotFoundComponent() {
   return (
