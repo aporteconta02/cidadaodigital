@@ -32,10 +32,10 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 const QUICK_ACCESS = [
   { label: "Mercado",                icon: <ShoppingBag size={22} />,  gradient: "from-[#f97316] to-[#ef4444]", to: "/comercio" },
-  { label: "Transporte",             icon: <Car size={22} />,          gradient: "from-[#06b6d4] to-[#0284c7]", to: "/transporte" },
+  { label: "Transporte",             icon: <Car size={22} />,          gradient: "from-[#06b6d4] to-[#3b82f6]", to: "/transporte" },
   { label: "Denúncias / Solicitações", icon: <Megaphone size={22} />,   gradient: "from-[#ef4444] to-[#dc2626]", to: "/comunidade", search: { tab: 'denuncias' } },
   { label: "Eventos",                icon: <Calendar size={22} />,     gradient: "from-[#10b981] to-[#059669]", to: "/comunidade", search: { tab: 'eventos' } },
-  { label: "Vizinho Seguro",         icon: <ShieldCheck size={22} />,  gradient: "from-[#3b82f6] to-[#1d4ed8]", to: "/sos" },
+  { label: "Vizinho Seguro",         icon: <ShieldCheck size={22} />,  gradient: "from-[#7c3aed] to-[#6d28d9]", to: "/sos" },
   { label: "Voz do Povo",            icon: <MessageSquare size={22} />,gradient: "from-[#f59e0b] to-[#d97706]", to: "/comunidade", search: { tab: 'voz' } },
   { label: "Mural",                  icon: <ClipboardList size={22} />,gradient: "from-[#ec4899] to-[#db2777]", to: "/comunidade", search: { tab: 'mural' } },
   { label: "Benefícios",             icon: <Star size={22} />,         gradient: "from-[#a855f7] to-[#7c3aed]", to: "/perfil" },
@@ -221,7 +221,7 @@ function DashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05, duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
               onClick={() => navigate({ to: item.to as any, search: (item as any).search })}
-              className="module-card flex flex-col items-center gap-2 group rounded-2xl p-2 bg-white/[0.03] backdrop-blur-xl border border-white/5"
+              className="module-card flex flex-col items-center gap-2 group p-2"
             >
               <div
                 className={cn(
@@ -237,7 +237,7 @@ function DashboardPage() {
                   </div>
                 )}
               </div>
-              <span className="text-[10px] font-bold text-text-secondary uppercase text-center leading-tight">{item.label}</span>
+              <span className="module-card-label uppercase">{item.label}</span>
             </motion.button>
           ))}
         </div>
