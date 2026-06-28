@@ -264,7 +264,7 @@ function MinhaLojaPage() {
       <p className="text-xs text-text-muted uppercase font-bold mb-6">{loja.categoria} · {loja.aprovada ? '✅ Aprovada' : '⏳ Aguardando aprovação'}</p>
 
       <div className="flex gap-2 border-b border-white/5 mb-6">
-        {([['resumo', BarChart3], ['produtos', Package], ['pedidos', ClipboardList]] as const).map(([t, Icon]) => (
+        {([['resumo', BarChart3], ['produtos', Package], ['pedidos', ClipboardList], ['cupons', Ticket]] as const).map(([t, Icon]) => (
           <button key={t} onClick={() => setTab(t)}
             className={cn("flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 flex items-center justify-center gap-2",
               tab === t ? "border-primary text-primary" : "border-transparent text-text-muted")}>
