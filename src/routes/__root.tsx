@@ -292,24 +292,44 @@ function RootComponent() {
           <div
             style={{
               position: "fixed", top: 0, left: 0, right: 0,
-              background: "#7c3aed", color: "white",
-              padding: "12px", textAlign: "center",
-              zIndex: 99999, fontSize: "14px",
+              background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
+              color: "white", padding: "10px 16px", textAlign: "center",
+              zIndex: 99999, fontSize: "14px", fontWeight: 600,
               display: "flex", alignItems: "center",
               justifyContent: "center", gap: "12px",
+              boxShadow: "0 4px 20px rgba(124,58,237,0.4)",
             }}
           >
             🔄 Nova versão disponível!
             <button
-              onClick={aplicarAtualizacao}
+              onClick={async () => {
+                try {
+                  const reg = await navigator.serviceWorker.getRegistration();
+                  reg?.waiting?.postMessage({ type: "SKIP_WAITING" });
+                  const keys = await caches.keys();
+                  await Promise.all(keys.map((k) => caches.delete(k)));
+                } catch {}
+                setTimeout(() => window.location.reload(), 300);
+              }}
               style={{
                 background: "white", color: "#7c3aed",
-                border: "none", borderRadius: "6px",
-                padding: "4px 12px", cursor: "pointer",
-                fontWeight: "bold",
+                border: "none", borderRadius: "8px",
+                padding: "4px 14px", cursor: "pointer",
+                fontWeight: 700, fontSize: "13px",
               }}
             >
               Atualizar agora
+            </button>
+            <button
+              onClick={() => setTemAtualizacao(false)}
+              style={{
+                background: "transparent", color: "rgba(255,255,255,0.7)",
+                border: "1px solid rgba(255,255,255,0.3)",
+                borderRadius: "8px", padding: "4px 10px",
+                cursor: "pointer", fontSize: "13px",
+              }}
+            >
+              Depois
             </button>
           </div>
         )}
