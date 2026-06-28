@@ -196,6 +196,59 @@ export type Database = {
           },
         ]
       }
+      cupons: {
+        Row: {
+          ativo: boolean
+          codigo: string
+          created_at: string
+          descricao: string | null
+          id: string
+          limite_uso: number | null
+          loja_id: string
+          tipo_desconto: string
+          total_usado: number
+          validade: string | null
+          valor_desconto: number
+          valor_minimo_pedido: number
+        }
+        Insert: {
+          ativo?: boolean
+          codigo: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          limite_uso?: number | null
+          loja_id: string
+          tipo_desconto: string
+          total_usado?: number
+          validade?: string | null
+          valor_desconto: number
+          valor_minimo_pedido?: number
+        }
+        Update: {
+          ativo?: boolean
+          codigo?: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          limite_uso?: number | null
+          loja_id?: string
+          tipo_desconto?: string
+          total_usado?: number
+          validade?: string | null
+          valor_desconto?: number
+          valor_minimo_pedido?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cupons_loja_id_fkey"
+            columns: ["loja_id"]
+            isOneToOne: false
+            referencedRelation: "lojas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       denuncias: {
         Row: {
           categoria: string
@@ -593,35 +646,47 @@ export type Database = {
         Row: {
           comprador_id: string | null
           criado_em: string | null
+          cupom_id: string | null
           endereco_entrega: string | null
+          forma_pagamento: string | null
           id: string
           loja_id: string | null
           observacao: string | null
           status: string | null
           tipo_entrega: string | null
           total: number
+          troco_para: number | null
+          valor_desconto: number
         }
         Insert: {
           comprador_id?: string | null
           criado_em?: string | null
+          cupom_id?: string | null
           endereco_entrega?: string | null
+          forma_pagamento?: string | null
           id?: string
           loja_id?: string | null
           observacao?: string | null
           status?: string | null
           tipo_entrega?: string | null
           total: number
+          troco_para?: number | null
+          valor_desconto?: number
         }
         Update: {
           comprador_id?: string | null
           criado_em?: string | null
+          cupom_id?: string | null
           endereco_entrega?: string | null
+          forma_pagamento?: string | null
           id?: string
           loja_id?: string | null
           observacao?: string | null
           status?: string | null
           tipo_entrega?: string | null
           total?: number
+          troco_para?: number | null
+          valor_desconto?: number
         }
         Relationships: [
           {
@@ -629,6 +694,13 @@ export type Database = {
             columns: ["comprador_id"]
             isOneToOne: false
             referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_cupom_id_fkey"
+            columns: ["cupom_id"]
+            isOneToOne: false
+            referencedRelation: "cupons"
             referencedColumns: ["id"]
           },
           {
