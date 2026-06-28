@@ -49,41 +49,59 @@ function NotFoundComponent() {
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
-  const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          Ops! Essa página não carregou
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Algo deu errado por aqui. Tente atualizar ou volte para o início.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Tentar de novo
-          </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Voltar ao início
-          </a>
-        </div>
-      </div>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#0a0010",
+        color: "white",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "24px",
+        fontFamily: "sans-serif",
+        gap: "16px",
+      }}
+    >
+      <div style={{ fontSize: "48px" }}>⚠️</div>
+      <h2 style={{ color: "#a855f7", margin: 0 }}>CIDADÃO+</h2>
+      <p style={{ color: "#ef4444", textAlign: "center" }}>
+        {error?.message || "Erro desconhecido"}
+      </p>
+      <button
+        onClick={() => {
+          if (typeof caches !== "undefined") {
+            caches.keys().then((k) => k.forEach((key) => caches.delete(key)));
+          }
+          if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
+            navigator.serviceWorker.getRegistrations().then((regs) => {
+              regs.forEach((reg) => reg.unregister());
+            });
+          }
+          try { reset(); } catch {}
+          window.location.href = "/";
+        }}
+        style={{
+          padding: "12px 24px",
+          background: "#7c3aed",
+          color: "white",
+          border: "none",
+          borderRadius: "8px",
+          cursor: "pointer",
+          fontSize: "16px",
+        }}
+      >
+        Recarregar
+      </button>
     </div>
   );
 }
+
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
