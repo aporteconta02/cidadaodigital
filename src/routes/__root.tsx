@@ -224,6 +224,7 @@ function RootComponent() {
           "flex min-h-screen flex-col bg-bg-primary text-text-primary overflow-x-hidden font-jakarta",
         )}>
         <Toaster position="top-center" expand={true} richColors />
+        <DiagnosticPanel />
         {/* Floating theme toggle on public pages */}
         {isPublicPage && (
           <div className="fixed top-4 right-4 z-50">
