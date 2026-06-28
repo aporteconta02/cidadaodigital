@@ -221,7 +221,7 @@ function DashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05, duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
               onClick={() => navigate({ to: item.to as any, search: (item as any).search })}
-              className="module-card flex flex-col items-center gap-2 group rounded-2xl p-2 bg-white/[0.03] backdrop-blur-xl border border-white/5"
+              className="module-card flex flex-col items-center gap-2 group p-2"
             >
               <div
                 className={cn(
