@@ -8,7 +8,7 @@ import {
   Scripts,
   useLocation,
 } from "@tanstack/react-router";
-import React, { useEffect, useState, type ReactNode } from "react";
+import React, { useEffect, type ReactNode } from "react";
 import { Home, ShoppingBag, Users, ShieldAlert, User, Megaphone, Calendar, ClipboardList, Phone, Bus, Star, MapPin, Menu, X, Settings, LogOut } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/use-auth";
@@ -23,9 +23,6 @@ import { useAuthStore } from "@/hooks/use-auth-store";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { InstallPrompt } from "@/components/InstallPrompt";
-import { OfflineBanner } from "@/components/OfflineBanner";
-import { registerServiceWorker } from "@/lib/register-sw";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 function NotFoundComponent() {
@@ -112,7 +109,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f6ce6e9b-2935-4eb1-8e02-86b55f33a7e7/id-preview-933308de--16cbf638-dbf2-45eb-b749-d0e454bb09b3.lovable.app-1781258360326.png" },
     ],
     links: [
-      { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
       { rel: "icon", type: "image/png", sizes: "512x512", href: "/icon-512.png" },
       { rel: "apple-touch-icon", href: "/icon-192.png" },
@@ -181,97 +177,18 @@ function RootComponent() {
     };
   }, [router]);
 
-  const [temAtualizacao, setTemAtualizacao] = useState(false);
-
   useEffect(() => {
-    registerServiceWorker();
-
     if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
 
-    const onControllerChange = () => window.location.reload();
-    navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
+    navigator.serviceWorker.getRegistrations().then((regs) => {
+      regs.forEach((reg) => reg.unregister());
+    });
 
-    let detachUpdateFound: (() => void) | undefined;
-    navigator.serviceWorker.getRegistration().then((reg) => {
-      if (!reg) return;
-      if (reg.waiting && navigator.serviceWorker.controller) {
-        setTemAtualizacao(true);
-      }
-      const onUpdateFound = () => {
-        const newSW = reg.installing;
-        if (!newSW) return;
-        newSW.addEventListener("statechange", () => {
-          if (newSW.state === "installed" && navigator.serviceWorker.controller) {
-            setTemAtualizacao(true);
-          }
-        });
-      };
-      reg.addEventListener("updatefound", onUpdateFound);
-      detachUpdateFound = () => reg.removeEventListener("updatefound", onUpdateFound);
-    }).catch(() => {});
-
-    const interval = window.setInterval(() => {
-      navigator.serviceWorker.getRegistration().then((reg) => {
-        if (reg) reg.update();
-      }).catch(() => {});
-    }, 30000);
-
-    return () => {
-      navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
-      window.clearInterval(interval);
-      detachUpdateFound?.();
-    };
-  }, []);
-
-  const aplicarAtualizacao = () => {
-    if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
-    navigator.serviceWorker.getRegistration().then((reg) => {
-      reg?.waiting?.postMessage({ type: "SKIP_WAITING" });
-    }).catch(() => {});
-    setTimeout(() => window.location.reload(), 500);
-  };
-
-  useEffect(() => {
-    const limparCacheAntigo = async () => {
-      try {
-        if (typeof caches !== "undefined") {
-          const cacheNames = await caches.keys();
-          await Promise.all(
-            cacheNames
-              .filter((name) => !name.includes("-v2"))
-              .map((name) => caches.delete(name)),
-          );
-        }
-
-        if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
-          const reg = await navigator.serviceWorker.getRegistration();
-          if (reg) {
-            await reg.update();
-            reg.addEventListener("updatefound", () => {
-              const novo = reg.installing;
-              if (!novo) return;
-              novo.addEventListener("statechange", () => {
-                if (novo.state === "activated") {
-                  window.location.reload();
-                }
-              });
-            });
-          }
-        }
-      } catch (e) {
-        console.log("Cache cleanup:", e);
-      }
-    };
-
-    limparCacheAntigo();
-
-    const interval = window.setInterval(() => {
-      navigator.serviceWorker?.getRegistration()
-        .then((reg) => reg?.update())
-        .catch(() => {});
-    }, 60000);
-
-    return () => window.clearInterval(interval);
+    if (typeof caches !== "undefined") {
+      caches.keys().then((keys) => {
+        keys.forEach((key) => caches.delete(key));
+      });
+    }
   }, []);
 
 
@@ -288,53 +205,6 @@ function RootComponent() {
           "flex min-h-screen flex-col bg-bg-primary text-text-primary overflow-x-hidden font-jakarta",
         )}>
         <Toaster position="top-center" expand={true} richColors />
-        {temAtualizacao && (
-          <div
-            style={{
-              position: "fixed", top: 0, left: 0, right: 0,
-              background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
-              color: "white", padding: "10px 16px", textAlign: "center",
-              zIndex: 99999, fontSize: "14px", fontWeight: 600,
-              display: "flex", alignItems: "center",
-              justifyContent: "center", gap: "12px",
-              boxShadow: "0 4px 20px rgba(124,58,237,0.4)",
-            }}
-          >
-            🔄 Nova versão disponível!
-            <button
-              onClick={async () => {
-                try {
-                  const reg = await navigator.serviceWorker.getRegistration();
-                  reg?.waiting?.postMessage({ type: "SKIP_WAITING" });
-                  const keys = await caches.keys();
-                  await Promise.all(keys.map((k) => caches.delete(k)));
-                } catch {}
-                setTimeout(() => window.location.reload(), 300);
-              }}
-              style={{
-                background: "white", color: "#7c3aed",
-                border: "none", borderRadius: "8px",
-                padding: "4px 14px", cursor: "pointer",
-                fontWeight: 700, fontSize: "13px",
-              }}
-            >
-              Atualizar agora
-            </button>
-            <button
-              onClick={() => setTemAtualizacao(false)}
-              style={{
-                background: "transparent", color: "rgba(255,255,255,0.7)",
-                border: "1px solid rgba(255,255,255,0.3)",
-                borderRadius: "8px", padding: "4px 10px",
-                cursor: "pointer", fontSize: "13px",
-              }}
-            >
-              Depois
-            </button>
-          </div>
-        )}
-        <OfflineBanner />
-        <InstallPrompt />
         {/* Floating theme toggle on public pages */}
         {isPublicPage && (
           <div className="fixed top-4 right-4 z-50">
