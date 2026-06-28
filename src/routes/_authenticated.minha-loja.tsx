@@ -34,9 +34,10 @@ const STATUS_COLOR: Record<string, string> = {
 function MinhaLojaPage() {
   const { usuario } = useAuth();
   const [loja, setLoja] = useState<any>(null);
-  const [tab, setTab] = useState<'resumo' | 'produtos' | 'pedidos'>('resumo');
+  const [tab, setTab] = useState<'resumo' | 'produtos' | 'pedidos' | 'cupons'>('resumo');
   const [produtos, setProdutos] = useState<any[]>([]);
   const [pedidos, setPedidos] = useState<any[]>([]);
+  const [cupons, setCupons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Product form
@@ -44,6 +45,14 @@ function MinhaLojaPage() {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ nome: '', descricao: '', preco: '', categoria: 'alimento', foto_url: '', estoque: '0' });
   const [uploading, setUploading] = useState(false);
+
+  // Cupom form
+  const [showCupomForm, setShowCupomForm] = useState(false);
+  const [editingCupom, setEditingCupom] = useState<any | null>(null);
+  const [cupomData, setCupomData] = useState({
+    codigo: '', descricao: '', tipo_desconto: 'percentual' as 'percentual' | 'valor_fixo',
+    valor_desconto: '', valor_minimo_pedido: '0', limite_uso: '', validade: '',
+  });
 
   useEffect(() => {
     if (!usuario) return;
