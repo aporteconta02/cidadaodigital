@@ -296,7 +296,7 @@ function RootComponent() {
         )}
         {/* App Header (Hidden on landing/auth) */}
         {!isPublicPage && (
-          <header className="sticky top-0 z-40 px-4 py-3 border-b border-[rgba(124,58,237,0.2)] backdrop-blur-xl" style={{ background: 'rgba(10, 0, 16, 0.85)' }}>
+          <header className="sticky top-0 z-40 px-4 py-3 backdrop-blur-xl" style={{ background: 'rgba(13, 0, 32, 0.7)', borderBottom: '1px solid rgba(124,58,237,0.15)', boxShadow: '0 4px 30px rgba(0,0,0,0.3)' }}>
             <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
               {/* Left: avatar + greeting */}
               <Link
