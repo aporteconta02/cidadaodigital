@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronLeft, Plus, Edit, Image as ImageIcon, Package, Store as StoreIcon, ClipboardList, BarChart3, X } from "lucide-react";
+import { ChevronLeft, Plus, Edit, Image as ImageIcon, Package, Store as StoreIcon, ClipboardList, BarChart3, X, Ticket, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
