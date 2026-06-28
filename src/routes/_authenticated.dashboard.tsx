@@ -32,7 +32,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 const QUICK_ACCESS = [
   { label: "Mercado",                icon: <ShoppingBag size={22} />,  gradient: "from-[#f97316] to-[#ef4444]", to: "/comercio" },
-  { label: "Transporte",             icon: <Car size={22} />,          gradient: "from-[#06b6d4] to-[#0284c7]", to: "/transporte" },
+  { label: "Transporte",             icon: <Car size={22} />,          gradient: "from-[#06b6d4] to-[#3b82f6]", to: "/transporte" },
   { label: "Denúncias / Solicitações", icon: <Megaphone size={22} />,   gradient: "from-[#ef4444] to-[#dc2626]", to: "/comunidade", search: { tab: 'denuncias' } },
   { label: "Eventos",                icon: <Calendar size={22} />,     gradient: "from-[#10b981] to-[#059669]", to: "/comunidade", search: { tab: 'eventos' } },
   { label: "Vizinho Seguro",         icon: <ShieldCheck size={22} />,  gradient: "from-[#3b82f6] to-[#1d4ed8]", to: "/sos" },
