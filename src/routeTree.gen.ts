@@ -35,6 +35,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedComunidadeRouteImport } from './routes/_authenticated.comunidade'
 import { Route as AuthenticatedComercioRouteImport } from './routes/_authenticated.comercio'
 import { Route as AuthenticatedCarrinhoRouteImport } from './routes/_authenticated.carrinho'
+import { Route as AuthenticatedBeneficiosRouteImport } from './routes/_authenticated.beneficios'
 import { Route as AuthenticatedPedidosPedidoIdRouteImport } from './routes/_authenticated.pedidos.$pedidoId'
 import { Route as AuthenticatedPedidoConfirmadoPedidoIdRouteImport } from './routes/_authenticated.pedido-confirmado.$pedidoId'
 import { Route as AuthenticatedComercioProdutoProdutoIdRouteImport } from './routes/_authenticated.comercio.produto.$produtoId'
@@ -169,6 +170,11 @@ const AuthenticatedCarrinhoRoute = AuthenticatedCarrinhoRouteImport.update({
   path: '/carrinho',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedBeneficiosRoute = AuthenticatedBeneficiosRouteImport.update({
+  id: '/beneficios',
+  path: '/beneficios',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedPedidosPedidoIdRoute =
   AuthenticatedPedidosPedidoIdRouteImport.update({
     id: '/$pedidoId',
@@ -200,6 +206,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/limpar-cache': typeof LimparCacheRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/beneficios': typeof AuthenticatedBeneficiosRoute
   '/carrinho': typeof AuthenticatedCarrinhoRoute
   '/comercio': typeof AuthenticatedComercioRouteWithChildren
   '/comunidade': typeof AuthenticatedComunidadeRoute
@@ -230,6 +237,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/limpar-cache': typeof LimparCacheRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/beneficios': typeof AuthenticatedBeneficiosRoute
   '/carrinho': typeof AuthenticatedCarrinhoRoute
   '/comercio': typeof AuthenticatedComercioRouteWithChildren
   '/comunidade': typeof AuthenticatedComunidadeRoute
@@ -263,6 +271,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/limpar-cache': typeof LimparCacheRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/beneficios': typeof AuthenticatedBeneficiosRoute
   '/_authenticated/carrinho': typeof AuthenticatedCarrinhoRoute
   '/_authenticated/comercio': typeof AuthenticatedComercioRouteWithChildren
   '/_authenticated/comunidade': typeof AuthenticatedComunidadeRoute
@@ -296,6 +305,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/limpar-cache'
     | '/reset-password'
+    | '/beneficios'
     | '/carrinho'
     | '/comercio'
     | '/comunidade'
@@ -326,6 +336,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/limpar-cache'
     | '/reset-password'
+    | '/beneficios'
     | '/carrinho'
     | '/comercio'
     | '/comunidade'
@@ -358,6 +369,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/limpar-cache'
     | '/reset-password'
+    | '/_authenticated/beneficios'
     | '/_authenticated/carrinho'
     | '/_authenticated/comercio'
     | '/_authenticated/comunidade'
@@ -577,6 +589,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCarrinhoRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/beneficios': {
+      id: '/_authenticated/beneficios'
+      path: '/beneficios'
+      fullPath: '/beneficios'
+      preLoaderRoute: typeof AuthenticatedBeneficiosRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/pedidos/$pedidoId': {
       id: '/_authenticated/pedidos/$pedidoId'
       path: '/$pedidoId'
@@ -636,6 +655,7 @@ const AuthenticatedPedidosRouteWithChildren =
   AuthenticatedPedidosRoute._addFileChildren(AuthenticatedPedidosRouteChildren)
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedBeneficiosRoute: typeof AuthenticatedBeneficiosRoute
   AuthenticatedCarrinhoRoute: typeof AuthenticatedCarrinhoRoute
   AuthenticatedComercioRoute: typeof AuthenticatedComercioRouteWithChildren
   AuthenticatedComunidadeRoute: typeof AuthenticatedComunidadeRoute
@@ -649,6 +669,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedBeneficiosRoute: AuthenticatedBeneficiosRoute,
   AuthenticatedCarrinhoRoute: AuthenticatedCarrinhoRoute,
   AuthenticatedComercioRoute: AuthenticatedComercioRouteWithChildren,
   AuthenticatedComunidadeRoute: AuthenticatedComunidadeRoute,
