@@ -295,10 +295,14 @@ html, body {
   50%      { background-position: 100% 50%; }
 }
 .welcome-banner {
-  background: linear-gradient(135deg, #4c1d95, #1e1b4b, #0c4a6e, #1e1b4b, #4c1d95);
-  background-size: 300% 300%;
+  background: linear-gradient(135deg, rgba(109,40,217,0.6), rgba(30,27,75,0.8), rgba(12,74,110,0.5));
+  background-size: 200% 200%;
   animation: welcome-gradient-shift 18s ease infinite;
+  border: 1px solid rgba(167,139,250,0.2);
+  border-radius: 24px;
+  backdrop-filter: blur(10px);
 }
+
 .welcome-banner-text {
   text-shadow: 0 2px 20px rgba(124, 58, 237, 0.55), 0 1px 3px rgba(0,0,0,0.4);
 }
