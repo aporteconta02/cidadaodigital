@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronLeft, Plus, Edit, Image as ImageIcon, Package, Store as StoreIcon, ClipboardList, BarChart3, X } from "lucide-react";
+import { ChevronLeft, Plus, Edit, Image as ImageIcon, Package, Store as StoreIcon, ClipboardList, BarChart3, X, Ticket, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,9 +34,10 @@ const STATUS_COLOR: Record<string, string> = {
 function MinhaLojaPage() {
   const { usuario } = useAuth();
   const [loja, setLoja] = useState<any>(null);
-  const [tab, setTab] = useState<'resumo' | 'produtos' | 'pedidos'>('resumo');
+  const [tab, setTab] = useState<'resumo' | 'produtos' | 'pedidos' | 'cupons'>('resumo');
   const [produtos, setProdutos] = useState<any[]>([]);
   const [pedidos, setPedidos] = useState<any[]>([]);
+  const [cupons, setCupons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Product form
@@ -44,6 +45,14 @@ function MinhaLojaPage() {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ nome: '', descricao: '', preco: '', categoria: 'alimento', foto_url: '', estoque: '0' });
   const [uploading, setUploading] = useState(false);
+
+  // Cupom form
+  const [showCupomForm, setShowCupomForm] = useState(false);
+  const [editingCupom, setEditingCupom] = useState<any | null>(null);
+  const [cupomData, setCupomData] = useState({
+    codigo: '', descricao: '', tipo_desconto: 'percentual' as 'percentual' | 'valor_fixo',
+    valor_desconto: '', valor_minimo_pedido: '0', limite_uso: '', validade: '',
+  });
 
   useEffect(() => {
     if (!usuario) return;
@@ -55,8 +64,10 @@ function MinhaLojaPage() {
     if (!loja) return;
     supabase.from('produtos').select('*').eq('loja_id', loja.id).order('criado_em', { ascending: false })
       .then(({ data }) => setProdutos(data || []));
-    supabase.from('pedidos').select('*, usuarios(nome, telefone)').eq('loja_id', loja.id).order('criado_em', { ascending: false })
+    supabase.from('pedidos').select('*, usuarios(nome, telefone), cupons(codigo)').eq('loja_id', loja.id).order('criado_em', { ascending: false })
       .then(({ data }) => setPedidos(data || []));
+    supabase.from('cupons').select('*').eq('loja_id', loja.id).order('created_at', { ascending: false })
+      .then(({ data }) => setCupons(data || []));
 
     // Realtime subscription
     const channel = supabase.channel(`pedidos-loja-${loja.id}`)
@@ -153,6 +164,76 @@ function MinhaLojaPage() {
     toast.success("Status atualizado");
   };
 
+  // ===== Cupons =====
+  const openCupomNew = () => {
+    setEditingCupom(null);
+    setCupomData({ codigo: '', descricao: '', tipo_desconto: 'percentual', valor_desconto: '', valor_minimo_pedido: '0', limite_uso: '', validade: '' });
+    setShowCupomForm(true);
+  };
+
+  const openCupomEdit = (c: any) => {
+    setEditingCupom(c);
+    setCupomData({
+      codigo: c.codigo,
+      descricao: c.descricao || '',
+      tipo_desconto: c.tipo_desconto,
+      valor_desconto: String(c.valor_desconto),
+      valor_minimo_pedido: String(c.valor_minimo_pedido || 0),
+      limite_uso: c.limite_uso ? String(c.limite_uso) : '',
+      validade: c.validade ? c.validade.slice(0, 10) : '',
+    });
+    setShowCupomForm(true);
+  };
+
+  const salvarCupom = async () => {
+    if (!loja) return;
+    const codigo = cupomData.codigo.trim().toUpperCase();
+    const valor = parseFloat(cupomData.valor_desconto.replace(',', '.'));
+    if (!codigo) return toast.error('Informe o código');
+    if (isNaN(valor) || valor <= 0) return toast.error('Valor de desconto inválido');
+    if (cupomData.tipo_desconto === 'percentual' && valor > 100) return toast.error('Percentual máximo 100%');
+
+    const payload: any = {
+      loja_id: loja.id,
+      codigo,
+      descricao: cupomData.descricao || null,
+      tipo_desconto: cupomData.tipo_desconto,
+      valor_desconto: valor,
+      valor_minimo_pedido: parseFloat(cupomData.valor_minimo_pedido.replace(',', '.')) || 0,
+      limite_uso: cupomData.limite_uso ? parseInt(cupomData.limite_uso, 10) : null,
+      validade: cupomData.validade ? new Date(cupomData.validade).toISOString() : null,
+    };
+
+    if (editingCupom) {
+      const { error } = await supabase.from('cupons').update(payload).eq('id', editingCupom.id);
+      if (error) return toast.error(error.message);
+      setCupons(curr => curr.map(c => c.id === editingCupom.id ? { ...c, ...payload } : c));
+      toast.success('Cupom atualizado');
+    } else {
+      const { data, error } = await supabase.from('cupons').insert(payload).select().single();
+      if (error) return toast.error(error.message);
+      setCupons(curr => [data, ...curr]);
+      toast.success('Cupom criado');
+    }
+    setShowCupomForm(false);
+  };
+
+  const toggleCupomAtivo = async (c: any) => {
+    const { error } = await supabase.from('cupons').update({ ativo: !c.ativo }).eq('id', c.id);
+    if (error) return toast.error(error.message);
+    setCupons(curr => curr.map(x => x.id === c.id ? { ...x, ativo: !c.ativo } : x));
+  };
+
+  const excluirCupom = async (c: any) => {
+    if (!window.confirm(`Excluir cupom ${c.codigo}?`)) return;
+    const { error } = await supabase.from('cupons').delete().eq('id', c.id);
+    if (error) return toast.error(error.message);
+    setCupons(curr => curr.filter(x => x.id !== c.id));
+    toast.success('Cupom excluído');
+  };
+
+
+
   if (loading) return <div className="p-10 text-center text-text-muted">Carregando...</div>;
   if (usuario?.tipo !== 'comerciante') {
     return (
@@ -183,7 +264,7 @@ function MinhaLojaPage() {
       <p className="text-xs text-text-muted uppercase font-bold mb-6">{loja.categoria} · {loja.aprovada ? '✅ Aprovada' : '⏳ Aguardando aprovação'}</p>
 
       <div className="flex gap-2 border-b border-white/5 mb-6">
-        {([['resumo', BarChart3], ['produtos', Package], ['pedidos', ClipboardList]] as const).map(([t, Icon]) => (
+        {([['resumo', BarChart3], ['produtos', Package], ['pedidos', ClipboardList], ['cupons', Ticket]] as const).map(([t, Icon]) => (
           <button key={t} onClick={() => setTab(t)}
             className={cn("flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 flex items-center justify-center gap-2",
               tab === t ? "border-primary text-primary" : "border-transparent text-text-muted")}>
@@ -247,6 +328,25 @@ function MinhaLojaPage() {
                   <span className={cn("text-[9px] font-black uppercase px-2 py-0.5 rounded", STATUS_COLOR[p.status])}>{p.status}</span>
                 </div>
               </div>
+
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {p.forma_pagamento && (
+                  <span className="text-[9px] font-bold uppercase bg-white/5 text-text-secondary px-2 py-0.5 rounded">
+                    💳 {p.forma_pagamento.replace('_', ' ')}
+                  </span>
+                )}
+                {p.troco_para && (
+                  <span className="text-[9px] font-bold uppercase bg-yellow-500/10 text-yellow-500 px-2 py-0.5 rounded">
+                    Troco p/ {formatBRL(Number(p.troco_para))}
+                  </span>
+                )}
+                {Number(p.valor_desconto) > 0 && (
+                  <span className="text-[9px] font-bold uppercase bg-success/10 text-success px-2 py-0.5 rounded">
+                    🎟️ {p.cupons?.codigo || 'CUPOM'} -{formatBRL(Number(p.valor_desconto))}
+                  </span>
+                )}
+              </div>
+
               <Link to="/pedidos/$pedidoId" params={{ pedidoId: p.id }} className="text-[10px] text-primary uppercase font-bold">Ver detalhes →</Link>
               {STATUS_FLOW[p.status]?.length > 0 && (
                 <div className="flex gap-2 mt-3 flex-wrap">
@@ -261,6 +361,52 @@ function MinhaLojaPage() {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {tab === 'cupons' && (
+        <div>
+          <button onClick={openCupomNew} className="w-full mb-4 h-9 bg-primary text-white rounded-lg font-bold text-sm flex items-center justify-center gap-2">
+            <Plus size={16} /> Novo cupom
+          </button>
+          {cupons.length === 0 ? (
+            <p className="text-center text-text-muted text-sm py-10">Nenhum cupom criado ainda.</p>
+          ) : (
+            <div className="space-y-2">
+              {cupons.map(c => {
+                const expirado = c.validade && new Date(c.validade) < new Date();
+                const esgotado = c.limite_uso && (c.total_usado || 0) >= c.limite_uso;
+                return (
+                  <div key={c.id} className={cn("p-3 bg-bg-card border border-white/5 rounded-lg", (!c.ativo || expirado || esgotado) && "opacity-60")}>
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-2">
+                        <Ticket size={16} className="text-primary" />
+                        <code className="text-sm font-black tracking-wider">{c.codigo}</code>
+                        <span className="text-[10px] font-bold text-primary">
+                          {c.tipo_desconto === 'percentual' ? `${Number(c.valor_desconto)}%` : formatBRL(Number(c.valor_desconto))} OFF
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button onClick={() => toggleCupomAtivo(c)} className={cn("text-[9px] font-bold uppercase px-2 py-1 rounded", c.ativo ? "bg-success/10 text-success" : "bg-white/5 text-text-muted")}>
+                          {c.ativo ? 'Ativo' : 'Inativo'}
+                        </button>
+                        <button onClick={() => openCupomEdit(c)} className="size-7 rounded-md bg-white/5 flex items-center justify-center"><Edit size={12} /></button>
+                        <button onClick={() => excluirCupom(c)} className="size-7 rounded-md bg-danger/10 text-danger flex items-center justify-center"><Trash2 size={12} /></button>
+                      </div>
+                    </div>
+                    {c.descricao && <p className="text-[11px] text-text-muted mb-1">{c.descricao}</p>}
+                    <div className="flex flex-wrap gap-2 text-[10px] text-text-muted">
+                      {Number(c.valor_minimo_pedido) > 0 && <span>Min: {formatBRL(Number(c.valor_minimo_pedido))}</span>}
+                      <span>Usos: {c.total_usado || 0}{c.limite_uso ? `/${c.limite_uso}` : ''}</span>
+                      {c.validade && <span>Até: {format(new Date(c.validade), 'dd/MM/yyyy', { locale: ptBR })}</span>}
+                      {expirado && <span className="text-danger font-bold">Expirado</span>}
+                      {esgotado && <span className="text-danger font-bold">Esgotado</span>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
@@ -301,6 +447,53 @@ function MinhaLojaPage() {
             </select>
             <button onClick={salvarProduto} className="w-full h-10 bg-primary text-white rounded-lg font-bold text-sm">
               {editingProduto ? 'Atualizar' : 'Criar produto'}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showCupomForm} onOpenChange={setShowCupomForm}>
+        <DialogContent className="bg-bg-elevated border-border-custom max-w-md">
+          <DialogHeader>
+            <DialogTitle>{editingCupom ? 'Editar cupom' : 'Novo cupom'}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <label className="text-[10px] uppercase font-bold text-text-muted block mb-1">Código</label>
+              <input value={cupomData.codigo} onChange={e => setCupomData(f => ({ ...f, codigo: e.target.value.toUpperCase() }))}
+                placeholder="Ex: VIZINHO10" className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm uppercase tracking-wider" />
+            </div>
+            <textarea placeholder="Descrição (opcional)" value={cupomData.descricao} onChange={e => setCupomData(f => ({ ...f, descricao: e.target.value }))}
+              className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm" rows={2} />
+            <div className="grid grid-cols-2 gap-3">
+              <select value={cupomData.tipo_desconto} onChange={e => setCupomData(f => ({ ...f, tipo_desconto: e.target.value as any }))}
+                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm">
+                <option value="percentual">Percentual (%)</option>
+                <option value="valor_fixo">Valor fixo (R$)</option>
+              </select>
+              <input placeholder={cupomData.tipo_desconto === 'percentual' ? '10' : '5.00'} value={cupomData.valor_desconto}
+                onChange={e => setCupomData(f => ({ ...f, valor_desconto: e.target.value }))}
+                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[10px] uppercase font-bold text-text-muted block mb-1">Pedido mínimo</label>
+                <input placeholder="0.00" value={cupomData.valor_minimo_pedido} onChange={e => setCupomData(f => ({ ...f, valor_minimo_pedido: e.target.value }))}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm" />
+              </div>
+              <div>
+                <label className="text-[10px] uppercase font-bold text-text-muted block mb-1">Limite de uso</label>
+                <input placeholder="ilimitado" type="number" value={cupomData.limite_uso} onChange={e => setCupomData(f => ({ ...f, limite_uso: e.target.value }))}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm" />
+              </div>
+            </div>
+            <div>
+              <label className="text-[10px] uppercase font-bold text-text-muted block mb-1">Validade (opcional)</label>
+              <input type="date" value={cupomData.validade} onChange={e => setCupomData(f => ({ ...f, validade: e.target.value }))}
+                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm" />
+            </div>
+            <button onClick={salvarCupom} className="w-full h-10 bg-primary text-white rounded-lg font-bold text-sm">
+              {editingCupom ? 'Atualizar' : 'Criar cupom'}
             </button>
           </div>
         </DialogContent>
