@@ -451,6 +451,53 @@ function MinhaLojaPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={showCupomForm} onOpenChange={setShowCupomForm}>
+        <DialogContent className="bg-bg-elevated border-border-custom max-w-md">
+          <DialogHeader>
+            <DialogTitle>{editingCupom ? 'Editar cupom' : 'Novo cupom'}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <label className="text-[10px] uppercase font-bold text-text-muted block mb-1">Código</label>
+              <input value={cupomData.codigo} onChange={e => setCupomData(f => ({ ...f, codigo: e.target.value.toUpperCase() }))}
+                placeholder="Ex: VIZINHO10" className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm uppercase tracking-wider" />
+            </div>
+            <textarea placeholder="Descrição (opcional)" value={cupomData.descricao} onChange={e => setCupomData(f => ({ ...f, descricao: e.target.value }))}
+              className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm" rows={2} />
+            <div className="grid grid-cols-2 gap-3">
+              <select value={cupomData.tipo_desconto} onChange={e => setCupomData(f => ({ ...f, tipo_desconto: e.target.value as any }))}
+                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm">
+                <option value="percentual">Percentual (%)</option>
+                <option value="valor_fixo">Valor fixo (R$)</option>
+              </select>
+              <input placeholder={cupomData.tipo_desconto === 'percentual' ? '10' : '5.00'} value={cupomData.valor_desconto}
+                onChange={e => setCupomData(f => ({ ...f, valor_desconto: e.target.value }))}
+                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[10px] uppercase font-bold text-text-muted block mb-1">Pedido mínimo</label>
+                <input placeholder="0.00" value={cupomData.valor_minimo_pedido} onChange={e => setCupomData(f => ({ ...f, valor_minimo_pedido: e.target.value }))}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm" />
+              </div>
+              <div>
+                <label className="text-[10px] uppercase font-bold text-text-muted block mb-1">Limite de uso</label>
+                <input placeholder="ilimitado" type="number" value={cupomData.limite_uso} onChange={e => setCupomData(f => ({ ...f, limite_uso: e.target.value }))}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm" />
+              </div>
+            </div>
+            <div>
+              <label className="text-[10px] uppercase font-bold text-text-muted block mb-1">Validade (opcional)</label>
+              <input type="date" value={cupomData.validade} onChange={e => setCupomData(f => ({ ...f, validade: e.target.value }))}
+                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm" />
+            </div>
+            <button onClick={salvarCupom} className="w-full h-10 bg-primary text-white rounded-lg font-bold text-sm">
+              {editingCupom ? 'Atualizar' : 'Criar cupom'}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
