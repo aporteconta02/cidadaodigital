@@ -164,6 +164,76 @@ function MinhaLojaPage() {
     toast.success("Status atualizado");
   };
 
+  // ===== Cupons =====
+  const openCupomNew = () => {
+    setEditingCupom(null);
+    setCupomData({ codigo: '', descricao: '', tipo_desconto: 'percentual', valor_desconto: '', valor_minimo_pedido: '0', limite_uso: '', validade: '' });
+    setShowCupomForm(true);
+  };
+
+  const openCupomEdit = (c: any) => {
+    setEditingCupom(c);
+    setCupomData({
+      codigo: c.codigo,
+      descricao: c.descricao || '',
+      tipo_desconto: c.tipo_desconto,
+      valor_desconto: String(c.valor_desconto),
+      valor_minimo_pedido: String(c.valor_minimo_pedido || 0),
+      limite_uso: c.limite_uso ? String(c.limite_uso) : '',
+      validade: c.validade ? c.validade.slice(0, 10) : '',
+    });
+    setShowCupomForm(true);
+  };
+
+  const salvarCupom = async () => {
+    if (!loja) return;
+    const codigo = cupomData.codigo.trim().toUpperCase();
+    const valor = parseFloat(cupomData.valor_desconto.replace(',', '.'));
+    if (!codigo) return toast.error('Informe o código');
+    if (isNaN(valor) || valor <= 0) return toast.error('Valor de desconto inválido');
+    if (cupomData.tipo_desconto === 'percentual' && valor > 100) return toast.error('Percentual máximo 100%');
+
+    const payload: any = {
+      loja_id: loja.id,
+      codigo,
+      descricao: cupomData.descricao || null,
+      tipo_desconto: cupomData.tipo_desconto,
+      valor_desconto: valor,
+      valor_minimo_pedido: parseFloat(cupomData.valor_minimo_pedido.replace(',', '.')) || 0,
+      limite_uso: cupomData.limite_uso ? parseInt(cupomData.limite_uso, 10) : null,
+      validade: cupomData.validade ? new Date(cupomData.validade).toISOString() : null,
+    };
+
+    if (editingCupom) {
+      const { error } = await supabase.from('cupons').update(payload).eq('id', editingCupom.id);
+      if (error) return toast.error(error.message);
+      setCupons(curr => curr.map(c => c.id === editingCupom.id ? { ...c, ...payload } : c));
+      toast.success('Cupom atualizado');
+    } else {
+      const { data, error } = await supabase.from('cupons').insert(payload).select().single();
+      if (error) return toast.error(error.message);
+      setCupons(curr => [data, ...curr]);
+      toast.success('Cupom criado');
+    }
+    setShowCupomForm(false);
+  };
+
+  const toggleCupomAtivo = async (c: any) => {
+    const { error } = await supabase.from('cupons').update({ ativo: !c.ativo }).eq('id', c.id);
+    if (error) return toast.error(error.message);
+    setCupons(curr => curr.map(x => x.id === c.id ? { ...x, ativo: !c.ativo } : x));
+  };
+
+  const excluirCupom = async (c: any) => {
+    if (!window.confirm(`Excluir cupom ${c.codigo}?`)) return;
+    const { error } = await supabase.from('cupons').delete().eq('id', c.id);
+    if (error) return toast.error(error.message);
+    setCupons(curr => curr.filter(x => x.id !== c.id));
+    toast.success('Cupom excluído');
+  };
+
+
+
   if (loading) return <div className="p-10 text-center text-text-muted">Carregando...</div>;
   if (usuario?.tipo !== 'comerciante') {
     return (
