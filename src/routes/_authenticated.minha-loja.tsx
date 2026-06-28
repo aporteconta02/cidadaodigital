@@ -328,6 +328,25 @@ function MinhaLojaPage() {
                   <span className={cn("text-[9px] font-black uppercase px-2 py-0.5 rounded", STATUS_COLOR[p.status])}>{p.status}</span>
                 </div>
               </div>
+
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {p.forma_pagamento && (
+                  <span className="text-[9px] font-bold uppercase bg-white/5 text-text-secondary px-2 py-0.5 rounded">
+                    💳 {p.forma_pagamento.replace('_', ' ')}
+                  </span>
+                )}
+                {p.troco_para && (
+                  <span className="text-[9px] font-bold uppercase bg-yellow-500/10 text-yellow-500 px-2 py-0.5 rounded">
+                    Troco p/ {formatBRL(Number(p.troco_para))}
+                  </span>
+                )}
+                {Number(p.valor_desconto) > 0 && (
+                  <span className="text-[9px] font-bold uppercase bg-success/10 text-success px-2 py-0.5 rounded">
+                    🎟️ {p.cupons?.codigo || 'CUPOM'} -{formatBRL(Number(p.valor_desconto))}
+                  </span>
+                )}
+              </div>
+
               <Link to="/pedidos/$pedidoId" params={{ pedidoId: p.id }} className="text-[10px] text-primary uppercase font-bold">Ver detalhes →</Link>
               {STATUS_FLOW[p.status]?.length > 0 && (
                 <div className="flex gap-2 mt-3 flex-wrap">
@@ -342,6 +361,52 @@ function MinhaLojaPage() {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {tab === 'cupons' && (
+        <div>
+          <button onClick={openCupomNew} className="w-full mb-4 h-9 bg-primary text-white rounded-lg font-bold text-sm flex items-center justify-center gap-2">
+            <Plus size={16} /> Novo cupom
+          </button>
+          {cupons.length === 0 ? (
+            <p className="text-center text-text-muted text-sm py-10">Nenhum cupom criado ainda.</p>
+          ) : (
+            <div className="space-y-2">
+              {cupons.map(c => {
+                const expirado = c.validade && new Date(c.validade) < new Date();
+                const esgotado = c.limite_uso && (c.total_usado || 0) >= c.limite_uso;
+                return (
+                  <div key={c.id} className={cn("p-3 bg-bg-card border border-white/5 rounded-lg", (!c.ativo || expirado || esgotado) && "opacity-60")}>
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-2">
+                        <Ticket size={16} className="text-primary" />
+                        <code className="text-sm font-black tracking-wider">{c.codigo}</code>
+                        <span className="text-[10px] font-bold text-primary">
+                          {c.tipo_desconto === 'percentual' ? `${Number(c.valor_desconto)}%` : formatBRL(Number(c.valor_desconto))} OFF
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button onClick={() => toggleCupomAtivo(c)} className={cn("text-[9px] font-bold uppercase px-2 py-1 rounded", c.ativo ? "bg-success/10 text-success" : "bg-white/5 text-text-muted")}>
+                          {c.ativo ? 'Ativo' : 'Inativo'}
+                        </button>
+                        <button onClick={() => openCupomEdit(c)} className="size-7 rounded-md bg-white/5 flex items-center justify-center"><Edit size={12} /></button>
+                        <button onClick={() => excluirCupom(c)} className="size-7 rounded-md bg-danger/10 text-danger flex items-center justify-center"><Trash2 size={12} /></button>
+                      </div>
+                    </div>
+                    {c.descricao && <p className="text-[11px] text-text-muted mb-1">{c.descricao}</p>}
+                    <div className="flex flex-wrap gap-2 text-[10px] text-text-muted">
+                      {Number(c.valor_minimo_pedido) > 0 && <span>Min: {formatBRL(Number(c.valor_minimo_pedido))}</span>}
+                      <span>Usos: {c.total_usado || 0}{c.limite_uso ? `/${c.limite_uso}` : ''}</span>
+                      {c.validade && <span>Até: {format(new Date(c.validade), 'dd/MM/yyyy', { locale: ptBR })}</span>}
+                      {expirado && <span className="text-danger font-bold">Expirado</span>}
+                      {esgotado && <span className="text-danger font-bold">Esgotado</span>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
