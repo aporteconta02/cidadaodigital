@@ -64,8 +64,10 @@ function MinhaLojaPage() {
     if (!loja) return;
     supabase.from('produtos').select('*').eq('loja_id', loja.id).order('criado_em', { ascending: false })
       .then(({ data }) => setProdutos(data || []));
-    supabase.from('pedidos').select('*, usuarios(nome, telefone)').eq('loja_id', loja.id).order('criado_em', { ascending: false })
+    supabase.from('pedidos').select('*, usuarios(nome, telefone), cupons(codigo)').eq('loja_id', loja.id).order('criado_em', { ascending: false })
       .then(({ data }) => setPedidos(data || []));
+    supabase.from('cupons').select('*').eq('loja_id', loja.id).order('created_at', { ascending: false })
+      .then(({ data }) => setCupons(data || []));
 
     // Realtime subscription
     const channel = supabase.channel(`pedidos-loja-${loja.id}`)
