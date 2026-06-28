@@ -395,7 +395,7 @@ function RootComponent() {
                       <DrawerNavLink to="/sos"         icon={<ShieldAlert size={20} />}  label="Vizinho Seguro"            iconGradient="from-[#3b82f6] to-[#1d4ed8]" />
                       <DrawerNavLink to="/comunidade"  icon={<Users size={20} />}        label="Voz do Povo"               iconGradient="from-[#f59e0b] to-[#d97706]" search={{ tab: 'voz' }} />
                       <DrawerNavLink to="/comunidade"  icon={<ClipboardList size={20} />} label="Mural"                    iconGradient="from-[#ec4899] to-[#db2777]" search={{ tab: 'mural' }} />
-                      <DrawerNavLink to="/comercio"    icon={<Star size={20} />}         label="Benefícios"                iconGradient="from-[#a855f7] to-[#7c3aed]" />
+                      <DrawerNavLink to="/beneficios"  icon={<Star size={20} />}         label="Benefícios"                iconGradient="from-[#a855f7] to-[#7c3aed]" />
                       <DrawerNavLink to="/comunidade"  icon={<Phone size={20} />}        label="Telefones"                 iconGradient="from-[#6b7280] to-[#4b5563]" search={{ tab: 'telefones' }} />
                       <DrawerNavLink to="/transporte"  icon={<Bus size={20} />}          label="Transporte"                iconGradient="from-[#06b6d4] to-[#0284c7]" />
 
