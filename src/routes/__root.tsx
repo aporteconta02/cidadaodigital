@@ -232,19 +232,46 @@ function RootComponent() {
   };
 
   useEffect(() => {
-    if (typeof caches === "undefined") return;
-    caches.keys().then((cacheNames) => {
-      cacheNames.forEach((cacheName) => {
-        if (
-          !cacheName.includes("workbox") &&
-          !cacheName.includes("pages-cache") &&
-          !cacheName.includes("assets-cache") &&
-          !cacheName.includes("images-cache")
-        ) {
-          caches.delete(cacheName).catch(() => {});
+    const limparCacheAntigo = async () => {
+      try {
+        if (typeof caches !== "undefined") {
+          const cacheNames = await caches.keys();
+          await Promise.all(
+            cacheNames
+              .filter((name) => !name.includes("-v2"))
+              .map((name) => caches.delete(name)),
+          );
         }
-      });
-    }).catch(() => {});
+
+        if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
+          const reg = await navigator.serviceWorker.getRegistration();
+          if (reg) {
+            await reg.update();
+            reg.addEventListener("updatefound", () => {
+              const novo = reg.installing;
+              if (!novo) return;
+              novo.addEventListener("statechange", () => {
+                if (novo.state === "activated") {
+                  window.location.reload();
+                }
+              });
+            });
+          }
+        }
+      } catch (e) {
+        console.log("Cache cleanup:", e);
+      }
+    };
+
+    limparCacheAntigo();
+
+    const interval = window.setInterval(() => {
+      navigator.serviceWorker?.getRegistration()
+        .then((reg) => reg?.update())
+        .catch(() => {});
+    }, 60000);
+
+    return () => window.clearInterval(interval);
   }, []);
 
 
