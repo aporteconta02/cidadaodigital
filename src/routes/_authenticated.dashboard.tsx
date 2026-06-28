@@ -151,6 +151,25 @@ function DashboardPage() {
           <div className="absolute -top-12 -right-12 size-44 rounded-full bg-white/10 blur-2xl pointer-events-none" />
           <div className="absolute -bottom-16 -left-10 size-40 rounded-full bg-[#06b6d4]/20 blur-3xl pointer-events-none" />
           <div className="absolute top-4 right-6 size-16 rotate-45 border border-white/15 rounded-lg pointer-events-none" />
+          {/* Minimal city skyline */}
+          <svg viewBox="0 0 160 80" className="absolute bottom-3 right-3 w-32 h-16 opacity-40 pointer-events-none" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g fill="rgba(167,139,250,0.55)">
+              <rect x="4"   y="40" width="18" height="36" rx="1" />
+              <rect x="26"  y="28" width="14" height="48" rx="1" />
+              <rect x="44"  y="18" width="20" height="58" rx="1" />
+              <rect x="68"  y="34" width="12" height="42" rx="1" />
+              <rect x="84"  y="10" width="16" height="66" rx="1" />
+              <rect x="104" y="26" width="18" height="50" rx="1" />
+              <rect x="126" y="36" width="14" height="40" rx="1" />
+              <rect x="144" y="22" width="12" height="54" rx="1" />
+            </g>
+            <g fill="rgba(255,255,255,0.45)">
+              <rect x="50"  y="26" width="2" height="4" /><rect x="56" y="26" width="2" height="4" />
+              <rect x="88"  y="18" width="2" height="4" /><rect x="94" y="18" width="2" height="4" />
+              <rect x="110" y="34" width="2" height="4" /><rect x="116" y="34" width="2" height="4" />
+            </g>
+          </svg>
+
 
           <div className="relative z-10">
             <p className="text-[10px] font-black uppercase tracking-widest text-white/80 welcome-banner-text">
