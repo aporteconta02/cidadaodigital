@@ -21,7 +21,8 @@ export default defineConfig({
         manifest: false,
         workbox: {
           globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,woff,woff2}"],
-          navigateFallback: "/",
+          // Nunca servir HTML do cache em rotas de navegação
+          navigateFallback: null,
           navigateFallbackDenylist: [/^\/~oauth/, /^\/api\//],
           cleanupOutdatedCaches: true,
           skipWaiting: true,
@@ -35,9 +36,10 @@ export default defineConfig({
               urlPattern: ({ request }) => request.mode === "navigate",
               handler: "NetworkFirst",
               options: {
-                cacheName: "pages-cache",
-                networkTimeoutSeconds: 3,
-                expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 },
+                cacheName: "pages-cache-v2",
+                networkTimeoutSeconds: 5,
+                expiration: { maxEntries: 5, maxAgeSeconds: 60 * 60 },
+                cacheableResponse: { statuses: [200] },
               },
             },
             {
@@ -45,9 +47,9 @@ export default defineConfig({
                 sameOrigin && /\.(?:js|css)$/i.test(url.pathname),
               handler: "NetworkFirst",
               options: {
-                cacheName: "assets-cache",
-                networkTimeoutSeconds: 3,
-                expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 },
+                cacheName: "assets-cache-v2",
+                networkTimeoutSeconds: 5,
+                expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 },
               },
             },
             {
@@ -55,8 +57,8 @@ export default defineConfig({
                 sameOrigin && /\.(?:png|jpg|jpeg|svg|gif|webp|ico|woff2?)$/i.test(url.pathname),
               handler: "CacheFirst",
               options: {
-                cacheName: "images-cache",
-                expiration: { maxEntries: 60, maxAgeSeconds: 60 * 60 * 24 * 7 },
+                cacheName: "static-cache-v2",
+                expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 7 },
               },
             },
           ],
