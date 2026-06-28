@@ -237,7 +237,7 @@ function DashboardPage() {
                   </div>
                 )}
               </div>
-              <span className="text-[10px] font-bold text-text-secondary uppercase text-center leading-tight">{item.label}</span>
+              <span className="module-card-label uppercase">{item.label}</span>
             </motion.button>
           ))}
         </div>
