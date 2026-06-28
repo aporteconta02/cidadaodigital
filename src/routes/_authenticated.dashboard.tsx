@@ -38,7 +38,7 @@ const QUICK_ACCESS = [
   { label: "Vizinho Seguro",         icon: <ShieldCheck size={22} />,  gradient: "from-[#7c3aed] to-[#6d28d9]", to: "/sos" },
   { label: "Voz do Povo",            icon: <MessageSquare size={22} />,gradient: "from-[#f59e0b] to-[#d97706]", to: "/comunidade", search: { tab: 'voz' } },
   { label: "Mural",                  icon: <ClipboardList size={22} />,gradient: "from-[#ec4899] to-[#db2777]", to: "/comunidade", search: { tab: 'mural' } },
-  { label: "Benefícios",             icon: <Star size={22} />,         gradient: "from-[#a855f7] to-[#7c3aed]", to: "/perfil" },
+  { label: "Benefícios",             icon: <Star size={22} />,         gradient: "from-[#a855f7] to-[#7c3aed]", to: "/beneficios" },
   { label: "Telefones",              icon: <Phone size={22} />,        gradient: "from-[#6b7280] to-[#4b5563]", to: "/comunidade", search: { tab: 'telefones' } },
 ];
 
