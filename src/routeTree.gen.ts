@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as LimparCacheRouteImport } from './routes/limpar-cache'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -36,14 +37,22 @@ import { Route as AuthenticatedComunidadeRouteImport } from './routes/_authentic
 import { Route as AuthenticatedComercioRouteImport } from './routes/_authenticated.comercio'
 import { Route as AuthenticatedCarrinhoRouteImport } from './routes/_authenticated.carrinho'
 import { Route as AuthenticatedBeneficiosRouteImport } from './routes/_authenticated.beneficios'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AuthenticatedPedidosPedidoIdRouteImport } from './routes/_authenticated.pedidos.$pedidoId'
 import { Route as AuthenticatedPedidoConfirmadoPedidoIdRouteImport } from './routes/_authenticated.pedido-confirmado.$pedidoId'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as AuthenticatedComercioProdutoProdutoIdRouteImport } from './routes/_authenticated.comercio.produto.$produtoId'
 import { Route as AuthenticatedComercioLojaLojaIdRouteImport } from './routes/_authenticated.comercio.loja.$lojaId'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LimparCacheRoute = LimparCacheRouteImport.update({
@@ -175,6 +184,18 @@ const AuthenticatedBeneficiosRoute = AuthenticatedBeneficiosRouteImport.update({
   path: '/beneficios',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedPedidosPedidoIdRoute =
   AuthenticatedPedidosPedidoIdRouteImport.update({
     id: '/$pedidoId',
@@ -186,6 +207,12 @@ const AuthenticatedPedidoConfirmadoPedidoIdRoute =
     id: '/pedido-confirmado/$pedidoId',
     path: '/pedido-confirmado/$pedidoId',
     getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const AuthenticatedComercioProdutoProdutoIdRoute =
   AuthenticatedComercioProdutoProdutoIdRouteImport.update({
@@ -205,7 +232,10 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/limpar-cache': typeof LimparCacheRoute
+  '/mcp': typeof McpRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/beneficios': typeof AuthenticatedBeneficiosRoute
   '/carrinho': typeof AuthenticatedCarrinhoRoute
   '/comercio': typeof AuthenticatedComercioRouteWithChildren
@@ -227,6 +257,7 @@ export interface FileRoutesByFullPath {
   '/admin/transporte': typeof AdminTransporteRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/': typeof AdminIndexRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/pedido-confirmado/$pedidoId': typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
   '/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
   '/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
@@ -236,7 +267,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/limpar-cache': typeof LimparCacheRoute
+  '/mcp': typeof McpRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/beneficios': typeof AuthenticatedBeneficiosRoute
   '/carrinho': typeof AuthenticatedCarrinhoRoute
   '/comercio': typeof AuthenticatedComercioRouteWithChildren
@@ -258,6 +292,7 @@ export interface FileRoutesByTo {
   '/admin/transporte': typeof AdminTransporteRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin': typeof AdminIndexRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/pedido-confirmado/$pedidoId': typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
   '/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
   '/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
@@ -270,7 +305,10 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/limpar-cache': typeof LimparCacheRoute
+  '/mcp': typeof McpRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/beneficios': typeof AuthenticatedBeneficiosRoute
   '/_authenticated/carrinho': typeof AuthenticatedCarrinhoRoute
   '/_authenticated/comercio': typeof AuthenticatedComercioRouteWithChildren
@@ -292,6 +330,7 @@ export interface FileRoutesById {
   '/admin/transporte': typeof AdminTransporteRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/': typeof AdminIndexRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/pedido-confirmado/$pedidoId': typeof AuthenticatedPedidoConfirmadoPedidoIdRoute
   '/_authenticated/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
   '/_authenticated/comercio/loja/$lojaId': typeof AuthenticatedComercioLojaLojaIdRoute
@@ -304,7 +343,10 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/limpar-cache'
+    | '/mcp'
     | '/reset-password'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/beneficios'
     | '/carrinho'
     | '/comercio'
@@ -326,6 +368,7 @@ export interface FileRouteTypes {
     | '/admin/transporte'
     | '/admin/usuarios'
     | '/admin/'
+    | '/.mcp/invoke-tool/$tool'
     | '/pedido-confirmado/$pedidoId'
     | '/pedidos/$pedidoId'
     | '/comercio/loja/$lojaId'
@@ -335,7 +378,10 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/limpar-cache'
+    | '/mcp'
     | '/reset-password'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/beneficios'
     | '/carrinho'
     | '/comercio'
@@ -357,6 +403,7 @@ export interface FileRouteTypes {
     | '/admin/transporte'
     | '/admin/usuarios'
     | '/admin'
+    | '/.mcp/invoke-tool/$tool'
     | '/pedido-confirmado/$pedidoId'
     | '/pedidos/$pedidoId'
     | '/comercio/loja/$lojaId'
@@ -368,7 +415,10 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/limpar-cache'
+    | '/mcp'
     | '/reset-password'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/_authenticated/beneficios'
     | '/_authenticated/carrinho'
     | '/_authenticated/comercio'
@@ -390,6 +440,7 @@ export interface FileRouteTypes {
     | '/admin/transporte'
     | '/admin/usuarios'
     | '/admin/'
+    | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/pedido-confirmado/$pedidoId'
     | '/_authenticated/pedidos/$pedidoId'
     | '/_authenticated/comercio/loja/$lojaId'
@@ -402,7 +453,11 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
   LimparCacheRoute: typeof LimparCacheRoute
+  McpRoute: typeof McpRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -412,6 +467,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/limpar-cache': {
@@ -596,6 +658,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBeneficiosRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/pedidos/$pedidoId': {
       id: '/_authenticated/pedidos/$pedidoId'
       path: '/$pedidoId'
@@ -609,6 +685,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/pedido-confirmado/$pedidoId'
       preLoaderRoute: typeof AuthenticatedPedidoConfirmadoPedidoIdRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/comercio/produto/$produtoId': {
       id: '/_authenticated/comercio/produto/$produtoId'
@@ -723,7 +806,12 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   LimparCacheRoute: LimparCacheRoute,
+  McpRoute: McpRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
