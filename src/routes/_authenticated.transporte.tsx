@@ -211,9 +211,9 @@ function SolicitarTab({ usuarioId }: { usuarioId: string }) {
               <p><span className="text-text-muted">Valor:</span> <strong>R$ {Number(accepted.valor).toFixed(2)}</strong></p>
               <p><span className="text-text-muted">Pix:</span> {accepted.drivers?.chave_pix}</p>
               {accepted.drivers?.usuarios?.telefone && (
-                <a href={`tel:${accepted.drivers.usuarios.telefone}`} className="inline-flex items-center gap-2 mt-2 bg-success text-white px-4 py-2 rounded-xl text-xs font-black uppercase">
+                <button type="button" onClick={() => callPhone(accepted.drivers.usuarios.telefone)} className="inline-flex items-center gap-2 mt-2 bg-success text-white px-4 py-2 rounded-xl text-xs font-black uppercase">
                   <Phone size={14}/> Ligar
-                </a>
+                </button>
               )}
             </div>
             <button onClick={concluir} className="mt-4 w-full bg-primary text-white py-3 rounded-xl text-xs font-black uppercase">
