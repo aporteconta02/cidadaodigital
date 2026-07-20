@@ -41,7 +41,6 @@ const withStartupTimeout = <T,>(promise: Promise<T>, ms = 3500): Promise<T | nul
 
 function LandingPage() {
   const navigate = useNavigate();
-  const [checking, setChecking] = useState(true);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false });
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -56,43 +55,25 @@ function LandingPage() {
     emblaApi.on("select", onSelect);
   }, [emblaApi, onSelect]);
 
+  // Background session check — never blocks rendering. If a session exists,
+  // redirect to the dashboard silently; otherwise stay on onboarding.
   useEffect(() => {
     let mounted = true;
-
-    const checkUser = async () => {
+    (async () => {
       try {
-        console.log("Landing page: Checking user...");
-        const result = await withStartupTimeout(supabase.auth.getSession());
-        if (!mounted) return;
-
-        if (!result) {
-          console.warn("Landing page: session check timed out");
-          setChecking(false);
-          return;
-        }
-
-        const { data } = result;
-
-        if (data.session) {
-          console.log("Landing page: Session found, redirecting to dashboard");
+        const result = await withStartupTimeout(supabase.auth.getSession(), 3000);
+        if (!mounted || !result) return;
+        if (result.data.session) {
           navigate({ to: "/dashboard" });
-        } else {
-          setChecking(false);
         }
       } catch (error) {
-        console.error("Landing page: Failed to check session", error);
-        if (mounted) setChecking(false);
+        console.error("Landing page: session check failed", error);
       }
-    };
-
-    checkUser();
-
+    })();
     return () => {
       mounted = false;
     };
   }, [navigate]);
-
-  if (checking) return <StartupFallback />;
 
   const isLastStep = selectedIndex === ONBOARDING_STEPS.length - 1;
 
