@@ -83,7 +83,7 @@ function MinhaLojaPage() {
     try {
       const ext = file.name.split('.').pop();
       const path = `${usuario.id}/${campo}-${Date.now()}.${ext}`;
-      const bucket = campo === 'banner' ? 'banners' : 'fotos-produtos';
+      const bucket = 'fotos-produtos';
       const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
       if (error) throw error;
       const { data: signed, error: signErr } = await supabase.storage
