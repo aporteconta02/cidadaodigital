@@ -32,56 +32,75 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { profile, setProfile, setSession } = useAuthStore();
+  const { profile, setProfile, setSession, setHydrated } = useAuthStore();
   const [loading, setLoading] = useState(true);
 
   const refreshUsuario = useCallback(async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (session) {
-      setSession(session);
-      const { data, error } = await supabase
-        .from('usuarios')
-        .select('*')
-        .eq('auth_id', session.user.id)
-        .maybeSingle();
-
-      if (!error && data) {
-        setProfile(data as UserProfile);
-      }
-    } else {
-      setProfile(null);
-      setSession(null);
-    }
-    setLoading(false);
-  }, [setProfile, setSession]);
-
-  useEffect(() => {
-    refreshUsuario();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
       if (session) {
         setSession(session);
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('usuarios')
           .select('*')
           .eq('auth_id', session.user.id)
           .maybeSingle();
-        
-        if (data) {
+
+        if (!error && data) {
           setProfile(data as UserProfile);
         }
       } else {
         setProfile(null);
         setSession(null);
       }
+    } catch (error) {
+      console.error('AuthProvider: failed to refresh user', error);
+      setProfile(null);
+      setSession(null);
+    } finally {
       setLoading(false);
+    }
+  }, [setProfile, setSession]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    Promise.resolve(useAuthStore.persist.rehydrate()).finally(() => {
+      if (!mounted) return;
+      setHydrated(true);
+      refreshUsuario();
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      try {
+        if (session) {
+          setSession(session);
+          const { data } = await supabase
+            .from('usuarios')
+            .select('*')
+            .eq('auth_id', session.user.id)
+            .maybeSingle();
+          
+          if (data) {
+            setProfile(data as UserProfile);
+          }
+        } else {
+          setProfile(null);
+          setSession(null);
+        }
+      } catch (error) {
+        console.error('AuthProvider: auth state change failed', error);
+      } finally {
+        setLoading(false);
+      }
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
-  }, [refreshUsuario, setProfile, setSession]);
+  }, [refreshUsuario, setHydrated, setProfile, setSession]);
 
   const value = {
     usuario: profile as UserProfile | null,

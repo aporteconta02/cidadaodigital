@@ -51,20 +51,34 @@ function LandingPage() {
   }, [emblaApi, onSelect]);
 
   useEffect(() => {
+    let mounted = true;
+
     const checkUser = async () => {
-      console.log("Landing page: Checking user...");
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        console.log("Landing page: Session found, redirecting to dashboard");
-        navigate({ to: "/dashboard" });
-      } else {
-        setChecking(false);
+      try {
+        console.log("Landing page: Checking user...");
+        const { data } = await supabase.auth.getSession();
+        if (!mounted) return;
+
+        if (data.session) {
+          console.log("Landing page: Session found, redirecting to dashboard");
+          navigate({ to: "/dashboard" });
+        } else {
+          setChecking(false);
+        }
+      } catch (error) {
+        console.error("Landing page: Failed to check session", error);
+        if (mounted) setChecking(false);
       }
     };
+
     checkUser();
+
+    return () => {
+      mounted = false;
+    };
   }, [navigate]);
 
-  if (checking) return null;
+  if (checking) return <StartupFallback />;
 
   const isLastStep = selectedIndex === ONBOARDING_STEPS.length - 1;
 
@@ -165,6 +179,39 @@ function LandingPage() {
           </button>
         </div>
       </main>
+    </div>
+  );
+}
+
+function StartupFallback() {
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#0a0010",
+        color: "#ffffff",
+        fontFamily: "Inter, system-ui, sans-serif",
+      }}
+    >
+      <div style={{ textAlign: "center" }}>
+        <div
+          style={{
+            width: 44,
+            height: 44,
+            margin: "0 auto 16px",
+            borderRadius: 14,
+            background: "linear-gradient(135deg, #7c3aed, #06b6d4)",
+            boxShadow: "0 0 28px rgba(124, 58, 237, 0.45)",
+          }}
+        />
+        <strong style={{ fontSize: 14, letterSpacing: 1.2 }}>CIDADÃO+</strong>
+        <p style={{ margin: "8px 0 0", fontSize: 12, color: "rgba(255,255,255,0.65)" }}>
+          Carregando app...
+        </p>
+      </div>
     </div>
   );
 }

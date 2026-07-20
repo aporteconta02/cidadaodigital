@@ -23,8 +23,10 @@ interface UserProfile {
 interface AuthState {
   profile: UserProfile | null;
   session: any | null;
+  isHydrated: boolean;
   setProfile: (profile: UserProfile | null) => void;
   setSession: (session: any | null) => void;
+  setHydrated: (isHydrated: boolean) => void;
   logout: () => void;
 }
 
@@ -33,12 +35,18 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       profile: null,
       session: null,
+      isHydrated: false,
       setProfile: (profile: UserProfile | null) => set({ profile }),
       setSession: (session: any | null) => set({ session }),
+      setHydrated: (isHydrated: boolean) => set({ isHydrated }),
       logout: () => set({ profile: null, session: null }),
     }),
     {
       name: 'auth-storage',
+      partialize: (state) => ({ profile: state.profile, session: state.session }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHydrated(true);
+      },
     }
   )
 );
