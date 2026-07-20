@@ -268,7 +268,7 @@ function PerfilPage() {
     }
   };
 
-  if (!usuario) return null;
+  if (!usuario) return <PerfilLoading />;
 
   return (
     <div className="min-h-screen bg-bg-primary pb-32">
@@ -663,6 +663,15 @@ function PerfilPage() {
           </div>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+function PerfilLoading() {
+  return (
+    <div className="min-h-screen bg-bg-primary flex flex-col items-center justify-center gap-3 text-text-secondary">
+      <UserIcon className="text-primary" size={28} />
+      <p className="text-xs font-bold uppercase tracking-widest">Carregando perfil...</p>
     </div>
   );
 }
