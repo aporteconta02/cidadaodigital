@@ -38,18 +38,31 @@ function AuthPage() {
   const [erro, setErro] = useState("");
   const navigate = useNavigate();
 
-  // Check if already logged in
+  // Se já existe sessão persistida, redireciona direto (sempre logado).
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session) {
-        const { data: profile } = await supabase
-          .from('usuarios')
-          .select('is_admin')
-          .eq('auth_id', session.user.id)
-          .maybeSingle();
-        navigate({ to: profile?.is_admin ? '/admin' : '/dashboard' });
+    let cancelled = false;
+    (async () => {
+      try {
+        await Promise.resolve(useAuthStore.persist.rehydrate());
+      } catch {}
+      const stored = useAuthStore.getState();
+      if (stored.session && stored.profile) {
+        if (cancelled) return;
+        navigate({ to: stored.profile.is_admin ? '/admin' : '/dashboard' });
+        return;
       }
-    });
+      const { data: { session } } = await supabase.auth.getSession();
+      if (cancelled || !session) return;
+      const { data: profile } = await supabase
+        .from('usuarios')
+        .select('*')
+        .eq('auth_id', session.user.id)
+        .maybeSingle();
+      useAuthStore.getState().setSession(session);
+      if (profile) useAuthStore.getState().setProfile(profile as any);
+      navigate({ to: profile?.is_admin ? '/admin' : '/dashboard' });
+    })();
+    return () => { cancelled = true; };
   }, [navigate]);
 
   // Form states
@@ -223,7 +236,9 @@ function AuthPage() {
          } else if (redirectPath) {
            target = redirectPath;
          }
+         setLoading(false);
          navigate({ to: target as any });
+         return;
       }
     } catch (error: any) {
       setErro(error.message || "Erro na autenticação");
