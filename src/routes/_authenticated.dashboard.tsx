@@ -126,7 +126,7 @@ function DashboardPage() {
     return { ...item, badge: 0 };
   });
 
-  if (authLoading) return (
+  if (authLoading && !usuario) return (
     <div className="p-6 space-y-8">
       <Skeleton className="h-12 w-48" />
       <Skeleton className="h-[180px] w-full rounded-2xl" />
