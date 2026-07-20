@@ -66,11 +66,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
+    // Hard cap: never let the app sit on a spinner forever due to a hung
+    // getSession() or profile fetch. If we haven't resolved in 4s, unblock.
+    const safetyTimer = window.setTimeout(() => {
+      if (mounted) setLoading(false);
+    }, 4000);
+
     Promise.resolve(useAuthStore.persist.rehydrate()).finally(() => {
       if (!mounted) return;
       setHydrated(true);
       refreshUsuario();
     });
+
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       try {
@@ -98,9 +105,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       mounted = false;
+      window.clearTimeout(safetyTimer);
       subscription.unsubscribe();
     };
   }, [refreshUsuario, setHydrated, setProfile, setSession]);
+
 
   const value = {
     usuario: profile as UserProfile | null,
