@@ -33,6 +33,12 @@ const ONBOARDING_STEPS = [
   },
 ];
 
+const withStartupTimeout = <T,>(promise: Promise<T>, ms = 3500): Promise<T | null> =>
+  Promise.race([
+    promise,
+    new Promise<null>((resolve) => window.setTimeout(() => resolve(null), ms)),
+  ]);
+
 function LandingPage() {
   const navigate = useNavigate();
   const [checking, setChecking] = useState(true);
@@ -56,8 +62,16 @@ function LandingPage() {
     const checkUser = async () => {
       try {
         console.log("Landing page: Checking user...");
-        const { data } = await supabase.auth.getSession();
+        const result = await withStartupTimeout(supabase.auth.getSession());
         if (!mounted) return;
+
+        if (!result) {
+          console.warn("Landing page: session check timed out");
+          setChecking(false);
+          return;
+        }
+
+        const { data } = result;
 
         if (data.session) {
           console.log("Landing page: Session found, redirecting to dashboard");
