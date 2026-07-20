@@ -105,9 +105,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       mounted = false;
+      window.clearTimeout(safetyTimer);
       subscription.unsubscribe();
     };
   }, [refreshUsuario, setHydrated, setProfile, setSession]);
+
 
   const value = {
     usuario: profile as UserProfile | null,
