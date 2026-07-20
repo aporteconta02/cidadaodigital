@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronLeft, Plus, Edit, Image as ImageIcon, Package, Store as StoreIcon, ClipboardList, BarChart3, X, Ticket, Trash2 } from "lucide-react";
+import { ChevronLeft, Plus, Edit, Image as ImageIcon, Package, Store as StoreIcon, ClipboardList, BarChart3, X, Ticket, Trash2, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,6 +53,88 @@ function MinhaLojaPage() {
     codigo: '', descricao: '', tipo_desconto: 'percentual' as 'percentual' | 'valor_fixo',
     valor_desconto: '', valor_minimo_pedido: '0', limite_uso: '', validade: '',
   });
+
+  // Loja form (criar/editar)
+  const [showLojaForm, setShowLojaForm] = useState(false);
+  const [savingLoja, setSavingLoja] = useState(false);
+  const [uploadingLojaImg, setUploadingLojaImg] = useState<null | 'logo' | 'banner'>(null);
+  const [lojaData, setLojaData] = useState({
+    nome: '', categoria: 'alimento', descricao: '', telefone: '', endereco: '',
+    logo_url: '', banner_url: '',
+  });
+
+  const openLojaForm = () => {
+    setLojaData({
+      nome: loja?.nome && loja.nome !== 'Minha Loja' ? loja.nome : '',
+      categoria: loja?.categoria || 'alimento',
+      descricao: loja?.descricao || '',
+      telefone: loja?.telefone || '',
+      endereco: loja?.endereco || '',
+      logo_url: loja?.logo_url || '',
+      banner_url: loja?.banner_url || '',
+    });
+    setShowLojaForm(true);
+  };
+
+  const uploadLojaImg = async (e: React.ChangeEvent<HTMLInputElement>, campo: 'logo' | 'banner') => {
+    const file = e.target.files?.[0];
+    if (!file || !usuario) return;
+    setUploadingLojaImg(campo);
+    try {
+      const ext = file.name.split('.').pop();
+      const path = `${usuario.id}/${campo}-${Date.now()}.${ext}`;
+      const bucket = 'fotos-produtos';
+      const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
+      if (error) throw error;
+      const { data: signed, error: signErr } = await supabase.storage
+        .from(bucket).createSignedUrl(path, 60 * 60 * 24 * 365);
+      if (signErr || !signed) throw signErr || new Error('Falha ao gerar URL');
+      setLojaData(f => ({ ...f, [`${campo}_url`]: signed.signedUrl }));
+      toast.success(`${campo === 'logo' ? 'Logo' : 'Banner'} enviado!`);
+    } catch (err: any) {
+      toast.error(err.message || 'Erro no upload');
+    } finally {
+      setUploadingLojaImg(null);
+    }
+  };
+
+  const salvarLoja = async () => {
+    if (!usuario) return;
+    if (!lojaData.nome.trim()) return toast.error('Informe o nome da loja');
+    if (!lojaData.categoria) return toast.error('Escolha a categoria');
+    setSavingLoja(true);
+    try {
+      const payload = {
+        nome: lojaData.nome.trim(),
+        categoria: lojaData.categoria,
+        descricao: lojaData.descricao.trim() || null,
+        telefone: lojaData.telefone.trim() || null,
+        endereco: lojaData.endereco.trim() || null,
+        logo_url: lojaData.logo_url || null,
+        banner_url: lojaData.banner_url || null,
+      };
+      if (loja) {
+        const { data, error } = await supabase.from('lojas')
+          .update(payload).eq('id', loja.id).select().single();
+        if (error) throw error;
+        setLoja(data);
+        toast.success('Loja atualizada!');
+      } else {
+        const { data, error } = await supabase.from('lojas')
+          .insert({ ...payload, usuario_id: usuario.id, ativo: true })
+          .select().single();
+        if (error) throw error;
+        setLoja(data);
+        toast.success('Loja criada! Aguardando aprovação do admin.');
+      }
+      setShowLojaForm(false);
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao salvar loja');
+    } finally {
+      setSavingLoja(false);
+    }
+  };
+
 
   useEffect(() => {
     if (!usuario) return;
@@ -246,11 +328,69 @@ function MinhaLojaPage() {
   }
   if (!loja) {
     return (
-      <div className="p-10 text-center text-text-muted">
-        <StoreIcon size={48} className="mx-auto mb-4 opacity-30" />
-        <p className="text-sm">Você ainda não possui uma loja cadastrada.</p>
-        <Link to="/perfil" className="inline-block mt-4 px-4 h-9 leading-9 rounded-lg bg-primary text-white text-sm font-bold">Voltar ao perfil</Link>
+      <div className="min-h-screen bg-bg-primary pb-8 px-4 pt-6">
+        <Link to="/perfil" className="inline-flex items-center gap-2 text-text-muted mb-6"><ChevronLeft size={18} /> Voltar</Link>
+        <div className="p-8 text-center bg-bg-card border border-white/5 rounded-2xl">
+          <StoreIcon size={48} className="mx-auto mb-4 opacity-30" />
+          <h2 className="text-lg font-black mb-2">Crie sua loja</h2>
+          <p className="text-sm text-text-muted mb-5">Cadastre os dados da sua loja para começar a vender no CIDADÃO+.</p>
+          <button onClick={openLojaForm} className="inline-flex items-center gap-2 px-5 h-11 rounded-lg bg-primary text-white text-sm font-bold">
+            <Plus size={16} /> Criar minha loja
+          </button>
+        </div>
+        {renderLojaDialog()}
       </div>
+    );
+  }
+
+  function renderLojaDialog() {
+    return (
+      <Dialog open={showLojaForm} onOpenChange={setShowLojaForm}>
+        <DialogContent className="bg-bg-elevated border-border-custom max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>{loja ? 'Editar loja' : 'Criar minha loja'}</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <label className="text-[10px] uppercase font-bold text-text-muted block mb-1">Banner</label>
+              <label className="flex items-center justify-center h-24 bg-white/5 rounded-lg border border-dashed border-white/10 cursor-pointer overflow-hidden">
+                {lojaData.banner_url
+                  ? <img src={lojaData.banner_url} className="w-full h-full object-cover" />
+                  : <div className="text-text-muted text-xs flex items-center gap-1"><ImageIcon size={20} />{uploadingLojaImg === 'banner' ? 'Enviando...' : 'Enviar banner'}</div>}
+                <input type="file" accept="image/*" className="hidden" onChange={e => uploadLojaImg(e, 'banner')} />
+              </label>
+            </div>
+            <div className="flex items-center gap-3">
+              <label className="size-16 rounded-full bg-white/5 border border-dashed border-white/10 flex items-center justify-center cursor-pointer overflow-hidden flex-shrink-0">
+                {lojaData.logo_url
+                  ? <img src={lojaData.logo_url} className="w-full h-full object-cover" />
+                  : <ImageIcon size={18} className="text-text-muted" />}
+                <input type="file" accept="image/*" className="hidden" onChange={e => uploadLojaImg(e, 'logo')} />
+              </label>
+              <span className="text-xs text-text-muted">{uploadingLojaImg === 'logo' ? 'Enviando logo...' : 'Toque para enviar logo'}</span>
+            </div>
+            <input placeholder="Nome da loja *" value={lojaData.nome} onChange={e => setLojaData(f => ({ ...f, nome: e.target.value }))}
+              className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm" />
+            <select value={lojaData.categoria} onChange={e => setLojaData(f => ({ ...f, categoria: e.target.value }))}
+              className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm">
+              <option value="alimento">Alimentação</option>
+              <option value="moda">Moda</option>
+              <option value="farma">Farmácia</option>
+              <option value="mercado">Mercado</option>
+              <option value="pet">Pet</option>
+              <option value="servico">Serviços</option>
+              <option value="outro">Outros</option>
+            </select>
+            <textarea placeholder="Descrição da loja" value={lojaData.descricao} onChange={e => setLojaData(f => ({ ...f, descricao: e.target.value }))}
+              className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm" rows={2} />
+            <input placeholder="Telefone / WhatsApp" value={lojaData.telefone} onChange={e => setLojaData(f => ({ ...f, telefone: e.target.value }))}
+              className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm" />
+            <input placeholder="Endereço" value={lojaData.endereco} onChange={e => setLojaData(f => ({ ...f, endereco: e.target.value }))}
+              className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm" />
+            <button onClick={salvarLoja} disabled={savingLoja} className="w-full h-11 bg-primary text-white rounded-lg font-bold text-sm disabled:opacity-50">
+              {savingLoja ? 'Salvando...' : loja ? 'Salvar alterações' : 'Criar loja'}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     );
   }
 
@@ -260,8 +400,15 @@ function MinhaLojaPage() {
   return (
     <div className="min-h-screen bg-bg-primary pb-8 px-4 pt-6">
       <Link to="/perfil" className="inline-flex items-center gap-2 text-text-muted mb-4"><ChevronLeft size={18} /> Voltar</Link>
-      <h1 className="text-2xl font-black mb-1">{loja.nome}</h1>
+      <div className="flex items-start justify-between gap-3 mb-1">
+        <h1 className="text-2xl font-black">{loja.nome}</h1>
+        <button onClick={openLojaForm} className="flex-shrink-0 inline-flex items-center gap-1 h-9 px-3 rounded-lg bg-white/5 border border-white/10 text-xs font-bold uppercase">
+          <Settings size={14} /> Editar loja
+        </button>
+      </div>
       <p className="text-xs text-text-muted uppercase font-bold mb-6">{loja.categoria} · {loja.aprovada ? '✅ Aprovada' : '⏳ Aguardando aprovação'}</p>
+      {renderLojaDialog()}
+
 
       <div className="flex gap-2 border-b border-white/5 mb-6">
         {([['resumo', BarChart3], ['produtos', Package], ['pedidos', ClipboardList], ['cupons', Ticket]] as const).map(([t, Icon]) => (
