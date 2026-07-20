@@ -3,67 +3,67 @@ import { supabase } from "@/integrations/supabase/client";
 
 import { useAuthStore } from "@/hooks/use-auth-store";
 
+// Fail-safe: never let a hung network call keep the app on a blank router-pending
+// screen. If getSession()/profile fetch doesn't resolve fast, fall back and let
+// the AuthProvider re-hydrate on the client.
+function withTimeout<T>(promise: PromiseLike<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([
+    Promise.resolve(promise),
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
+
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ location }) => {
-    // On the server, we might not have the session in the singleton client
-    // because it relies on localStorage which isn't available on the server.
-    // We skip the redirect on the server and let the client-side execution handle it.
-    if (typeof window === 'undefined') {
+    // Skip on the server — no localStorage, no session. Client re-runs.
+    if (typeof window === "undefined") {
       return { session: null, profile: null };
     }
 
-    console.log("Checking authentication for path:", location.pathname);
-    
-    // Attempt to get session
-    let { data: { session } } = await supabase.auth.getSession();
-    
-    // If no session, wait a brief moment and try once more (handles race conditions after login)
+    const sessionResult = await withTimeout(
+      supabase.auth.getSession(),
+      2500,
+      { data: { session: null } } as any,
+    );
+    let session = sessionResult.data.session;
+
     if (!session) {
-      console.log("Session not found immediately, retrying in 100ms...");
-      await new Promise(resolve => setTimeout(resolve, 100));
-      const retry = await supabase.auth.getSession();
+      // Brief retry to handle post-login race
+      await new Promise((r) => setTimeout(r, 120));
+      const retry = await withTimeout(
+        supabase.auth.getSession(),
+        1500,
+        { data: { session: null } } as any,
+      );
       session = retry.data.session;
     }
-    
+
     if (!session) {
-      console.log("Authentication failed, redirecting to /auth");
-      // Limpar estado se a sessão caiu
-      if (typeof window !== 'undefined') {
-        const { logout } = useAuthStore.getState();
-        logout();
-      }
+      const { logout } = useAuthStore.getState();
+      logout();
       throw redirect({
         to: "/auth",
-        search: {
-          redirect: location.pathname + location.search,
-        },
+        search: { redirect: location.pathname + location.search },
       });
     }
 
-    console.log("Authenticated as:", session.user.email);
+    // Profile fetch is best-effort — never block routing on it.
+    const profileResult = await withTimeout(
+      supabase
+        .from("usuarios")
+        .select("*")
+        .eq("auth_id", session.user.id)
+        .maybeSingle(),
+      2500,
+      { data: null, error: null } as any,
+    );
+    const profile = profileResult.data;
 
-    // Fetch user profile
-    const { data: profile, error } = await supabase
-      .from('usuarios')
-      .select('*')
-      .eq('auth_id', session.user.id)
-      .maybeSingle();
+    const { setProfile, setSession } = useAuthStore.getState();
+    setSession(session);
+    if (profile) setProfile(profile as any);
 
-    if (error) {
-      console.error('Error fetching profile in guard:', error);
-    }
-
-    // Atualizar store global se no cliente
-    if (typeof window !== 'undefined' && profile) {
-      const { setProfile, setSession } = useAuthStore.getState();
-      setProfile(profile as any);
-      setSession(session);
-    }
-
-    return { 
-      session, 
-      profile 
-    };
+    return { session, profile };
   },
   component: () => <Outlet />,
 });
