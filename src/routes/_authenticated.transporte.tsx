@@ -99,31 +99,29 @@ function SolicitarTab({ usuarioId }: { usuarioId: string }) {
   }, [usuarioId]);
 
   // Realtime: ofertas + status
+  const activeId = activeRequest?.id;
   useEffect(() => {
-    if (!activeRequest) { setOffers([]); return; }
-    (async () => {
+    if (!activeId) { setOffers([]); return; }
+    const fetchOffers = async () => {
       const { data } = await supabase
         .from("ride_offers")
         .select("*, drivers(nome_completo, foto_url, modelo_veiculo, placa, avaliacao_media, total_corridas, chave_pix, usuario_id, usuarios:usuario_id(telefone))")
-        .eq("request_id", activeRequest.id);
+        .eq("request_id", activeId);
       setOffers(data || []);
-    })();
+    };
+    fetchOffers();
     const ch = supabase
-      .channel(`req-${activeRequest.id}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "ride_offers", filter: `request_id=eq.${activeRequest.id}` }, async () => {
-        const { data } = await supabase
-          .from("ride_offers")
-          .select("*, drivers(nome_completo, foto_url, modelo_veiculo, placa, avaliacao_media, total_corridas, chave_pix, usuario_id, usuarios:usuario_id(telefone))")
-          .eq("request_id", activeRequest.id);
-        setOffers(data || []);
-        toast.info("Nova oferta recebida!");
+      .channel(`req-${activeId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "ride_offers", filter: `request_id=eq.${activeId}` }, async (p) => {
+        await fetchOffers();
+        if (p.eventType === "INSERT") toast.info("Nova oferta recebida!");
       })
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "ride_requests", filter: `id=eq.${activeRequest.id}` }, (p) => {
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "ride_requests", filter: `id=eq.${activeId}` }, (p) => {
         setActiveRequest(p.new);
       })
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [activeRequest]);
+  }, [activeId]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
