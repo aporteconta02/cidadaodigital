@@ -54,6 +54,88 @@ function MinhaLojaPage() {
     valor_desconto: '', valor_minimo_pedido: '0', limite_uso: '', validade: '',
   });
 
+  // Loja form (criar/editar)
+  const [showLojaForm, setShowLojaForm] = useState(false);
+  const [savingLoja, setSavingLoja] = useState(false);
+  const [uploadingLojaImg, setUploadingLojaImg] = useState<null | 'logo' | 'banner'>(null);
+  const [lojaData, setLojaData] = useState({
+    nome: '', categoria: 'alimento', descricao: '', telefone: '', endereco: '',
+    logo_url: '', banner_url: '',
+  });
+
+  const openLojaForm = () => {
+    setLojaData({
+      nome: loja?.nome && loja.nome !== 'Minha Loja' ? loja.nome : '',
+      categoria: loja?.categoria || 'alimento',
+      descricao: loja?.descricao || '',
+      telefone: loja?.telefone || '',
+      endereco: loja?.endereco || '',
+      logo_url: loja?.logo_url || '',
+      banner_url: loja?.banner_url || '',
+    });
+    setShowLojaForm(true);
+  };
+
+  const uploadLojaImg = async (e: React.ChangeEvent<HTMLInputElement>, campo: 'logo' | 'banner') => {
+    const file = e.target.files?.[0];
+    if (!file || !usuario) return;
+    setUploadingLojaImg(campo);
+    try {
+      const ext = file.name.split('.').pop();
+      const path = `${usuario.id}/${campo}-${Date.now()}.${ext}`;
+      const bucket = campo === 'banner' ? 'banners' : 'fotos-produtos';
+      const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
+      if (error) throw error;
+      const { data: signed, error: signErr } = await supabase.storage
+        .from(bucket).createSignedUrl(path, 60 * 60 * 24 * 365);
+      if (signErr || !signed) throw signErr || new Error('Falha ao gerar URL');
+      setLojaData(f => ({ ...f, [`${campo}_url`]: signed.signedUrl }));
+      toast.success(`${campo === 'logo' ? 'Logo' : 'Banner'} enviado!`);
+    } catch (err: any) {
+      toast.error(err.message || 'Erro no upload');
+    } finally {
+      setUploadingLojaImg(null);
+    }
+  };
+
+  const salvarLoja = async () => {
+    if (!usuario) return;
+    if (!lojaData.nome.trim()) return toast.error('Informe o nome da loja');
+    if (!lojaData.categoria) return toast.error('Escolha a categoria');
+    setSavingLoja(true);
+    try {
+      const payload = {
+        nome: lojaData.nome.trim(),
+        categoria: lojaData.categoria,
+        descricao: lojaData.descricao.trim() || null,
+        telefone: lojaData.telefone.trim() || null,
+        endereco: lojaData.endereco.trim() || null,
+        logo_url: lojaData.logo_url || null,
+        banner_url: lojaData.banner_url || null,
+      };
+      if (loja) {
+        const { data, error } = await supabase.from('lojas')
+          .update(payload).eq('id', loja.id).select().single();
+        if (error) throw error;
+        setLoja(data);
+        toast.success('Loja atualizada!');
+      } else {
+        const { data, error } = await supabase.from('lojas')
+          .insert({ ...payload, usuario_id: usuario.id, ativo: true })
+          .select().single();
+        if (error) throw error;
+        setLoja(data);
+        toast.success('Loja criada! Aguardando aprovação do admin.');
+      }
+      setShowLojaForm(false);
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao salvar loja');
+    } finally {
+      setSavingLoja(false);
+    }
+  };
+
+
   useEffect(() => {
     if (!usuario) return;
     supabase.from('lojas').select('*').eq('usuario_id', usuario.id).maybeSingle()
