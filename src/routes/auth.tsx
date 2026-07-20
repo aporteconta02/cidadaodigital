@@ -236,7 +236,9 @@ function AuthPage() {
          } else if (redirectPath) {
            target = redirectPath;
          }
+         setLoading(false);
          navigate({ to: target as any });
+         return;
       }
     } catch (error: any) {
       setErro(error.message || "Erro na autenticação");
