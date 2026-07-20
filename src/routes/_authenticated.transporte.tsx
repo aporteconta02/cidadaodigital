@@ -12,6 +12,20 @@ export const Route = createFileRoute("/_authenticated/transporte")({
 
 type Tab = "solicitar" | "minhas" | "motorista";
 
+function callPhone(raw: string) {
+  const digits = (raw || "").replace(/\D/g, "");
+  if (!digits) { toast.error("Telefone indisponível"); return; }
+  // Copy to clipboard so desktop users without a dialer still get the number
+  try { navigator.clipboard?.writeText(digits); } catch {}
+  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  if (isMobile) {
+    window.location.href = `tel:${digits}`;
+  } else {
+    toast.success(`Telefone copiado: ${raw}`);
+    window.open(`tel:${digits}`, "_self");
+  }
+}
+
 function TransportePage() {
   const { usuario } = useAuth();
   const [tab, setTab] = useState<Tab>("solicitar");
