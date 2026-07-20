@@ -241,7 +241,7 @@ function AuthPage() {
            target = redirectPath;
          }
          setLoading(false);
-         navigate({ to: target as any });
+         navigate({ to: target as any, replace: true });
          return;
       }
     } catch (error: any) {
