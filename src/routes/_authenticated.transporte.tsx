@@ -25,7 +25,7 @@ function TransportePage() {
 
   useEffect(() => { loadDriver(); }, [loadDriver]);
 
-  if (!usuario) return null;
+  if (!usuario) return <TransporteLoading />;
 
   return (
     <div className="pb-32 bg-bg-primary min-h-screen">
@@ -60,6 +60,15 @@ function TransportePage() {
         {tab === "minhas" && <MinhasCorridasTab usuarioId={usuario.id} />}
         {tab === "motorista" && <MotoristaTab driver={driver} authId={usuario.auth_id} onChange={loadDriver} />}
       </div>
+    </div>
+  );
+}
+
+function TransporteLoading() {
+  return (
+    <div className="min-h-screen bg-bg-primary flex flex-col items-center justify-center gap-3 text-text-secondary">
+      <Loader2 className="animate-spin text-primary" size={28} />
+      <p className="text-xs font-bold uppercase tracking-widest">Carregando transporte...</p>
     </div>
   );
 }
