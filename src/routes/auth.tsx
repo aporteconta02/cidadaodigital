@@ -46,9 +46,12 @@ function AuthPage() {
         await Promise.resolve(useAuthStore.persist.rehydrate());
       } catch {}
       const stored = useAuthStore.getState();
-      if (stored.session && stored.profile) {
+      const resolveTarget = (isAdmin: boolean) =>
+        isAdmin ? '/admin' : (redirectPath || '/dashboard');
+
+      if (stored.session) {
         if (cancelled) return;
-        navigate({ to: stored.profile.is_admin ? '/admin' : '/dashboard' });
+        navigate({ to: resolveTarget(!!stored.profile?.is_admin) as any, replace: true });
         return;
       }
       const { data: { session } } = await supabase.auth.getSession();
@@ -60,10 +63,10 @@ function AuthPage() {
         .maybeSingle();
       useAuthStore.getState().setSession(session);
       if (profile) useAuthStore.getState().setProfile(profile as any);
-      navigate({ to: profile?.is_admin ? '/admin' : '/dashboard' });
+      navigate({ to: resolveTarget(!!profile?.is_admin) as any, replace: true });
     })();
     return () => { cancelled = true; };
-  }, [navigate]);
+  }, [navigate, redirectPath]);
 
   // Form states
   const [email, setEmail] = useState("");
@@ -186,8 +189,9 @@ function AuthPage() {
         setProfile(newUserProfile as any);
       }
       setSession(authData.session);
-      
-      navigate({ to: '/dashboard' });
+
+      setLoading(false);
+      navigate({ to: (redirectPath || '/dashboard') as any, replace: true });
 
     } catch (err: any) {
       console.error("Erro inesperado no cadastro:", err);
@@ -237,7 +241,7 @@ function AuthPage() {
            target = redirectPath;
          }
          setLoading(false);
-         navigate({ to: target as any });
+         navigate({ to: target as any, replace: true });
          return;
       }
     } catch (error: any) {

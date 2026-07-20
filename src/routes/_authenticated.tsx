@@ -25,9 +25,9 @@ export const Route = createFileRoute("/_authenticated")({
 
     const store = useAuthStore.getState();
 
-    // Fast path: we already have a persisted session in the store -> let user in.
-    // Refresh session/profile in the background so we never block routing.
-    if (store.session && store.profile) {
+    // Fast path: qualquer sessão persistida basta para deixar entrar.
+    // Perfil e refresh de sessão acontecem em background — nunca bloqueiam a rota.
+    if (store.session) {
       void (async () => {
         try {
           const { data } = await supabase.auth.getSession();
@@ -39,6 +39,9 @@ export const Route = createFileRoute("/_authenticated")({
               .eq("auth_id", data.session.user.id)
               .maybeSingle();
             if (profile) useAuthStore.getState().setProfile(profile as any);
+          } else {
+            // Sessão persistida ficou inválida: limpa store para próximo carregamento.
+            useAuthStore.getState().logout();
           }
         } catch {
           // ignore background refresh errors
