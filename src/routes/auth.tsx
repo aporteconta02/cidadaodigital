@@ -189,8 +189,9 @@ function AuthPage() {
         setProfile(newUserProfile as any);
       }
       setSession(authData.session);
-      
-      navigate({ to: '/dashboard' });
+
+      setLoading(false);
+      navigate({ to: (redirectPath || '/dashboard') as any, replace: true });
 
     } catch (err: any) {
       console.error("Erro inesperado no cadastro:", err);
