@@ -493,9 +493,9 @@ function DriverDashboard({ driver, onChange }: { driver: any; onChange: () => vo
           <p className="text-sm">{myActive.usuarios?.nome}</p>
           <p className="text-xs text-text-muted">{myActive.origem} → {myActive.destino}</p>
           {myActive.usuarios?.telefone && (
-            <a href={`tel:${myActive.usuarios.telefone}`} className="inline-flex items-center gap-2 mt-3 bg-success text-white px-4 py-2 rounded-xl text-xs font-black uppercase">
+            <button type="button" onClick={() => callPhone(myActive.usuarios.telefone)} className="inline-flex items-center gap-2 mt-3 bg-success text-white px-4 py-2 rounded-xl text-xs font-black uppercase">
               <Phone size={14}/> Ligar
-            </a>
+            </button>
           )}
         </div>
       )}
