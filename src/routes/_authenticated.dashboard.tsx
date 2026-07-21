@@ -47,7 +47,7 @@ const QUICK_ACCESS = [
 function DashboardPage() {
   const { usuario, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [data, setData] = useState<any>({ banners: [], eventos: [], pesquisa: null, parceiros: [], alertas: [], mural: [], driversOnline: 0, novasDenuncias: 0, novosAvisos: 0 });
+  const [data, setData] = useState<any>({ banners: [], eventos: [], pesquisa: null, parceiros: [], alertas: [], mural: [], lojasLocais: [], driversOnline: 0, novasDenuncias: 0, novosAvisos: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
