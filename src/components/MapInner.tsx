@@ -119,16 +119,20 @@ export default function MapInner({
         return (
           <Marker key={marker.id || i} position={marker.position} icon={getIcon(marker.type, marker.resolved, isFresh)}>
             <Popup>
-              <div className="p-2 min-w-[180px]">
+              <div className="p-2 min-w-[200px]">
                 <div className="flex items-center justify-between mb-1 gap-2">
-                  <h4 className="font-black text-[11px] uppercase text-text-primary tracking-wider">{marker.title}</h4>
-                  {marker.created_at && (
-                    <span className="text-[9px] text-text-muted font-bold whitespace-nowrap">
-                      {formatDistanceToNow(new Date(marker.created_at), { addSuffix: true, locale: ptBR })}
-                    </span>
-                  )}
+                  <span className="text-[9px] font-black uppercase tracking-wider text-text-muted">{marker.type}</span>
+                  <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${marker.resolved ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    {marker.resolved ? 'Resolvido' : 'Ativo'}
+                  </span>
                 </div>
+                <h4 className="font-black text-[12px] text-text-primary mb-1">{marker.title}</h4>
                 <p className="text-[11px] text-text-secondary leading-tight mb-2">{marker.description || 'Sem descrição.'}</p>
+                {marker.created_at && (
+                  <p className="text-[9px] text-text-muted font-bold mb-2">
+                    {formatDistanceToNow(new Date(marker.created_at), { addSuffix: true, locale: ptBR })}
+                  </p>
+                )}
                 {!isAdminView && marker.type !== 'user' && (
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-1">
