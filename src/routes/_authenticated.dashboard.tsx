@@ -1,20 +1,21 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { 
-  ShoppingBag, 
-  Megaphone, 
-  Calendar, 
-  ShieldCheck, 
-  MessageSquare, 
-  ClipboardList, 
-  Star, 
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import {
+  ShoppingBag,
+  Megaphone,
+  Calendar,
+  ShieldCheck,
+  MessageSquare,
+  ClipboardList,
+  Star,
   Phone,
   ChevronRight,
   MapPin,
   ShieldAlert,
   AlertCircle,
-  Car
+  Car,
+  Store,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,7 +47,7 @@ const QUICK_ACCESS = [
 function DashboardPage() {
   const { usuario, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [data, setData] = useState<any>({ banners: [], eventos: [], pesquisa: null, parceiros: [], alertas: [], mural: [], driversOnline: 0, novasDenuncias: 0, novosAvisos: 0 });
+  const [data, setData] = useState<any>({ banners: [], eventos: [], pesquisa: null, parceiros: [], alertas: [], mural: [], lojasLocais: [], driversOnline: 0, novasDenuncias: 0, novosAvisos: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -55,7 +56,7 @@ function DashboardPage() {
       setLoading(true);
       try {
         const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-        const [banners, eventos, pesquisa, parceiros, alertas, mural, driversOnline, novasDenuncias, novosAvisos] = await Promise.all([
+        const [banners, eventos, pesquisa, parceiros, alertas, mural, lojasLocais, driversOnline, novasDenuncias, novosAvisos] = await Promise.all([
           supabase.from('banners').select('*').eq('ativo', true).order('posicao'),
           supabase.from('eventos').select('*').eq('destaque', true).eq('aprovado', true).gte('data_evento', new Date().toISOString()).limit(5),
           supabase.from('pesquisas').select('*').eq('ativa', true).limit(1).maybeSingle(),
@@ -64,6 +65,7 @@ function DashboardPage() {
             ? supabase.from('alertas_seguranca').select('*').eq('bairro', usuario.bairro).eq('ativo', true).gt('expira_em', new Date().toISOString()).limit(3)
             : { data: [] },
           supabase.from('mural_avisos').select('*').order('created_at', { ascending: false }).limit(3),
+          supabase.from('lojas').select('id, nome, categoria, logo_url, banner_url').eq('aprovada', true).eq('ativo', true).order('created_at', { ascending: false }).limit(8),
           supabase.from('drivers').select('id', { count: 'exact', head: true }).eq('online', true).eq('status_aprovacao', 'aprovado'),
           supabase.from('denuncias').select('id', { count: 'exact', head: true }).gte('created_at', since),
           supabase.from('mural_avisos').select('id', { count: 'exact', head: true }).gte('created_at', since),
@@ -76,6 +78,7 @@ function DashboardPage() {
           parceiros: parceiros.data || [],
           alertas: alertas.data || [],
           mural: mural.data || [],
+          lojasLocais: lojasLocais.data || [],
           driversOnline: (driversOnline as any).count || 0,
           novasDenuncias: (novasDenuncias as any).count || 0,
           novosAvisos: (novosAvisos as any).count || 0,
@@ -209,6 +212,71 @@ function DashboardPage() {
       <section className="px-4 mb-8 mt-4">
         <BannerCarousel />
       </section>
+
+      {/* Negócio Local — carrossel em loop */}
+      {data.lojasLocais.length > 0 && (
+        <section className="px-4 mb-8">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="text-sm font-black uppercase tracking-tight ml-1 italic">Negócio Local</h2>
+              <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest ml-1 mt-0.5">Apoie quem é da sua cidade</p>
+            </div>
+            <button onClick={() => navigate({ to: '/comercio' })} className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline">Ver todos</button>
+          </div>
+          <Carousel
+            opts={{ align: "start", loop: true }}
+            plugins={[Autoplay({ delay: 2500, stopOnInteraction: false, stopOnMouseEnter: true })]}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-3">
+              {data.lojasLocais.map((loja: any) => (
+                <CarouselItem key={loja.id} className="pl-3 basis-1/2 sm:basis-1/3 md:basis-1/4">
+                  <Link
+                    to="/comercio/loja/$lojaId"
+                    params={{ lojaId: loja.id }}
+                    className="block bg-bg-card rounded-2xl overflow-hidden border border-white/5 active:scale-[0.98] transition-all"
+                  >
+                    <div className="h-24 w-full bg-white/5 relative overflow-hidden">
+                      {loja.banner_url || loja.logo_url ? (
+                        <img src={loja.banner_url || loja.logo_url} alt={loja.nome} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-text-muted opacity-30">
+                          <Store size={28} />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-2.5">
+                      <h4 className="text-xs font-bold text-text-primary truncate">{loja.nome}</h4>
+                      <p className="text-[9px] text-text-muted uppercase font-black tracking-widest truncate">{loja.categoria || 'Loja'}</p>
+                    </div>
+                  </Link>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+
+          {/* Banner promocional */}
+          <button
+            onClick={() => navigate({ to: '/comercio' })}
+            className="mt-4 w-full relative overflow-hidden rounded-2xl p-5 text-left bg-gradient-to-r from-[#f97316] via-[#ef4444] to-[#ec4899] shadow-[0_10px_30px_rgba(239,68,68,0.35)] active:scale-[0.98] transition-all"
+          >
+            <div className="absolute -top-8 -right-8 size-32 rounded-full bg-white/20 blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-10 -left-6 size-28 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+            <div className="relative z-10 flex items-center gap-3">
+              <div className="size-12 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-white">
+                <ShoppingBag size={22} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/90">Promoção</p>
+                <h3 className="text-base font-black text-white leading-tight">Compre local e ganhe cupons</h3>
+                <p className="text-[11px] text-white/85 mt-0.5">Descontos exclusivos no comércio da sua cidade</p>
+              </div>
+              <ChevronRight size={20} className="text-white shrink-0" />
+            </div>
+          </button>
+        </section>
+      )}
+
 
       {/* Quick Access */}
       <section className="px-4 mb-10">
