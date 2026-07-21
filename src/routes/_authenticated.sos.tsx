@@ -447,8 +447,8 @@ function SOSPage() {
     toast.success(`Avisando ${contatos.length} contato(s)...`);
   };
 
-  const isValido = usuario?.validade_assinatura ? new Date(usuario.validade_assinatura) > new Date() : false;
-  if (!isAssinante || !isValido) {
+  const isValido = true; // Vizinho Seguro liberado gratuitamente para todos os usuários
+  if (false) {
     return (
       <div className="min-h-[calc(100vh-144px)] bg-bg-primary flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
         <div className="size-24 rounded-3xl bg-gradient-hero flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(108,99,255,0.2)]">
