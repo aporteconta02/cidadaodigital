@@ -216,48 +216,43 @@ function SOSPage() {
 
   // Fetch alerts and user location
   useEffect(() => {
-    const isValido = usuario?.validade_assinatura ? new Date(usuario.validade_assinatura) > new Date() : false;
-    if (isAssinante && isValido) {
-      fetchAlerts();
-      
-      // Realtime subscription
-      const channel = supabase
-        .channel('alertas-realtime')
-        .on(
-          'postgres_changes',
-          { event: 'INSERT', schema: 'public', table: 'alertas_seguranca' },
-          (payload) => {
-            fetchAlerts();
-            const novo: any = payload.new || {};
-            const tipoLabel = ALERT_TYPES[novo.tipo as keyof typeof ALERT_TYPES]?.label || 'Alerta';
-            const local = novo.bairro || 'sua região';
-            toast.warning(`🚨 ${tipoLabel} em ${local} — agora`, { duration: 6000 });
-          }
-        )
-        .on(
-          'postgres_changes',
-          { event: 'UPDATE', schema: 'public', table: 'alertas_seguranca' },
-          () => fetchAlerts()
-        )
-        .subscribe();
+    // Vizinho Seguro liberado gratuitamente — todos os usuários autenticados
+    fetchAlerts();
 
-      // Geolocation
-      // Realtime geolocation (live tracking)
-      let watchId: number | null = null;
-      if (navigator.geolocation) {
-        watchId = navigator.geolocation.watchPosition(
-          (position) => setUserLocation([position.coords.latitude, position.coords.longitude]),
-          (error) => console.error("Geolocation error:", error),
-          { enableHighAccuracy: true, maximumAge: 10000 }
-        );
-      }
+    const channel = supabase
+      .channel('alertas-realtime')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'alertas_seguranca' },
+        (payload) => {
+          fetchAlerts();
+          const novo: any = payload.new || {};
+          const tipoLabel = ALERT_TYPES[novo.tipo as keyof typeof ALERT_TYPES]?.label || 'Alerta';
+          const local = novo.bairro || 'sua região';
+          toast.warning(`🚨 ${tipoLabel} em ${local} — agora`, { duration: 6000 });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'alertas_seguranca' },
+        () => fetchAlerts()
+      )
+      .subscribe();
 
-      return () => {
-        supabase.removeChannel(channel);
-        if (watchId !== null) navigator.geolocation.clearWatch(watchId);
-      };
+    let watchId: number | null = null;
+    if (navigator.geolocation) {
+      watchId = navigator.geolocation.watchPosition(
+        (position) => setUserLocation([position.coords.latitude, position.coords.longitude]),
+        (error) => console.error("Geolocation error:", error),
+        { enableHighAccuracy: true, maximumAge: 10000 }
+      );
     }
-  }, [isAssinante, usuario?.bairro]);
+
+    return () => {
+      supabase.removeChannel(channel);
+      if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+    };
+  }, [usuario?.bairro]);
 
   const fetchAlerts = async () => {
     setLoading(true);
