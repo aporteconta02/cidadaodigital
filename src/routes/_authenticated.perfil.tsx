@@ -498,14 +498,16 @@ function PerfilPage() {
               sub="Histórico de compras" 
               onClick={() => navigate({ to: "/pedidos" })}
             />
-            {usuario.tipo === 'comerciante' && (
-              <ProfileItem 
-                icon={<Store className="text-secondary" />} 
-                title="Minha Loja" 
-                sub="Gerenciar produtos e pedidos" 
-                onClick={() => navigate({ to: "/minha-loja" })}
-              />
-            )}
+            <ProfileItem
+              icon={<Store className="text-secondary" />}
+              title="Meu Negócio"
+              sub={minhaLoja ? `Painel: ${minhaLoja.nome}` : "🏪 Quero ser comerciante"}
+              onClick={() => {
+                if (minhaLoja) navigate({ to: "/minha-loja" });
+                else setIsBusinessModalOpen(true);
+              }}
+            />
+
 
             <ProfileItem 
               icon={<Megaphone className="text-secondary" />} 
