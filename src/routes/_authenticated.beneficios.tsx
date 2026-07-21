@@ -1,9 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronLeft, Copy, Tag, Store as StoreIcon } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ChevronLeft, Copy, Tag, Store as StoreIcon, Crown, Sparkles, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { formatBRL } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/beneficios")({
   component: BeneficiosPage,
@@ -25,10 +26,18 @@ function validadeLabel(v: string | null) {
 }
 
 function BeneficiosPage() {
+  const { usuario, isAssinante } = useAuth();
+  const navigate = useNavigate();
   const [cupons, setCupons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const validoAssinatura = usuario?.validade_assinatura
+    ? new Date(usuario.validade_assinatura) > new Date()
+    : false;
+  const temAcesso = isAssinante && validoAssinatura;
+
   useEffect(() => {
+    if (!temAcesso) { setLoading(false); return; }
     supabase.from('cupons')
       .select('*, lojas(id, nome, logo_url, categoria)')
       .eq('ativo', true)
@@ -43,7 +52,53 @@ function BeneficiosPage() {
         setCupons(validos);
         setLoading(false);
       });
-  }, []);
+  }, [temAcesso]);
+
+  if (!temAcesso) {
+    return (
+      <div className="min-h-screen bg-bg-primary pb-32 px-4 pt-6">
+        <Link to="/dashboard" className="inline-flex items-center gap-2 text-text-muted mb-6">
+          <ChevronLeft size={18} /> Voltar
+        </Link>
+        <div className="flex flex-col items-center text-center pt-6">
+          <div className="size-24 rounded-3xl bg-gradient-to-br from-[#a855f7] to-[#7c3aed] flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(168,85,247,0.35)]">
+            <Crown size={44} className="text-white" />
+          </div>
+          <h1 className="text-2xl font-black uppercase tracking-tight mb-2">Clube de Benefícios</h1>
+          <p className="text-text-secondary text-sm max-w-[300px] mb-8">
+            Acesso exclusivo para assinantes. Desconto real em lojas parceiras da sua cidade.
+          </p>
+
+          <div className="w-full space-y-3 mb-8">
+            {[
+              'Cupons exclusivos das lojas parceiras',
+              'Descontos em alimentação, moda e serviços',
+              'Novos cupons toda semana',
+              'QR Code de membro para validação na loja',
+            ].map((item) => (
+              <div key={item} className="flex items-center gap-3 p-4 bg-bg-card rounded-2xl border border-border-custom text-left">
+                <div className="size-8 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
+                  <Check size={16} className="text-primary" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-tight">{item}</span>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => navigate({ to: '/perfil' })}
+            className="w-full h-14 rounded-2xl bg-gradient-to-r from-[#a855f7] to-[#7c3aed] text-white font-black uppercase tracking-widest text-sm flex items-center justify-center gap-2 shadow-[0_10px_30px_rgba(168,85,247,0.35)]"
+          >
+            <Sparkles size={18} /> Assinar Cidadão+
+          </button>
+          <p className="text-[10px] text-text-muted mt-3 uppercase tracking-widest">
+            {isAssinante && !validoAssinatura ? 'Sua assinatura expirou' : 'Ative sua assinatura no perfil'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
 
   const copiar = async (codigo: string) => {
     try {
