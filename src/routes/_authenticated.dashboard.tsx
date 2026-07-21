@@ -213,6 +213,71 @@ function DashboardPage() {
         <BannerCarousel />
       </section>
 
+      {/* Negócio Local — carrossel em loop */}
+      {data.lojasLocais.length > 0 && (
+        <section className="px-4 mb-8">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="text-sm font-black uppercase tracking-tight ml-1 italic">Negócio Local</h2>
+              <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest ml-1 mt-0.5">Apoie quem é da sua cidade</p>
+            </div>
+            <button onClick={() => navigate({ to: '/comercio' })} className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline">Ver todos</button>
+          </div>
+          <Carousel
+            opts={{ align: "start", loop: true }}
+            plugins={[Autoplay({ delay: 2500, stopOnInteraction: false, stopOnMouseEnter: true })]}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-3">
+              {data.lojasLocais.map((loja: any) => (
+                <CarouselItem key={loja.id} className="pl-3 basis-1/2 sm:basis-1/3 md:basis-1/4">
+                  <Link
+                    to="/comercio/loja/$lojaId"
+                    params={{ lojaId: loja.id }}
+                    className="block bg-bg-card rounded-2xl overflow-hidden border border-white/5 active:scale-[0.98] transition-all"
+                  >
+                    <div className="h-24 w-full bg-white/5 relative overflow-hidden">
+                      {loja.banner_url || loja.logo_url ? (
+                        <img src={loja.banner_url || loja.logo_url} alt={loja.nome} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-text-muted opacity-30">
+                          <Store size={28} />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-2.5">
+                      <h4 className="text-xs font-bold text-text-primary truncate">{loja.nome}</h4>
+                      <p className="text-[9px] text-text-muted uppercase font-black tracking-widest truncate">{loja.categoria || 'Loja'}</p>
+                    </div>
+                  </Link>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+
+          {/* Banner promocional */}
+          <button
+            onClick={() => navigate({ to: '/comercio' })}
+            className="mt-4 w-full relative overflow-hidden rounded-2xl p-5 text-left bg-gradient-to-r from-[#f97316] via-[#ef4444] to-[#ec4899] shadow-[0_10px_30px_rgba(239,68,68,0.35)] active:scale-[0.98] transition-all"
+          >
+            <div className="absolute -top-8 -right-8 size-32 rounded-full bg-white/20 blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-10 -left-6 size-28 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+            <div className="relative z-10 flex items-center gap-3">
+              <div className="size-12 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-white">
+                <ShoppingBag size={22} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/90">Promoção</p>
+                <h3 className="text-base font-black text-white leading-tight">Compre local e ganhe cupons</h3>
+                <p className="text-[11px] text-white/85 mt-0.5">Descontos exclusivos no comércio da sua cidade</p>
+              </div>
+              <ChevronRight size={20} className="text-white shrink-0" />
+            </div>
+          </button>
+        </section>
+      )}
+
+
       {/* Quick Access */}
       <section className="px-4 mb-10">
         <h2 className="text-sm font-black uppercase tracking-tight mb-4 ml-1">Acesso Rápido</h2>
