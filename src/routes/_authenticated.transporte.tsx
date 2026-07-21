@@ -391,8 +391,10 @@ function DriverSignup({ authId, onDone }: { authId: string; onDone: () => void }
       let fotoUrl: string | null = null;
       if (foto) {
         const fotoPath = await upload(foto, "foto");
-        fotoUrl = supabase.storage.from("cnh-docs").getPublicUrl(fotoPath).data.publicUrl;
+        const { data: signed } = await supabase.storage.from("cnh-docs").createSignedUrl(fotoPath, 60 * 60 * 24 * 365);
+        fotoUrl = signed?.signedUrl || null;
       }
+
       const { data: { user } } = await supabase.auth.getUser();
       const { data: usu } = await supabase.from("usuarios").select("id").eq("auth_id", user!.id).single();
       const { error } = await supabase.from("drivers").insert({
@@ -439,37 +441,93 @@ function DriverSignup({ authId, onDone }: { authId: string; onDone: () => void }
 function DriverDashboard({ driver, onChange }: { driver: any; onChange: () => void }) {
   const [requests, setRequests] = useState<any[]>([]);
   const [myActive, setMyActive] = useState<any>(null);
+  const [pendingRating, setPendingRating] = useState<any>(null);
 
   async function toggleOnline() {
     const { error } = await supabase.from("drivers").update({ online: !driver.online }).eq("id", driver.id);
     if (error) toast.error(error.message); else onChange();
   }
 
-  const loadRequests = useCallback(async () => {
-    const { data } = await supabase.from("ride_requests").select("*, usuarios:cliente_id(nome, telefone)").eq("status", "aberta").order("created_at", { ascending: false });
-    setRequests(data || []);
-    const { data: active } = await supabase.from("ride_requests").select("*, usuarios:cliente_id(nome, telefone)").eq("driver_aceito_id", driver.id).in("status", ["aceita"]).maybeSingle();
+  const loadMine = useCallback(async () => {
+    // Corrida em andamento
+    const { data: active } = await supabase
+      .from("ride_requests")
+      .select("*, usuarios:cliente_id(nome, telefone)")
+      .eq("driver_aceito_id", driver.id)
+      .eq("status", "aceita")
+      .maybeSingle();
     setMyActive(active);
-  }, [driver.id]);
 
+    // Corrida concluída sem avaliação do motorista
+    const { data: done } = await supabase
+      .from("ride_requests")
+      .select("*, usuarios:cliente_id(nome, telefone)")
+      .eq("driver_aceito_id", driver.id)
+      .eq("status", "concluida")
+      .order("updated_at", { ascending: false })
+      .limit(5);
+    if (done?.length) {
+      const ids = done.map(d => d.id);
+      const { data: rated } = await supabase
+        .from("ride_ratings")
+        .select("request_id")
+        .eq("avaliador_id", driver.usuario_id)
+        .in("request_id", ids);
+      const ratedSet = new Set((rated || []).map(r => r.request_id));
+      const toRate = done.find(d => !ratedSet.has(d.id));
+      setPendingRating(toRate || null);
+    } else {
+      setPendingRating(null);
+    }
+  }, [driver.id, driver.usuario_id]);
+
+  const loadOpen = useCallback(async () => {
+    const { data } = await supabase
+      .from("ride_requests")
+      .select("*, usuarios:cliente_id(nome, telefone)")
+      .eq("status", "aberta")
+      .order("created_at", { ascending: false });
+    setRequests(data || []);
+  }, []);
+
+  // Load "my active" and "pending rating" always (independent of online status)
+  useEffect(() => { loadMine(); }, [loadMine]);
+
+  // Realtime subscription for driver's own rides
   useEffect(() => {
-    if (!driver.online) { setRequests([]); return; }
-    loadRequests();
     const ch = supabase
-      .channel(`driver-${driver.id}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "ride_requests" }, loadRequests)
+      .channel(`driver-mine-${driver.id}`)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "ride_requests", filter: `driver_aceito_id=eq.${driver.id}` }, (p) => {
+        loadMine();
+        if ((p.new as any).status === "concluida") toast.success("Corrida concluída pelo cliente!");
+      })
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "ride_offers", filter: `driver_id=eq.${driver.id}` }, (p) => {
         if ((p.new as any).status === "aceita") toast.success("Sua oferta foi aceita!");
-        loadRequests();
+        loadMine();
       })
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [driver.online, driver.id, loadRequests]);
+  }, [driver.id, loadMine]);
+
+  // Open requests only when online
+  useEffect(() => {
+    if (!driver.online) { setRequests([]); return; }
+    loadOpen();
+    const ch = supabase
+      .channel(`driver-open-${driver.id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "ride_requests" }, loadOpen)
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [driver.online, driver.id, loadOpen]);
 
   async function sendOffer(reqId: string, valor: number) {
     if (!valor || valor <= 0) { toast.error("Valor inválido"); return; }
     const { error } = await supabase.from("ride_offers").insert({ request_id: reqId, driver_id: driver.id, valor });
     if (error) toast.error(error.message); else toast.success("Oferta enviada");
+  }
+
+  if (pendingRating) {
+    return <RatingForm request={pendingRating} usuarioId={driver.usuario_id} tipo="driver_para_cliente" onDone={() => { setPendingRating(null); loadMine(); }} />;
   }
 
   return (
@@ -490,8 +548,9 @@ function DriverDashboard({ driver, onChange }: { driver: any; onChange: () => vo
       {myActive && (
         <div className="bg-success/10 border border-success/30 rounded-2xl p-5">
           <h3 className="font-black uppercase text-xs text-success mb-2">Corrida em andamento</h3>
-          <p className="text-sm">{myActive.usuarios?.nome}</p>
+          <p className="text-sm font-bold">{myActive.usuarios?.nome}</p>
           <p className="text-xs text-text-muted">{myActive.origem} → {myActive.destino}</p>
+          {myActive.observacao && <p className="text-[10px] text-text-muted italic mt-1">"{myActive.observacao}"</p>}
           {myActive.usuarios?.telefone && (
             <button type="button" onClick={() => callPhone(myActive.usuarios.telefone)} className="inline-flex items-center gap-2 mt-3 bg-success text-white px-4 py-2 rounded-xl text-xs font-black uppercase">
               <Phone size={14}/> Ligar
@@ -513,10 +572,11 @@ function DriverDashboard({ driver, onChange }: { driver: any; onChange: () => vo
         </div>
       )}
 
-      {!driver.online && <p className="text-center text-text-muted text-sm py-8">Ative o status online para ver solicitações.</p>}
+      {!driver.online && !myActive && <p className="text-center text-text-muted text-sm py-8">Ative o status online para ver solicitações.</p>}
     </div>
   );
 }
+
 
 function RequestCard({ request, onOffer }: { request: any; onOffer: (v: number) => void }) {
   const [valor, setValor] = useState("");
