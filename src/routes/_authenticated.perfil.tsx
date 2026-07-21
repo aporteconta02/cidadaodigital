@@ -563,7 +563,72 @@ function PerfilPage() {
         </div>
       </div>
 
+      {/* Modal Criar Loja (Meu Negócio) */}
+      <Dialog open={isBusinessModalOpen} onOpenChange={setIsBusinessModalOpen}>
+        <DialogContent className="bg-bg-elevated border-border-custom rounded-t-[32px] sm:rounded-3xl p-6 max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-white uppercase font-black italic">🏪 Criar minha loja</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-3">
+              <label className="flex flex-col items-center justify-center gap-1 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer text-text-muted hover:text-white">
+                <Camera size={18} />
+                <span className="text-[10px] font-black uppercase">{businessLogo ? "Logo ✓" : "Logo"}</span>
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => setBusinessLogo(e.target.files?.[0] || null)} />
+              </label>
+              <label className="flex flex-col items-center justify-center gap-1 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer text-text-muted hover:text-white">
+                <Camera size={18} />
+                <span className="text-[10px] font-black uppercase">{businessBanner ? "Banner ✓" : "Banner"}</span>
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => setBusinessBanner(e.target.files?.[0] || null)} />
+              </label>
+            </div>
+            <input
+              placeholder="Nome da loja *"
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
+              value={businessForm.nome}
+              onChange={(e) => setBusinessForm({ ...businessForm, nome: e.target.value })}
+            />
+            <select
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
+              value={businessForm.categoria}
+              onChange={(e) => setBusinessForm({ ...businessForm, categoria: e.target.value })}
+            >
+              {["Alimentação","Moda","Eletrônicos","Serviços","Beleza","Pet Shop","Farmácia","Outros"].map(c => (
+                <option key={c} value={c} className="bg-bg-elevated">{c}</option>
+              ))}
+            </select>
+            <textarea
+              placeholder="Descrição"
+              rows={2}
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
+              value={businessForm.descricao}
+              onChange={(e) => setBusinessForm({ ...businessForm, descricao: e.target.value })}
+            />
+            <input
+              placeholder="Endereço"
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
+              value={businessForm.endereco}
+              onChange={(e) => setBusinessForm({ ...businessForm, endereco: e.target.value })}
+            />
+            <input
+              placeholder="WhatsApp"
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
+              value={businessForm.telefone}
+              onChange={(e) => setBusinessForm({ ...businessForm, telefone: e.target.value })}
+            />
+            <button
+              onClick={handleCreateBusiness}
+              disabled={loading}
+              className="w-full py-4 bg-primary text-white font-black rounded-2xl uppercase tracking-widest mt-2 disabled:opacity-50"
+            >
+              {loading ? "Criando..." : "Criar minha loja"}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Modal Editar Perfil */}
+
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <DialogContent className="bg-bg-elevated border-border-custom rounded-t-[32px] sm:rounded-3xl p-6">
           <DialogHeader>
