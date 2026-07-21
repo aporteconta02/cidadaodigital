@@ -80,6 +80,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // Ignora eventos ruidosos que causam re-fetch em loop
+      if (event !== 'SIGNED_IN' && event !== 'SIGNED_OUT' && event !== 'USER_UPDATED') return;
       try {
         if (session) {
           setSession(session);
@@ -90,7 +92,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             .maybeSingle();
           
           if (data) {
-            setProfile(data as UserProfile);
+            const current = useAuthStore.getState().profile;
+            if (!current || current.id !== (data as any).id) {
+              setProfile(data as UserProfile);
+            }
           }
         } else {
           setProfile(null);
@@ -111,13 +116,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [refreshUsuario, setHydrated, setProfile, setSession]);
 
 
-  const value = {
+  const value = useMemo(() => ({
     usuario: profile as UserProfile | null,
     loading,
     isAdmin: !!profile?.is_admin,
     isAssinante: !!profile?.assinante_plus,
     refreshUsuario,
-  };
+  }), [profile, loading, refreshUsuario]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
