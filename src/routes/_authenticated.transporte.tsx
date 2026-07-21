@@ -31,11 +31,18 @@ function TransportePage() {
   const [tab, setTab] = useState<Tab>("solicitar");
   const [driver, setDriver] = useState<any>(null);
 
+  const usuarioId = usuario?.id;
   const loadDriver = useCallback(async () => {
-    if (!usuario) return;
-    const { data } = await supabase.from("drivers").select("*").eq("usuario_id", usuario.id).maybeSingle();
-    setDriver(data);
-  }, [usuario]);
+    if (!usuarioId) return;
+    const { data } = await supabase.from("drivers").select("*").eq("usuario_id", usuarioId).maybeSingle();
+    setDriver((prev: any) => {
+      // Evita nova referência quando os dados não mudaram — previne re-render loop
+      if (prev && data && prev.id === data.id && prev.online === data.online && prev.status_aprovacao === data.status_aprovacao && prev.avaliacao_media === data.avaliacao_media && prev.total_corridas === data.total_corridas) {
+        return prev;
+      }
+      return data;
+    });
+  }, [usuarioId]);
 
   useEffect(() => { loadDriver(); }, [loadDriver]);
 
