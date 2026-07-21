@@ -80,6 +80,29 @@ function PerfilPage() {
   // Partners State
   const [partners, setPartners] = useState<any[]>([]);
 
+  // Meu Negócio (loja) state
+  const [minhaLoja, setMinhaLoja] = useState<any | null>(null);
+  const [isBusinessModalOpen, setIsBusinessModalOpen] = useState(false);
+  const [businessForm, setBusinessForm] = useState({
+    nome: "",
+    categoria: "Alimentação",
+    descricao: "",
+    endereco: "",
+    telefone: "",
+  });
+  const [businessLogo, setBusinessLogo] = useState<File | null>(null);
+  const [businessBanner, setBusinessBanner] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (!usuario?.id) return;
+    supabase
+      .from("lojas")
+      .select("*")
+      .eq("usuario_id", usuario.id)
+      .maybeSingle()
+      .then(({ data }) => setMinhaLoja(data));
+  }, [usuario?.id]);
+
   useEffect(() => {
     if (usuario) {
       setEditForm({
@@ -90,6 +113,7 @@ function PerfilPage() {
       });
     }
   }, [usuario]);
+
 
   const handleLogout = async () => {
     setIsLogoutModalOpen(false);
@@ -192,6 +216,67 @@ function PerfilPage() {
       setLoading(false);
     }
   };
+
+  const uploadBusinessAsset = async (file: File, prefix: string) => {
+    if (!usuario) throw new Error("Sem usuário");
+    const ext = file.name.split(".").pop();
+    const path = `${usuario.id}/${prefix}-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage
+      .from("fotos-produtos")
+      .upload(path, file, { upsert: true });
+    if (error) throw error;
+    const { data: signed, error: sErr } = await supabase.storage
+      .from("fotos-produtos")
+      .createSignedUrl(path, 60 * 60 * 24 * 365);
+    if (sErr || !signed) throw sErr || new Error("Falha ao gerar URL");
+    return signed.signedUrl;
+  };
+
+  const handleCreateBusiness = async () => {
+    if (!usuario) return;
+    if (!businessForm.nome.trim()) return toast.error("Nome da loja é obrigatório");
+    try {
+      setLoading(true);
+      let logo_url: string | null = null;
+      let banner_url: string | null = null;
+      if (businessLogo) logo_url = await uploadBusinessAsset(businessLogo, "logo");
+      if (businessBanner) banner_url = await uploadBusinessAsset(businessBanner, "banner");
+
+      if (usuario.tipo !== "comerciante") {
+        await supabase.from("usuarios").update({ tipo: "comerciante" }).eq("id", usuario.id);
+      }
+
+      const { data: novaLoja, error } = await supabase
+        .from("lojas")
+        .insert({
+          usuario_id: usuario.id,
+          nome: businessForm.nome.trim(),
+          categoria: businessForm.categoria,
+          descricao: businessForm.descricao || null,
+          endereco: businessForm.endereco || null,
+          telefone: businessForm.telefone || null,
+          logo_url,
+          banner_url,
+          ativo: true,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setMinhaLoja(novaLoja);
+      setIsBusinessModalOpen(false);
+      await refreshUsuario();
+      toast.success("Loja criada com sucesso! 🎉");
+      navigate({ to: "/minha-loja" });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.message || "Erro ao criar loja");
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
 
   const fetchPartners = async () => {
@@ -413,14 +498,16 @@ function PerfilPage() {
               sub="Histórico de compras" 
               onClick={() => navigate({ to: "/pedidos" })}
             />
-            {usuario.tipo === 'comerciante' && (
-              <ProfileItem 
-                icon={<Store className="text-secondary" />} 
-                title="Minha Loja" 
-                sub="Gerenciar produtos e pedidos" 
-                onClick={() => navigate({ to: "/minha-loja" })}
-              />
-            )}
+            <ProfileItem
+              icon={<Store className="text-secondary" />}
+              title="Meu Negócio"
+              sub={minhaLoja ? `Painel: ${minhaLoja.nome}` : "🏪 Quero ser comerciante"}
+              onClick={() => {
+                if (minhaLoja) navigate({ to: "/minha-loja" });
+                else setIsBusinessModalOpen(true);
+              }}
+            />
+
 
             <ProfileItem 
               icon={<Megaphone className="text-secondary" />} 
@@ -476,7 +563,72 @@ function PerfilPage() {
         </div>
       </div>
 
+      {/* Modal Criar Loja (Meu Negócio) */}
+      <Dialog open={isBusinessModalOpen} onOpenChange={setIsBusinessModalOpen}>
+        <DialogContent className="bg-bg-elevated border-border-custom rounded-t-[32px] sm:rounded-3xl p-6 max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-white uppercase font-black italic">🏪 Criar minha loja</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-3">
+              <label className="flex flex-col items-center justify-center gap-1 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer text-text-muted hover:text-white">
+                <Camera size={18} />
+                <span className="text-[10px] font-black uppercase">{businessLogo ? "Logo ✓" : "Logo"}</span>
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => setBusinessLogo(e.target.files?.[0] || null)} />
+              </label>
+              <label className="flex flex-col items-center justify-center gap-1 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer text-text-muted hover:text-white">
+                <Camera size={18} />
+                <span className="text-[10px] font-black uppercase">{businessBanner ? "Banner ✓" : "Banner"}</span>
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => setBusinessBanner(e.target.files?.[0] || null)} />
+              </label>
+            </div>
+            <input
+              placeholder="Nome da loja *"
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
+              value={businessForm.nome}
+              onChange={(e) => setBusinessForm({ ...businessForm, nome: e.target.value })}
+            />
+            <select
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
+              value={businessForm.categoria}
+              onChange={(e) => setBusinessForm({ ...businessForm, categoria: e.target.value })}
+            >
+              {["Alimentação","Moda","Eletrônicos","Serviços","Beleza","Pet Shop","Farmácia","Outros"].map(c => (
+                <option key={c} value={c} className="bg-bg-elevated">{c}</option>
+              ))}
+            </select>
+            <textarea
+              placeholder="Descrição"
+              rows={2}
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
+              value={businessForm.descricao}
+              onChange={(e) => setBusinessForm({ ...businessForm, descricao: e.target.value })}
+            />
+            <input
+              placeholder="Endereço"
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
+              value={businessForm.endereco}
+              onChange={(e) => setBusinessForm({ ...businessForm, endereco: e.target.value })}
+            />
+            <input
+              placeholder="WhatsApp"
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
+              value={businessForm.telefone}
+              onChange={(e) => setBusinessForm({ ...businessForm, telefone: e.target.value })}
+            />
+            <button
+              onClick={handleCreateBusiness}
+              disabled={loading}
+              className="w-full py-4 bg-primary text-white font-black rounded-2xl uppercase tracking-widest mt-2 disabled:opacity-50"
+            >
+              {loading ? "Criando..." : "Criar minha loja"}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Modal Editar Perfil */}
+
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <DialogContent className="bg-bg-elevated border-border-custom rounded-t-[32px] sm:rounded-3xl p-6">
           <DialogHeader>
