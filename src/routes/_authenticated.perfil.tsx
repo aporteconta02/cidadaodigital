@@ -80,6 +80,29 @@ function PerfilPage() {
   // Partners State
   const [partners, setPartners] = useState<any[]>([]);
 
+  // Meu Negócio (loja) state
+  const [minhaLoja, setMinhaLoja] = useState<any | null>(null);
+  const [isBusinessModalOpen, setIsBusinessModalOpen] = useState(false);
+  const [businessForm, setBusinessForm] = useState({
+    nome: "",
+    categoria: "Alimentação",
+    descricao: "",
+    endereco: "",
+    telefone: "",
+  });
+  const [businessLogo, setBusinessLogo] = useState<File | null>(null);
+  const [businessBanner, setBusinessBanner] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (!usuario?.id) return;
+    supabase
+      .from("lojas")
+      .select("*")
+      .eq("usuario_id", usuario.id)
+      .maybeSingle()
+      .then(({ data }) => setMinhaLoja(data));
+  }, [usuario?.id]);
+
   useEffect(() => {
     if (usuario) {
       setEditForm({
@@ -90,6 +113,7 @@ function PerfilPage() {
       });
     }
   }, [usuario]);
+
 
   const handleLogout = async () => {
     setIsLogoutModalOpen(false);
