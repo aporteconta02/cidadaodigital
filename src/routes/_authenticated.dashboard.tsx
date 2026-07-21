@@ -1,20 +1,21 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { 
-  ShoppingBag, 
-  Megaphone, 
-  Calendar, 
-  ShieldCheck, 
-  MessageSquare, 
-  ClipboardList, 
-  Star, 
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import {
+  ShoppingBag,
+  Megaphone,
+  Calendar,
+  ShieldCheck,
+  MessageSquare,
+  ClipboardList,
+  Star,
   Phone,
   ChevronRight,
   MapPin,
   ShieldAlert,
   AlertCircle,
-  Car
+  Car,
+  Store,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
