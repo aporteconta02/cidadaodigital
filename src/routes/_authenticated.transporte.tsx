@@ -391,8 +391,10 @@ function DriverSignup({ authId, onDone }: { authId: string; onDone: () => void }
       let fotoUrl: string | null = null;
       if (foto) {
         const fotoPath = await upload(foto, "foto");
-        fotoUrl = supabase.storage.from("cnh-docs").getPublicUrl(fotoPath).data.publicUrl;
+        const { data: signed } = await supabase.storage.from("cnh-docs").createSignedUrl(fotoPath, 60 * 60 * 24 * 365);
+        fotoUrl = signed?.signedUrl || null;
       }
+
       const { data: { user } } = await supabase.auth.getUser();
       const { data: usu } = await supabase.from("usuarios").select("id").eq("auth_id", user!.id).single();
       const { error } = await supabase.from("drivers").insert({
