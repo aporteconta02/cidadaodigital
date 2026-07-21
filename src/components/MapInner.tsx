@@ -52,14 +52,14 @@ function colorFor(type: string, resolved?: boolean): string {
   return map[t] || '#6C63FF';
 }
 
-const getIcon = (type: string, resolved?: boolean, pulse?: boolean) => {
-  const color = colorFor(type, resolved);
+const getIcon = (_type: string, resolved?: boolean, pulse?: boolean) => {
+  const color = resolved ? '#22c55e' : '#ef4444';
   return L.divIcon({
-    className: 'custom-div-icon',
-    html: `<div class="${pulse ? 'map-pin-pulse' : ''}" style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>`,
-    iconSize: [20, 20],
-    iconAnchor: [10, 10],
-    popupAnchor: [0, -10],
+    className: '',
+    html: `<div class="${pulse ? 'map-pin-pulse' : ''}" style="width:28px;height:28px;background:${color};border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);"></div>`,
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+    popupAnchor: [0, -28],
   });
 };
 
