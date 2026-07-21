@@ -56,7 +56,7 @@ function DashboardPage() {
       setLoading(true);
       try {
         const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-        const [banners, eventos, pesquisa, parceiros, alertas, mural, driversOnline, novasDenuncias, novosAvisos] = await Promise.all([
+        const [banners, eventos, pesquisa, parceiros, alertas, mural, lojasLocais, driversOnline, novasDenuncias, novosAvisos] = await Promise.all([
           supabase.from('banners').select('*').eq('ativo', true).order('posicao'),
           supabase.from('eventos').select('*').eq('destaque', true).eq('aprovado', true).gte('data_evento', new Date().toISOString()).limit(5),
           supabase.from('pesquisas').select('*').eq('ativa', true).limit(1).maybeSingle(),
@@ -65,6 +65,7 @@ function DashboardPage() {
             ? supabase.from('alertas_seguranca').select('*').eq('bairro', usuario.bairro).eq('ativo', true).gt('expira_em', new Date().toISOString()).limit(3)
             : { data: [] },
           supabase.from('mural_avisos').select('*').order('created_at', { ascending: false }).limit(3),
+          supabase.from('lojas').select('id, nome, categoria, logo_url, banner_url').eq('aprovada', true).eq('ativo', true).order('created_at', { ascending: false }).limit(8),
           supabase.from('drivers').select('id', { count: 'exact', head: true }).eq('online', true).eq('status_aprovacao', 'aprovado'),
           supabase.from('denuncias').select('id', { count: 'exact', head: true }).gte('created_at', since),
           supabase.from('mural_avisos').select('id', { count: 'exact', head: true }).gte('created_at', since),
@@ -77,6 +78,7 @@ function DashboardPage() {
           parceiros: parceiros.data || [],
           alertas: alertas.data || [],
           mural: mural.data || [],
+          lojasLocais: lojasLocais.data || [],
           driversOnline: (driversOnline as any).count || 0,
           novasDenuncias: (novasDenuncias as any).count || 0,
           novosAvisos: (novosAvisos as any).count || 0,
