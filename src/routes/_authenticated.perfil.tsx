@@ -217,6 +217,67 @@ function PerfilPage() {
     }
   };
 
+  const uploadBusinessAsset = async (file: File, prefix: string) => {
+    if (!usuario) throw new Error("Sem usuário");
+    const ext = file.name.split(".").pop();
+    const path = `${usuario.id}/${prefix}-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage
+      .from("fotos-produtos")
+      .upload(path, file, { upsert: true });
+    if (error) throw error;
+    const { data: signed, error: sErr } = await supabase.storage
+      .from("fotos-produtos")
+      .createSignedUrl(path, 60 * 60 * 24 * 365);
+    if (sErr || !signed) throw sErr || new Error("Falha ao gerar URL");
+    return signed.signedUrl;
+  };
+
+  const handleCreateBusiness = async () => {
+    if (!usuario) return;
+    if (!businessForm.nome.trim()) return toast.error("Nome da loja é obrigatório");
+    try {
+      setLoading(true);
+      let logo_url: string | null = null;
+      let banner_url: string | null = null;
+      if (businessLogo) logo_url = await uploadBusinessAsset(businessLogo, "logo");
+      if (businessBanner) banner_url = await uploadBusinessAsset(businessBanner, "banner");
+
+      if (usuario.tipo !== "comerciante") {
+        await supabase.from("usuarios").update({ tipo: "comerciante" }).eq("id", usuario.id);
+      }
+
+      const { data: novaLoja, error } = await supabase
+        .from("lojas")
+        .insert({
+          usuario_id: usuario.id,
+          nome: businessForm.nome.trim(),
+          categoria: businessForm.categoria,
+          descricao: businessForm.descricao || null,
+          endereco: businessForm.endereco || null,
+          telefone: businessForm.telefone || null,
+          logo_url,
+          banner_url,
+          ativo: true,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setMinhaLoja(novaLoja);
+      setIsBusinessModalOpen(false);
+      await refreshUsuario();
+      toast.success("Loja criada com sucesso! 🎉");
+      navigate({ to: "/minha-loja" });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.message || "Erro ao criar loja");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
 
   const fetchPartners = async () => {
     const { data, error } = await supabase
